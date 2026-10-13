@@ -381,7 +381,7 @@ footer{margin-top:64px;color:var(--muted);font-size:13px;border-top:1px solid va
   <li>모든 명령은 <code>{actor, source: "gizmo"|"chat"|"teacher", requestId, ops[]}</code>. 서버가 순번(seq)을 매겨 방송.</li>
   <li>챗봇 요청 1회 = <b>트랜잭션 1개</b>. 중간에 하나라도 실패하면 전체 롤백, 되돌리기도 1단위.</li>
   <li>드래그 중에는 위치만 실시간 방송(저장 안 함), <b>놓는 순간 1건 기록</b>.</li>
-  <li>방 에셋 상한 200개, 생성물은 약 1만 삼각형으로 자동 감량. 상한 근접 시 챗봇이 안내.</li>
+  <li>방 에셋 상한 200개, 생성물은 약 5천 삼각형·텍스처 1024(KTX2)로 자동 감량. 상한 근접 시 챗봇이 안내.</li>
 </ul>
 
 <!-- 5 -->
@@ -446,7 +446,7 @@ footer{margin-top:64px;color:var(--muted);font-size:13px;border-top:1px solid va
   <rect class="w" x="415" y="62" width="120" height="56" rx="6"/><text x="475" y="86" text-anchor="middle">배경 제거</text><text class="sm tw" x="475" y="104" text-anchor="middle" style="fill:var(--warn)">RMBG-1.4 비상업 ⚠</text>
   <rect class="a" x="555" y="62" width="120" height="56" rx="6"/><text x="615" y="86" text-anchor="middle">TripoSG 형상</text><text class="sm" x="615" y="104" text-anchor="middle">MIT · VRAM 8GB+</text>
   <rect class="w" x="695" y="62" width="120" height="56" rx="6"/><text x="755" y="86" text-anchor="middle">텍스처</text><text class="sm tw" x="755" y="104" text-anchor="middle" style="fill:var(--warn)">nvdiffrast 비상업 ⚠</text>
-  <rect class="b" x="835" y="62" width="115" height="56" rx="6"/><text x="892" y="86" text-anchor="middle">감량 ~1만 tri</text><text class="sm" x="892" y="104" text-anchor="middle">GLB</text>
+  <rect class="b" x="835" y="62" width="115" height="56" rx="6"/><text x="892" y="86" text-anchor="middle">감량 ~5천 tri</text><text class="sm" x="892" y="104" text-anchor="middle">GLB</text>
   <line class="ln" x1="120" y1="90" x2="137" y2="90" marker-end="url(#ar)"/>
   <line class="ln" x1="250" y1="90" x2="263" y2="90" marker-end="url(#ar)"/>
   <line class="ln" x1="385" y1="90" x2="412" y2="90" marker-end="url(#ar)"/>
@@ -577,15 +577,15 @@ footer{margin-top:64px;color:var(--muted);font-size:13px;border-top:1px solid va
 
 <h3>성능 한계 수치 (반드시 지킬 것)</h3>
 <figure>
-<svg class="fig" viewBox="0 0 960 240" role="img" aria-label="프레임당 삼각형 수 비교: 데스크톱 편집 방 최대 200만, Quest 3 권장 130만에서 180만, Quest 2 권장 75만에서 100만, VR 감상 목표 50만">
+<svg class="fig" viewBox="0 0 960 240" role="img" aria-label="프레임당 삼각형 수 비교: 데스크톱 편집 방 최대 100만, Quest 3 권장 130만에서 180만, Quest 2 권장 75만에서 100만, VR 감상 목표 50만">
   <text class="t" x="10" y="20">프레임당 삼각형 수</text>
   <line class="grid" x1="230" y1="34" x2="230" y2="210"/>
   <line class="grid" x1="390" y1="34" x2="390" y2="210"/><line class="grid" x1="550" y1="34" x2="550" y2="210"/><line class="grid" x1="710" y1="34" x2="710" y2="210"/><line class="grid" x1="870" y1="34" x2="870" y2="210"/>
   <text class="sm" x="230" y="228" text-anchor="middle">0</text><text class="sm" x="390" y="228" text-anchor="middle">50만</text><text class="sm" x="550" y="228" text-anchor="middle">100만</text><text class="sm" x="710" y="228" text-anchor="middle">150만</text><text class="sm" x="870" y="228" text-anchor="middle">200만</text>
 
-  <text x="220" y="58" text-anchor="end" style="font-size:12.5px">데스크톱 편집 (200개 × 1만)</text>
-  <rect class="bn" x="230" y="42" width="640" height="24" rx="4"><title>데스크톱 편집 방 최대 약 200만 삼각형</title></rect>
-  <text x="878" y="59" style="font-size:12px">200만</text>
+  <text x="220" y="58" text-anchor="end" style="font-size:12.5px">데스크톱 편집 (200개 × 5천)</text>
+  <rect class="bn" x="230" y="42" width="320" height="24" rx="4"><title>데스크톱 편집 방 최대 약 100만 삼각형</title></rect>
+  <text x="558" y="59" style="font-size:12px">100만</text>
 
   <text x="220" y="100" text-anchor="end" style="font-size:12.5px">Quest 3·3S 권장 상한</text>
   <rect class="bn" x="230" y="84" width="416" height="24" rx="4"><title>Quest 3·3S 권장 130만~180만 (Meta Unity 문서)</title></rect>
@@ -603,7 +603,7 @@ footer{margin-top:64px;color:var(--muted);font-size:13px;border-top:1px solid va
   <line class="lnW dash" x1="470" y1="34" x2="470" y2="210"/>
   <text class="tw" x="476" y="206" style="font-size:11px;fill:var(--warn)">WebXR은 Quest 2 하한(75만)을 넘지 않게</text>
 </svg>
-<figcaption>데스크톱에서 만든 방을 그대로 VR에 올리면 Quest 2 한도의 2배를 넘는다. 그래서 VR로 열기 전에 "VR 굽기"로 에셋당 약 2,500 삼각형으로 줄인다. 진한 막대는 권장 범위의 하한, 옅은 연장은 상한이다. 출처는 Meta Unity 성능 문서이며, WebXR은 브라우저 오버헤드가 있어 하한을 상한으로 쓴다(추정).</figcaption>
+<figcaption>데스크톱에서 만든 방(최대 100만)을 그대로 VR에 올리면 Quest 2 하한(75만)을 넘는다. 그래서 VR로 열기 전에 "VR 굽기"로 에셋당 약 2,500 삼각형으로 줄인다. 진한 막대는 권장 범위의 하한, 옅은 연장은 상한이다. 출처는 Meta Unity 성능 문서이며, WebXR은 브라우저 오버헤드가 있어 하한을 상한으로 쓴다(추정).</figcaption>
 </figure>
 
 <figure>
@@ -633,10 +633,10 @@ footer{margin-top:64px;color:var(--muted);font-size:13px;border-top:1px solid va
 <h3>이 제품의 VR 감상 예산 (Quest 2 기준 설계)</h3>
 <div class="tbl"><table>
 <tr><th>항목</th><th>데스크톱 편집</th><th>VR 감상</th><th>이유</th></tr>
-<tr><td>방 전체 삼각형</td><td>~200만</td><td><b>50만 이하</b></td><td>Quest 2 하한 75만에서 아바타·환경 몫을 뺀 값</td></tr>
-<tr><td>에셋 1개 삼각형</td><td>~1만</td><td><b>~2,500</b> (VR용 LOD)</td><td>200개 × 2,500 = 50만</td></tr>
+<tr><td>방 전체 삼각형</td><td>~100만</td><td><b>50만 이하</b></td><td>Quest 2 하한 75만에서 아바타·환경 몫을 뺀 값</td></tr>
+<tr><td>에셋 1개 삼각형</td><td>~5천</td><td><b>~2,500</b> (VR용 LOD)</td><td>200개 × 2,500 = 50만</td></tr>
 <tr><td>draw call</td><td>제한 느슨</td><td><b>150 이하</b></td><td>아틀라스·병합 필요</td></tr>
-<tr><td>텍스처 해상도</td><td>2048</td><td><b>1024, KTX2/Basis</b></td><td>Meta 권장 압축 포맷. 생성 원본(4096)은 보관만</td></tr>
+<tr><td>텍스처 해상도</td><td>1024, KTX2</td><td><b>1024, KTX2/Basis</b></td><td>Meta 권장 압축 포맷. 생성 원본(4096)은 보관만</td></tr>
 <tr><td>아바타</td><td>-</td><td>1인 1만 tri 이하, 최대 5인</td><td>-</td></tr>
 </table></div>
 
