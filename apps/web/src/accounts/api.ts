@@ -1,4 +1,5 @@
-export const apiEndpoint=import.meta.env.VITE_SERVER_URL??'http://127.0.0.1:2567';
+export {serverEndpoint as apiEndpoint} from '../server-endpoint';
+import {serverEndpoint as apiEndpoint} from '../server-endpoint';
 import type {LoginIdentity} from '@coedit/contracts';
 export type {LoginIdentity,Classroom,IssuedStudent} from '@coedit/contracts';
 export async function accountApi<T>(path:string,body?:unknown):Promise<T>{

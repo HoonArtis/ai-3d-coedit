@@ -11,7 +11,13 @@ type AccountSession={actor:string;role:'teacher'|'student'};
 type ClassRoom={id:string;name:string;code:string};
 export class AccountService{
   constructor(readonly pool:Pool,private studentCredential=()=>randomBytes(12).toString('base64url')){}
-  async migrate(){await this.pool.query(await readFile(new URL('../../../../infra/migrations/002-accounts.sql',import.meta.url),'utf8'));}
+  async migrate(){
+    const client=await this.pool.connect();
+    try{await client.query('BEGIN');await client.query("SELECT pg_advisory_xact_lock(hashtext(current_schema() || ':coedit-accounts'))");
+      for(const file of ['002-accounts.sql','009-class-invites.sql'])await client.query(await readFile(new URL('../../../../infra/migrations/'+file,import.meta.url),'utf8'));
+      await client.query('COMMIT');
+    }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
+  }
   private async issue(actor:string,role:AccountSession['role']){
     const token=randomBytes(32).toString('base64url');
     await this.pool.query("INSERT INTO coedit_account_sessions(token_hash,actor,role,expires_at) VALUES($1,$2,$3,now()+interval '8 hours')",[credentialDigest(token),actor,role]);
@@ -66,11 +72,12 @@ export class AccountService{
     const actor=await this.teacher(token);z.number().int().min(1).max(150).parse(count);const client=await this.pool.connect();
     try{
       await client.query('BEGIN');await this.ownClass(client,actor,classId,true);
-      const {rows}=await client.query('SELECT r.id,r.code,(SELECT count(*)::int FROM coedit_students s WHERE s.room_id=r.id) AS used FROM coedit_class_rooms r WHERE class_id=$1 ORDER BY name,id',[classId]);
+      const {rows}=await client.query('SELECT r.id,r.code,(SELECT count(*)::int FROM coedit_students s WHERE s.room_id=r.id) AS used,ARRAY(SELECT s.ordinal FROM coedit_students s WHERE s.room_id=r.id) AS occupied FROM coedit_class_rooms r WHERE class_id=$1 ORDER BY name,id',[classId]);
       if(rows.reduce((n,r)=>n+5-r.used,0)<count)throw Error('CAPACITY');
       const issued:{actor:string;issuedId:string;roomKey:string;roomCode:string;ordinal:number}[]=[];
       for(const room of rows){
-        for(let ordinal=room.used+1;ordinal<=5&&issued.length<count;ordinal++){
+        for(let ordinal=1;ordinal<=5&&issued.length<count;ordinal++){
+          if(room.occupied.includes(ordinal))continue;
           const student={actor:randomUUID(),issuedId:this.studentCredential(),roomKey:room.id,roomCode:room.code,ordinal};
           await client.query('INSERT INTO coedit_students(id,room_id,credential_hash,ordinal) VALUES($1,$2,$3,$4)',[student.actor,room.id,credentialDigest(student.issuedId),ordinal]);issued.push(student);
         }

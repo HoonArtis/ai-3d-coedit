@@ -1,3 +1,5 @@
+import {inviteRoutes} from './accounts/invite-routes';
+import {mountWebSurface} from './web-surface';
 import {Server} from '@colyseus/core';
 import {WebSocketTransport} from '@colyseus/ws-transport';
 import {randomUUID} from 'node:crypto';
@@ -21,7 +23,7 @@ import {vrRoutes} from './vr/routes';
 import {RoomCapacity} from './rooms/capacity';
 import {createViewingRoom} from './vr/viewing-room';
 import type {RetextureService} from './generation/retexture-service';
-export async function startServer(port=2567,localPreview=false,options:{repository?:RoomRepository;accounts?:AccountService;chat?:ChatService;images?:ImageService;assets?:AssetService;history?:RoomHistoryService;vr?:VrBakeService;retexture?:RetextureService}={}){
+export async function startServer(port=2567,localPreview=false,options:{repository?:RoomRepository;accounts?:AccountService;chat?:ChatService;images?:ImageService;assets?:AssetService;history?:RoomHistoryService;vr?:VrBakeService;retexture?:RetextureService;webRoot?:string;registrationEnabled?:boolean}={}){
   const sessions=new SessionStore();
   // The upstream 4 KiB default rejects valid 200-op commands and 4000-character Korean chat.
   const transport=new WebSocketTransport({maxPayload:256*1024});
@@ -36,6 +38,7 @@ export async function startServer(port=2567,localPreview=false,options:{reposito
     }
     if(req.method==='OPTIONS'){res.status(204).end();return;}next();
   });
+  app.get('/api/runtime-config',(_req,res)=>res.json({localPreview,registrationEnabled:options.registrationEnabled??true}));
   app.get('/health',(_req,res)=>res.json({ok:true,mode:localPreview?'local-preview':'authenticated',storage:options.repository?'postgres':'memory'}));
   if(localPreview)app.post('/api/local-session',(req,res)=>{
     const origin=req.headers.origin;
@@ -52,7 +55,9 @@ export async function startServer(port=2567,localPreview=false,options:{reposito
   if(options.vr)app.use('/api',vrRoutes(options.vr));
   if(options.history)app.use('/api',historyRoutes(options.history));
   if(options.accounts)app.use('/api',logRoutes(new TeacherLogService(options.accounts)));
-  if(options.accounts)app.use('/api',accountRoutes(options.accounts,options.repository&&options.assets?new DashboardService(options.accounts,options.repository,options.assets):undefined));
+  if(options.accounts)app.use('/api',inviteRoutes(options.accounts));
+  if(options.accounts)app.use('/api',accountRoutes(options.accounts,options.repository&&options.assets?new DashboardService(options.accounts,options.repository,options.assets):undefined,options.registrationEnabled));
+  if(options.webRoot)mountWebSurface(app,options.webRoot);
   const resolver={read:async(token:unknown,roomKey:unknown)=>{
     try{return sessions.read(token,roomKey);}catch(error){if(!options.accounts)throw error;return options.accounts.resolveRoomToken(token,roomKey);}
   }};

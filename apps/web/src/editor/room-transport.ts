@@ -1,3 +1,4 @@
+import {serverEndpoint} from '../server-endpoint';
 import {Client,type Room} from '@colyseus/sdk';
 import {parseServerEvent,previewSchema,type Command,type CommandResult,type CommandTransport,type ServerEvent,type Lease,type PreviewEvent} from '@coedit/contracts';
 import {chatUpdateSchema,type ChatUpdate,type ChatRequest} from '@coedit/contracts';
@@ -50,7 +51,7 @@ export class RoomTransport implements CommandTransport {
   close(){if(this.closed)return;this.closed=true;clearInterval(this.heartbeat);window.removeEventListener('pagehide',this.onPageHide);void this.room.leave();}
 }
 export async function connectRoom():Promise<RoomTransport>{
-  const endpoint=import.meta.env.VITE_SERVER_URL??'http://127.0.0.1:2567';
+  const endpoint=serverEndpoint;
   const key='coedit-local-identity';
   const account=localStorage.getItem('coedit-account-identity');
   let saved:Identity|null=null;try{saved=JSON.parse(account??localStorage.getItem(key)??'null');}catch{/* replace invalid local identity */}

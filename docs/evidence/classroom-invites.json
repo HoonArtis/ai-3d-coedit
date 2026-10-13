@@ -1,0 +1,14 @@
+{
+  "date": "2026-10-13T23:31:25.193Z",
+  "publicHTTPS": true,
+  "teacherCreatedClass": true,
+  "rooms": 2,
+  "students": 2,
+  "occupiedSeatDisabled": true,
+  "studentSync": true,
+  "sameBrowserResume": true,
+  "teacherJoined": true,
+  "pageErrors": 0,
+  "localRequests": 0,
+  "independentExternalDevice": false
+}

@@ -2,7 +2,7 @@ import {useEffect,useState} from 'react';
 import {generationListSchema,type GenerationRecord} from '@coedit/contracts';
 import type {useEditor} from '../editor/use-editor';
 import {generationStatus} from './status';
-const endpoint=import.meta.env.VITE_SERVER_URL??'http://127.0.0.1:2567';
+import {serverEndpoint as endpoint} from '../server-endpoint';
 type Listed=ReturnType<typeof generationListSchema.parse>;
 function Preview({url,token,version}:{url:string;token:string;version:number}){
  const [src,setSrc]=useState(''),[error,setError]=useState(false),[attempt,setAttempt]=useState(0);

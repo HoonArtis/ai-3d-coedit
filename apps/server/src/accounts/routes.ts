@@ -3,7 +3,7 @@ import {z} from 'zod';
 import type {AccountService} from './service';
 import type {DashboardService} from './dashboard';
 export const bearer=(req:Request)=>req.headers.authorization?.startsWith('Bearer ')?req.headers.authorization.slice(7):'';
-export function accountRoutes(accounts:AccountService,dashboard?:DashboardService){
+export function accountRoutes(accounts:AccountService,dashboard?:DashboardService,registrationEnabled=true){
   const router=Router();router.use(json({limit:'32kb'}));
   const attempts=new Map<string,{count:number;until:number}>();
   router.use((req,res,next)=>{
@@ -14,7 +14,7 @@ export function accountRoutes(accounts:AccountService,dashboard?:DashboardServic
     for(const [ip,entry] of attempts)if(entry.until<=now)attempts.delete(ip);
     next();
   });
-  router.post('/teachers/register',async(req,res)=>{res.status(201).json({...await accounts.registerTeacher(req.body),storage:'postgres'});});
+  router.post('/teachers/register',async(req,res)=>{if(!registrationEnabled){res.status(403).json({error:'강사 계정은 운영자에게 발급받아 주세요.'});return;}res.status(201).json({...await accounts.registerTeacher(req.body),storage:'postgres'});});
   router.post('/teachers/login',async(req,res)=>{res.json({...await accounts.loginTeacher(req.body),storage:'postgres'});});
   router.post('/students/login',async(req,res)=>{res.json({...await accounts.joinStudent(req.body),storage:'postgres'});});
   router.get('/me',async(req,res)=>{res.json(await accounts.session(bearer(req)));});

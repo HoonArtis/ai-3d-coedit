@@ -29,7 +29,7 @@ export async function startRuntime(preview=false){
     const submissions=new SubmissionService(pool,repository,store);await submissions.migrate();
     const history=new RoomHistoryService(pool,accounts,submissions),vr=new VrBakeService(accounts,submissions,queues,store,assets);await vr.migrate();
     const retexture=new RetextureService(generation,assets);
-    const server=await startServer(Number(process.env.PORT??2567),preview,{repository,accounts,chat:new ChatService(chatRepository,queues),images,assets,history,vr,retexture});
+    const server=await startServer(Number(process.env.PORT??2567),preview,{repository,accounts,chat:new ChatService(chatRepository,queues),images,assets,history,vr,retexture,webRoot:process.env.SERVE_WEB==='1'?'dist/web':undefined,registrationEnabled:process.env.DISABLE_TEACHER_REGISTRATION!=='1'});
     const reconcile=singleFlight(async()=>{for(const result of await Promise.allSettled([images.reconcile(),finishing.reconcile(),vr.enqueuePending()]))if(result.status==='rejected')console.error('Job coordinator:',result.reason);});
     const timer=setInterval(()=>void reconcile(),500);
     return {...server,close:async()=>{clearInterval(timer);await server.close();await reconcile();await queues.close();await pool.end();}};
