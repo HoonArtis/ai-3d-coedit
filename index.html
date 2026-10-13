@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 공간 꾸미기 기획서</title>
+<style>
+:root{
+  --bg:#f7f6f2; --panel:#ffffff; --ink:#1d1d1b; --muted:#6b6a65; --line:#dedcd4;
+  --accent:#2f5d8a; --accent-soft:#e3ecf5; --warn:#a4471c; --warn-soft:#f8e6dc; --ok:#2e6b3f; --ok-soft:#e1efe4;
+  --code:#f0eee8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#161614; --panel:#1f1f1c; --ink:#ecebe6; --muted:#a3a29b; --line:#3a3934;
+    --accent:#8fb6e0; --accent-soft:#22313f; --warn:#f0a07a; --warn-soft:#3b261b; --ok:#8fcf9f; --ok-soft:#1f3326;
+    --code:#2a2a26;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#161614; --panel:#1f1f1c; --ink:#ecebe6; --muted:#a3a29b; --line:#3a3934;
+  --accent:#8fb6e0; --accent-soft:#22313f; --warn:#f0a07a; --warn-soft:#3b261b; --ok:#8fcf9f; --ok-soft:#1f3326;
+  --code:#2a2a26;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.7 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:40px 16px 96px}
+header.top{border-bottom:2px solid var(--ink);padding-bottom:20px;margin-bottom:28px}
+header.top h1{font-size:30px;line-height:1.3;margin:0 0 6px}
+header.top p{margin:0;color:var(--muted)}
+nav.toc{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin-bottom:36px}
+nav.toc ol{margin:0;padding-left:22px;columns:2;column-gap:32px}
+nav.toc a{color:var(--accent);text-decoration:none}
+nav.toc a:hover{text-decoration:underline}
+h2{font-size:22px;margin:56px 0 14px;padding-top:8px;border-top:1px solid var(--line)}
+h3{font-size:17px;margin:28px 0 10px}
+p,li{max-width:78ch}
+.tbl{overflow-x:auto;margin:12px 0 20px;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);font-weight:600;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:13px;font-family:Consolas,"D2Coding",monospace}
+.note{border-left:4px solid var(--accent);background:var(--accent-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0}
+.warn{border-left:4px solid var(--warn);background:var(--warn-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0}
+.ok{border-left:4px solid var(--ok);background:var(--ok-soft);padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0}
+.tag{display:inline-block;font-size:12px;padding:0 7px;border-radius:10px;border:1px solid var(--line);color:var(--muted);margin-left:4px}
+.tag.u{border-color:var(--warn);color:var(--warn)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr} nav.toc ol{columns:1}}
+/* 와이어프레임 */
+.wf{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin:12px 0 20px}
+.wf .cap{font-size:13px;color:var(--muted);margin-bottom:8px}
+.wf .row{display:flex;gap:8px}
+.box{border:1.5px dashed var(--muted);border-radius:6px;padding:8px;font-size:13px;color:var(--muted);display:flex;align-items:center;justify-content:center;text-align:center;min-height:40px}
+.box.solid{border-style:solid;color:var(--ink)}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:12px 0 20px}
+.flow .st{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px}
+.flow .st.hl{border-color:var(--accent);background:var(--accent-soft)}
+.flow .ar{color:var(--muted)}
+pre{background:var(--code);padding:12px 14px;border-radius:8px;overflow-x:auto;font-size:13px;line-height:1.55}
+footer{margin-top:64px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top">
+  <h1>AI 공간 꾸미기: 웹 3D 협업 에디터 기획서</h1>
+  <p>고등학생 교육용 · 최대 5인 공동 배치 · 개인 AI 챗봇 · 웹VR 감상 &nbsp;|&nbsp; 작성 2026-10-13 · 박형석(훈아티스) · 내부 개발팀용 v0.1</p>
+</header>
+
+<nav class="toc">
+<ol>
+  <li><a href="#s1">개요</a></li>
+  <li><a href="#s2">사용자와 권한</a></li>
+  <li><a href="#s3">화면 설계</a></li>
+  <li><a href="#s4">기능 명세: 명령 API 한눈표</a></li>
+  <li><a href="#s5">챗봇 설계</a></li>
+  <li><a href="#s6">생성 파이프라인</a></li>
+  <li><a href="#s7">멀티플레이·이력·예상 버그</a></li>
+  <li><a href="#s8">웹VR과 성능 한계 수치</a></li>
+  <li><a href="#s9">기술 구조와 동기화 서버 비교</a></li>
+  <li><a href="#s10">1주 일정과 자르는 순서</a></li>
+  <li><a href="#s11">위험 항목</a></li>
+  <li><a href="#s12">보류 항목</a></li>
+</ol>
+</nav>
+
+<!-- 1 -->
+<h2 id="s1">1. 개요</h2>
+<ul>
+  <li><b>무엇</b>: 언리얼 에디터의 배치·이동·회전·크기조절·카메라 조작을 웹(three.js)으로 재현한 3D 공간 꾸미기 프로그램. 언리얼 미사용.</li>
+  <li><b>차별점</b>: 학생마다 개인 AI 챗봇. MCP가 언리얼을 조작하듯 챗봇이 씬 명령을 직접 호출. "알아서 배치해" 수준의 요청까지 처리.</li>
+  <li><b>협업</b>: 한 맵에 최대 5인 동시 접속, 각자 에셋을 놓으며 공동 꾸미기.</li>
+  <li><b>에셋</b>: 미리 준비한 라이브러리 + 자체 클라우드 GPU의 AI 3D 생성(TripoSG).</li>
+  <li><b>마무리</b>: 완성한 공간을 메타 퀘스트·피코 브라우저 웹VR로 조원과 함께 감상.</li>
+  <li><b>대상</b>: 고등학생. 강사가 구매하고 학생을 초대하는 판매형까지 염두(판매 모델은 보류).</li>
+  <li><b>기기</b>: 저사양 PC·노트북 브라우저, 마우스 조작. 태블릿은 범위 밖.</li>
+</ul>
+
+<h3>수업 1회의 흐름</h3>
+<div class="flow">
+  <span class="st">강사: 수업 생성·학생 계정 일괄 발급</span><span class="ar">→</span>
+  <span class="st">학생: 방 코드 + ID로 입장</span><span class="ar">→</span>
+  <span class="st hl">조별 방(최대 5인)에서 배치·생성·챗봇 작업</span><span class="ar">→</span>
+  <span class="st">자동 저장·제출 스냅샷</span><span class="ar">→</span>
+  <span class="st hl">헤드셋 4대로 조별 웹VR 감상</span><span class="ar">→</span>
+  <span class="st">강사: 결과·대화 로그 열람</span>
+</div>
+
+<!-- 2 -->
+<h2 id="s2">2. 사용자와 권한</h2>
+<div class="tbl"><table>
+<tr><th>역할</th><th>입장</th><th>할 수 있는 것</th><th>제한</th></tr>
+<tr><td><b>강사(방장)</b></td><td>강사 계정</td><td>수업·방 생성, 학생 계정 일괄 생성, 모든 방 열람·입장, <b>모든 에셋 수정</b>, 잠금 강제 해제, 생성물 승인, 대화 로그 열람, 에셋·방 복원</td><td>방 정원 5인에 포함되지 않음</td></tr>
+<tr><td><b>학생</b></td><td>방 코드 + 강사가 발급한 ID</td><td>배치·변형·삭제(<b>자기 에셋만</b>), 개인 챗봇, AI 생성(횟수 제한), 캐릭터 업로드, 개인 되돌리기</td><td>남의 에셋 수정 불가. 챗봇도 같은 권한</td></tr>
+<tr><td><b>VR 감상자</b></td><td>헤드셋 브라우저에서 스냅샷 링크</td><td>텔레포트 이동, 조원 아바타 보기</td><td>읽기 전용. 정원 5인에 포함</td></tr>
+</table></div>
+<ul>
+  <li>수업 단위: 강사 1명 → 수업 1개 → 방 여러 개(방당 학생 최대 5인). 30명이면 방 6개.</li>
+  <li>계정: 미성년자 개인정보 최소화를 위해 이메일 가입 없이 <b>강사 일괄 생성</b>. 작품 저장 때문에 익명 닉네임 방식은 배제.</li>
+  <li>학생 사이 표시: 이름표·시점 아이콘 없음. <b>작업 중인 에셋 테두리만</b> 표시. 학생 간 채팅 없음.</li>
+</ul>
+
+<!-- 3 -->
+<h2 id="s3">3. 화면 설계</h2>
+
+<div class="wf">
+  <div class="cap">① 학생 에디터 (기본 화면)</div>
+  <div class="box solid" style="min-height:36px;justify-content:space-between;padding:6px 12px"><span>방 이름 · 저장됨 ✓</span><span>되돌리기 · 다시하기</span><span>생성 대기 2/3</span></div>
+  <div class="row" style="margin-top:8px">
+    <div class="box" style="flex:0 0 18%;min-height:300px">에셋 라이브러리<br>(카테고리·검색)<br><br>내 생성물<br>(승인 대기 표시)</div>
+    <div class="box solid" style="flex:1;min-height:300px">3D 뷰포트<br>기즈모(이동·회전·크기)<br>휠 줌 · 우클릭 궤도 · 휠클릭 이동<br>남이 잡은 에셋 = 그 사람 색 테두리</div>
+    <div class="box" style="flex:0 0 26%;min-height:300px">개인 챗봇 패널<br><br>대화 · 실행한 명령 요약<br>"방금 거 취소" 버튼<br><br>[입력창]</div>
+  </div>
+  <div class="box" style="margin-top:8px">하단: 선택한 에셋 속성(위치·회전·크기 숫자 입력, 재질 다시 입히기, 삭제)</div>
+</div>
+
+<div class="grid2">
+<div class="wf">
+  <div class="cap">② 생성 확인 단계 (챗봇 패널 안)</div>
+  <div class="box solid" style="min-height:150px">"고래 모양 벤치" →<br>[생성된 이미지 미리보기]<br>이걸로 3D 만들까?<br>[만들기] [다시 그리기] [취소]</div>
+  <div class="box" style="margin-top:8px">대기열 순번 · 단계 표시(이미지 → 형상 → 텍스처 → 감량)</div>
+</div>
+<div class="wf">
+  <div class="cap">③ 강사 대시보드</div>
+  <div class="row"><div class="box solid">1조 썸네일</div><div class="box solid">2조</div><div class="box solid">3조</div></div>
+  <div class="row" style="margin-top:8px"><div class="box solid">4조</div><div class="box solid">5조</div><div class="box solid">6조</div></div>
+  <div class="box" style="margin-top:8px">생성물 승인함 · 대화 로그 · 계정 발급 · 스냅샷/복원</div>
+</div>
+</div>
+
+<div class="wf">
+  <div class="cap">④ 웹VR 감상 (헤드셋 브라우저)</div>
+  <div class="row">
+    <div class="box solid" style="flex:1;min-height:90px">2D 진입 화면: 조 스냅샷 선택 → [VR 입장] 버튼(사용자 조작 필수)</div>
+    <div class="box solid" style="flex:1;min-height:90px">VR 안: 텔레포트 이동 · 조원 아바타(머리 위치 추종 + 손) · 편집 없음</div>
+  </div>
+</div>
+
+<!-- 4 -->
+<h2 id="s4">4. 기능 명세: 명령 API 한눈표</h2>
+<div class="note"><b>핵심 원칙</b>: 마우스로 하든 챗봇에 말하든 서버에는 <b>같은 명령</b>이 들어간다. 권한 검사·잠금·되돌리기·저장·로그를 서버 한 곳에서 처리. 언리얼 MCP가 에디터 명령을 대신 호출하는 것과 같은 원리.</div>
+
+<div class="tbl"><table>
+<tr><th>분류</th><th>명령</th><th>직접 조작</th><th>챗봇 예시</th><th>권한</th></tr>
+<tr><td rowspan="3"><b>배치</b></td><td><code>place</code> 라이브러리 에셋 놓기</td><td>드래그 앤 드롭</td><td>"책상 하나 놔줘"</td><td>학생</td></tr>
+<tr><td><code>generate</code> AI 생성(큐)</td><td>생성 버튼</td><td>"고래 모양 벤치 만들어줘"</td><td>학생, 횟수 제한</td></tr>
+<tr><td><code>upload_character</code> 리깅 캐릭터 반입</td><td>파일 업로드</td><td>-</td><td>학생</td></tr>
+<tr><td rowspan="2"><b>변형</b></td><td><code>move</code> · <code>rotate</code> · <code>scale</code></td><td>기즈모, 숫자 입력</td><td>"왼쪽으로 2m", "두 배로"</td><td>내 것만</td></tr>
+<tr><td><code>snap_to_ground</code></td><td>단축키</td><td>"바닥에 붙여"</td><td>내 것만</td></tr>
+<tr><td rowspan="2"><b>편집</b></td><td><code>duplicate</code> · <code>delete</code> · <code>rename</code></td><td>우클릭 메뉴</td><td>"이거 3개 복사해"</td><td>내 것만</td></tr>
+<tr><td><code>retexture</code> 재질 다시 입히기(큐)</td><td>속성 패널</td><td>"빨갛게 칠해줘"</td><td>내 것만</td></tr>
+<tr><td rowspan="5"><b>자동 배치</b></td><td><code>arrange_around</code> 둘러 놓기</td><td>-</td><td>"탁자 주위에 의자 4개"</td><td>내 것만</td></tr>
+<tr><td><code>align_row</code> · <code>distribute</code></td><td>다중 선택 메뉴</td><td>"나무들 일렬로"</td><td>내 것만</td></tr>
+<tr><td><code>scatter</code> 영역 흩뿌리기</td><td>-</td><td>"꽃을 여기저기"</td><td>내 것만</td></tr>
+<tr><td><code>place_on</code> 다른 물체 위에</td><td>-</td><td>"책상 위에 컵"</td><td>내 것만</td></tr>
+<tr><td><code>face_toward</code> 방향 맞추기</td><td>-</td><td>"의자들 무대 보게"</td><td>내 것만</td></tr>
+<tr><td><b>조회</b></td><td><code>list</code> · <code>find</code> · <code>describe_scene</code></td><td>아웃라이너</td><td>"내가 놓은 거 뭐 있어?"</td><td>모두</td></tr>
+<tr><td><b>카메라</b><br><small>개인, 동기화 없음</small></td><td><code>focus</code> · <code>orbit</code> · <code>zoom</code></td><td>휠·우클릭 드래그</td><td>"고래 쪽 보여줘"</td><td>개인</td></tr>
+<tr><td><b>기록</b></td><td><code>undo</code> · <code>redo</code></td><td>Ctrl+Z / Ctrl+Y</td><td>"방금 거 취소"</td><td>개인 기준</td></tr>
+<tr><td><b>잠금</b></td><td><code>lock</code> · <code>unlock</code></td><td>선택/해제 시 자동</td><td>챗봇 작업도 그 학생의 잠금</td><td>강사는 강제 해제</td></tr>
+<tr><td><b>강사 전용</b></td><td><code>force_unlock</code> · <code>approve_asset</code> · <code>restore_object</code> · <code>restore_snapshot</code> · <code>read_logs</code></td><td>강사 패널</td><td>-</td><td>강사</td></tr>
+</table></div>
+
+<h3>명령 공통 규칙</h3>
+<ul>
+  <li>모든 명령은 <code>{actor, source: "gizmo"|"chat"|"teacher", requestId, ops[]}</code> 형태. 서버가 순번(seq)을 매겨 방송.</li>
+  <li>챗봇 요청 1회 = <b>트랜잭션 1개</b>. 중간에 하나라도 실패하면 전체 롤백, 되돌리기도 1단위.</li>
+  <li>드래그 중에는 위치만 실시간 방송(저장 안 함), <b>놓는 순간 1건 기록</b>.</li>
+  <li>방 에셋 상한 200개, 생성물은 약 1만 삼각형으로 자동 감량. 상한 근접 시 챗봇이 안내.</li>
+</ul>
+
+<!-- 5 -->
+<h2 id="s5">5. 챗봇 설계</h2>
+<div class="ok"><b>분담 원칙</b>: 좌표 계산은 코드(배치 알고리즘), LLM은 "어떤 도구를 어떤 인자로"만 결정. 로컬 소형 모델로도 안정적으로 돌고, 결과가 재현 가능하며, 겹침·충돌 검사를 코드가 보장.</div>
+<ul>
+  <li><b>형태</b>: 화면 옆 패널, 학생마다 1개. 월드 안 아바타 없음.</li>
+  <li><b>권한</b>: 그 학생의 권한을 그대로 따름. 남의 에셋 지시는 거부하고 이유 안내.</li>
+  <li><b>MD 파일(시스템 프롬프트) 구성</b>
+    <ol>
+      <li>역할과 말투: 고등학생 대상, 짧고 친절하게, 실행 전 무엇을 할지 한 줄 요약</li>
+      <li>도구 목록: 4장 명령표 그대로. 도구마다 언제 쓰는지 + 예시 문장 2~3개</li>
+      <li>씬 읽는 법: <code>describe_scene</code> 결과 형식(이름·소유자·위치·크기) 해석 규칙</li>
+      <li>모호할 때: "저거", "여기"는 현재 선택·카메라 중심 기준으로 해석, 그래도 모호하면 한 번만 되묻기</li>
+      <li>금지: 남의 에셋 수정, 부적절한 생성 요청(필터 목록), 상한 초과</li>
+    </ol>
+  </li>
+  <li><b>모델</b>: 로컬 우선, 클라우드는 차선. 후보는 도구 호출을 지원하는 공개 모델(예: Qwen3 계열, gpt-oss-20b) <span class="tag u">라이선스·품질 실측 필요</span>. 차선 클라우드는 Claude Haiku 5.5(<code>claude-haiku-5-5</code>).</li>
+  <li><b>큐</b>: LLM 요청도 동시 처리 수 제한 큐를 거침(학생 30명 동시 요청 대비). 대기 시 "생각 중… 앞에 n명" 표시.</li>
+  <li><b>로그</b>: 대화 전문·호출한 명령·결과를 저장, 강사 열람.</li>
+</ul>
+
+<!-- 6 -->
+<h2 id="s6">6. 생성 파이프라인</h2>
+<div class="flow">
+  <span class="st">입력: 글 또는 그림 업로드</span><span class="ar">→</span>
+  <span class="st">이미지 모델(글일 때)</span><span class="ar">→</span>
+  <span class="st hl">학생 확인 "이걸로 만들까?"</span><span class="ar">→</span>
+  <span class="st">배경 제거</span><span class="ar">→</span>
+  <span class="st">TripoSG 형상</span><span class="ar">→</span>
+  <span class="st">MV-Adapter 텍스처</span><span class="ar">→</span>
+  <span class="st">감량 ~1만 tri · GLB</span><span class="ar">→</span>
+  <span class="st hl">강사 승인 → 수업 공유 라이브러리</span>
+</div>
+<ul>
+  <li><b>학생 확인 단계</b>를 둔 이유: 비싼 3D 단계(GPU 1~3분 추정)를 헛돌지 않게.</li>
+  <li><b>작업 큐</b>: Redis + BullMQ. 단계별 작업(이미지, 형상, 텍스처, 감량)을 큐로 연결, GPU 1장 기준 형상·텍스처는 동시 1개.</li>
+  <li><b>횟수 제한</b>: 수업당 1인 N회(강사 설정). 대기열 순번과 진행 단계 표시.</li>
+  <li><b>승인</b>: 생성물은 강사 승인 후 공유 라이브러리에 공개. 부적절 생성물 거르기 겸용.</li>
+  <li><b>차선책(기록만)</b>: 텍스처 생성 대신 미리 만든 재질 프리셋(나무·금속·천 등) 중 AI가 골라 입히기. 즉시 적용, GPU 비용 0, 대신 물체당 재질 1개.</li>
+</ul>
+
+<h3>캐릭터 반입 (생성 파이프라인과 별개)</h3>
+<ul>
+  <li>학생이 직접: 제미나이(이미지) → Tripo3D(유료) → 믹사모(리깅). <b>우리는 리깅된 모델 업로드만 받음.</b></li>
+  <li>업로드 처리: FBX → GLB 변환, 감량, 뼈대·애니메이션 유지 확인.</li>
+  <li>용도 두 가지: 맵에 놓는 캐릭터 오브젝트(대기 애니메이션 재생), VR 아바타.</li>
+</ul>
+
+<h3>부품별 사실 확인 (2026-10-13 조사)</h3>
+<div class="tbl"><table>
+<tr><th>부품</th><th>라이선스</th><th>요구 사양·특징</th><th>판매 가능</th></tr>
+<tr><td>TripoSG (코드·가중치)</td><td>MIT</td><td>이미지 → 형상만(텍스처 없음). VRAM 8GB 이상. 기본 50 steps</td><td>가능</td></tr>
+<tr><td>MV-Adapter (코드·가중치)</td><td>Apache-2.0</td><td>VAST 공식 데모가 TripoSG 텍스처에 사용. SDXL판 VRAM 16GB 초과, SD2.1판 10GB 미만</td><td>가능</td></tr>
+<tr><td>RMBG-1.4 (TripoSG 기본 배경 제거)</td><td><b>비상업 전용</b></td><td>상업 이용은 BRIA 별도 계약</td><td><b>교체 필요</b></td></tr>
+<tr><td>nvdiffrast (텍스처 렌더링)</td><td><b>NVIDIA Source Code License, 연구·평가 전용</b></td><td>대부분의 오픈 텍스처 파이프라인이 의존</td><td><b>교체·계약 필요</b></td></tr>
+<tr><td>SDXL (MV-Adapter 기반 모델)</td><td>CreativeML Open RAIL++-M</td><td>사용 제한 조항 준수 시 상업 이용 가능한 것으로 알려짐</td><td><span class="tag u">원문 확인 필요</span></td></tr>
+<tr><td>TRELLIS.2 (텍스처 대안)</td><td>MIT</td><td>메시 텍스처링 스크립트 제공. VRAM 24GB 이상. nvdiffrast·DINOv3 의존</td><td><span class="tag u">의존물 확인 필요</span></td></tr>
+<tr><td>Hunyuan3D-2 / 2.1</td><td>Tencent 라이선스</td><td><b>한국 사용 제외 지역</b></td><td><b>사용 금지</b></td></tr>
+<tr><td>이미지 모델(글 → 이미지)</td><td>후보: FLUX.1-schnell(Apache-2.0). FLUX.1-dev는 비상업</td><td>-</td><td><span class="tag u">최종 선정 필요</span></td></tr>
+</table></div>
+<p style="color:var(--muted);font-size:13px">생성 시간은 공식 수치 없음. VAST 데모 서버의 GPU 할당(형상 90초, 형상+텍스처 180초)으로 추정한 값이라 실측 필요.<br>
+출처: github.com/VAST-AI-Research/TripoSG · huggingface.co/VAST-AI/TripoSG · github.com/huanngzh/MV-Adapter · huggingface.co/briaai/RMBG-1.4 · github.com/NVlabs/nvdiffrast/blob/main/LICENSE.txt · github.com/microsoft/TRELLIS.2 · huggingface.co/tencent/Hunyuan3D-2/blob/main/LICENSE</p>
+
+<!-- 7 -->
+<h2 id="s7">7. 멀티플레이·이력·예상 버그</h2>
+<h3>규칙</h3>
+<ul>
+  <li><b>잠금</b>: 선택하는 순간 잠금, 잡은 사람 색 테두리. 놓을 때까지 다른 사람은 못 잡음. 연결이 끊기면 잠금 자동 해제(타임아웃). 강사는 강제 해제 가능.</li>
+  <li><b>되돌리기</b>: 개인 기준. 남이 한 작업은 내 Ctrl+Z로 사라지지 않음. 챗봇 요청 1회는 1단위.</li>
+  <li><b>저장</b>: 명령 이력을 서버에 계속 저장(자동 저장). 수업 종료 시 <b>제출 스냅샷</b> 생성, 다음 수업에서 이어하기.</li>
+  <li><b>강사 수정 이력</b>: 에셋마다 누가·언제·무엇을 바꿨는지 기록. 강사가 학생 에셋을 바꾸면 그 학생에게 알림. 강사는 에셋 단위 복원과 방 스냅샷 복원 가능.</li>
+</ul>
+
+<h3>강사 수정·이력·복원에서 날 수 있는 버그</h3>
+<div class="tbl"><table>
+<tr><th>#</th><th>상황</th><th>증상</th><th>대응 규칙</th></tr>
+<tr><td>1</td><td>학생이 드래그 중인 에셋을 강사가 강제 해제 후 수정</td><td>학생이 손을 놓는 순간 낡은 위치로 덮어써 강사 수정이 사라짐</td><td>강제 해제 시 학생 쪽 드래그 즉시 취소 + 서버가 잠금 없는 쓰기 거부</td></tr>
+<tr><td>2</td><td>강사가 고친 에셋에 학생이 Ctrl+Z</td><td>학생 되돌리기가 강사 수정을 되돌리거나, 중간 상태로 튐</td><td>되돌리기는 대상의 <b>마지막 변경자가 본인일 때만</b> 허용, 아니면 거부 + "선생님이 수정한 에셋" 안내</td></tr>
+<tr><td>3</td><td>강사가 에셋을 복원했는데 학생의 다시하기(redo) 스택에 옛 기록이 남음</td><td>다시하기로 복원 전 상태가 부활</td><td>복원·스냅샷 복원 시 해당 에셋 관련 undo/redo 스택 무효화</td></tr>
+<tr><td>4</td><td>방 스냅샷 복원 중 생성 큐 작업이 완료됨</td><td>복원된 방에 엉뚱한 생성물이 끼어듦, 또는 존재하지 않는 자리 참조</td><td>생성 결과는 "방 + 스냅샷 세대 번호"로 검증, 세대가 다르면 라이브러리에만 넣고 배치 안 함</td></tr>
+<tr><td>5</td><td>삭제된 에셋을 복원했는데 방 상한(200개)이 이미 찼음</td><td>상한 초과 또는 복원 실패가 조용히 묻힘</td><td>복원도 상한 검사, 실패 시 강사에게 명시적 오류</td></tr>
+<tr><td>6</td><td>챗봇 다단계 작업 도중 강사가 대상 에셋 하나를 수정</td><td>일부만 적용된 어정쩡한 배치</td><td>챗봇 요청은 트랜잭션: 시작 시 대상 전체 잠금 확보, 하나라도 실패하면 전체 롤백</td></tr>
+<tr><td>7</td><td>강사가 "전체 정렬" 같은 일괄 수정</td><td>학생에게 알림 수십 개 폭주</td><td>알림을 요청 단위로 묶음("선생님이 에셋 12개를 정리했어요")</td></tr>
+<tr><td>8</td><td>드래그 중 매 프레임 이력 기록</td><td>이력·DB 폭증, 복원 목록이 쓸모없어짐</td><td>드래그 종료 시 1건만 기록</td></tr>
+<tr><td>9</td><td>강사 브라우저가 잠금을 쥔 채 끊김</td><td>에셋이 영영 잠김</td><td>연결 끊김 감지 시 잠금 해제 + 하트비트 타임아웃</td></tr>
+<tr><td>10</td><td>클라이언트 시계로 이력 정렬</td><td>이력 순서 뒤바뀜, 복원 대상이 틀어짐</td><td>순서는 서버 순번(seq)만 신뢰</td></tr>
+<tr><td>11</td><td>강사가 학생 에셋을 복제</td><td>복제본 소유자가 모호해 학생이 못 고치거나 엉뚱한 학생이 고침</td><td>수정은 소유권 유지, 복제본은 복제한 사람 소유(필요 시 강사가 소유권 이전)</td></tr>
+<tr><td>12</td><td>복원 후 학생 화면이 사라진 에셋을 선택·주시 중</td><td>속성 패널 오류, 카메라가 빈 곳을 봄</td><td>복원 방송 수신 시 존재하지 않는 선택·포커스 해제</td></tr>
+</table></div>
+
+<!-- 8 -->
+<h2 id="s8">8. 웹VR과 성능 한계 수치</h2>
+<ul>
+  <li><b>범위</b>: 기본은 제출 스냅샷을 <b>읽기 전용</b>으로 감상, 조원이 아바타로 함께 둘러봄. 헤드셋 4대를 조별로 사용. 편집 중인 방에 실시간 접속하는 기능은 여유가 되면 확장.</li>
+  <li><b>아바타</b>: 학생이 업로드한 리깅 캐릭터. 1차는 전신 IK 없이 헤드셋 위치를 따라가고 머리 방향만 회전, 손은 컨트롤러·손 모델로 따로 표시. 캐릭터가 없으면 기본 머리+손.</li>
+  <li><b>진입 조건</b>: <b>HTTPS 필수</b>(localhost만 예외). Quest에서 HTTP로 띄우려면 브라우저 플래그 수동 설정이 필요하고, PICO 4 Ultra는 HTTP 불가. <code>requestSession('immersive-vr')</code>은 버튼 클릭 같은 <b>사용자 조작 안에서만</b> 호출 가능.</li>
+  <li><b>라이브러리</b>: <code>@react-three/xr</code> 6.6.31(peer: react ≥18, @react-three/fiber ≥8). 컨트롤러·손 입력 지원.</li>
+  <li><b>손 추적</b>: Quest WebXR 공식 지원, 사용자 동의 필요, 양손 핀치는 시스템 예약.</li>
+</ul>
+
+<h3>기기 지원 현황</h3>
+<div class="tbl"><table>
+<tr><th>기기</th><th>WebXR</th><th>근거·비고</th></tr>
+<tr><td>Meta Quest 2 / 3 / 3S</td><td>지원</td><td>Meta 브라우저 문서("Optimized for WebXR"), NVIDIA CloudXR.js 문서가 Quest 2/3/3S 내장 브라우저 지원 명시(OS v79+)</td></tr>
+<tr><td>PICO 4 Ultra</td><td>지원</td><td>PICO 공식: Chromium 125+ 내장 브라우저, WebXR·Hand Input 지원. Pico OS 15.4.4U+, HTTPS 필수</td></tr>
+<tr><td>PICO 4 (구형)</td><td><span class="tag u">미확인</span></td><td>공식 명시 못 찾음</td></tr>
+<tr><td>PICO 4 Ultra Enterprise <b>중국 내수판</b>(사내 보유)</td><td><span class="tag u">미확인</span></td><td>같은 브라우저 탑재 여부 미확인. 실기기 확인 필요</td></tr>
+</table></div>
+
+<h3>성능 한계 수치 (반드시 지킬 것)</h3>
+<div class="warn">Meta WebXR 문서는 수치를 주지 않음. 아래는 Meta <b>Unity(네이티브) 문서</b>의 공식 수치. WebXR은 브라우저·WebGL 오버헤드가 있으므로 <b>표의 아래쪽 값을 상한으로</b> 잡는다(추정, 공식 근거 없음).</div>
+<div class="tbl"><table>
+<tr><th>기기</th><th>draw call: 부하 큰 앱</th><th>보통</th><th>가벼운 앱</th><th>프레임당 삼각형</th><th>프레임 예산</th></tr>
+<tr><td>Quest 2</td><td>80–200</td><td>200–300</td><td>400–600</td><td>75만–100만</td><td rowspan="2">72fps = 13.7ms<br>90fps = 11.1ms</td></tr>
+<tr><td>Quest 3 / 3S</td><td>200–300</td><td>400–600</td><td>700–1000</td><td>130만–180만</td></tr>
+</table></div>
+
+<h3>이 제품의 VR 감상 예산 (Quest 2 기준으로 설계)</h3>
+<div class="tbl"><table>
+<tr><th>항목</th><th>데스크톱 편집</th><th>VR 감상</th><th>이유</th></tr>
+<tr><td>방 전체 삼각형</td><td>~200만 (200개 × 1만)</td><td><b>50만 이하</b></td><td>Quest 2 하한 75만에서 아바타·환경 몫을 뺀 값</td></tr>
+<tr><td>에셋 1개 삼각형</td><td>~1만</td><td><b>~2,500</b> (VR용 LOD)</td><td>200개 × 2,500 = 50만</td></tr>
+<tr><td>draw call</td><td>제한 느슨</td><td><b>150 이하</b></td><td>에셋마다 텍스처가 달라 개별 draw call이 생김 → 아틀라스·병합 필요</td></tr>
+<tr><td>텍스처 해상도</td><td>2048</td><td><b>1024, KTX2/Basis</b></td><td>Meta 권장 압축 포맷. 생성 원본(4096)은 보관만</td></tr>
+<tr><td>아바타</td><td>-</td><td>1인 1만 tri 이하, 최대 5인</td><td>-</td></tr>
+</table></div>
+<div class="note"><b>"VR 굽기" 단계</b>: 스냅샷을 VR로 열기 전에 서버에서 한 번 변환. 에셋별 VR LOD, 텍스처 아틀라스, 정적 에셋 병합, KTX2 압축. 결과를 스냅샷과 함께 캐시.</div>
+<p style="color:var(--muted);font-size:13px">출처: developers.meta.com/horizon/documentation/web/browser-intro · …/web/webxr-hands · …/web/webxr-perf-bp · …/web/webxr-perf-workflow · …/unity/unity-perf · developer-cn.picoxr.com/en/pico4-ultra · docs.nvidia.com/cloudxr-sdk/latest/requirement/cloudxrjs_req.html · developer.mozilla.org/en-US/docs/Web/API/XRSystem/requestSession · registry.npmjs.org/@react-three/xr</p>
+
+<!-- 9 -->
+<h2 id="s9">9. 기술 구조와 동기화 서버 비교</h2>
+<pre>
+[학생 브라우저 ×5]  React + R3F 에디터 + 챗봇 패널
+[VR 헤드셋 ×4]      React + R3F + @react-three/xr (읽기 전용)
+        │  WebSocket(명령·상태)            │ HTTPS(GLB·스냅샷)
+        ▼                                  ▼
+[방 서버]  Colyseus(Node.js) ── 권한·잠금·seq·되돌리기 판정
+        │
+        ├─ PostgreSQL : 계정·수업·방·명령 이력·대화 로그
+        ├─ 오브젝트 스토리지 : GLB·텍스처·스냅샷·VR 굽기 결과
+        └─ Redis + BullMQ 작업 큐
+                ├─ LLM 워커 (로컬 모델, 동시 처리 제한)
+                └─ GPU 워커 : 이미지 → 배경 제거 → TripoSG → 텍스처 → 감량 → VR 굽기
+</pre>
+<ul>
+  <li><b>GPU</b>: 1차는 GPU 1장에 LLM 상주 + 생성 작업 큐. 목표 규모는 동시 수업 1개(학생 30명), 실측 뒤 증설.</li>
+  <li><b>저사양 기준</b>: 내장 그래픽에서 30fps. 데스크톱은 마우스 전용.</li>
+</ul>
+
+<h3>동기화 서버 비교 (추후 결정용)</h3>
+<div class="tbl"><table>
+<tr><th>기준</th><th>Colyseus <span class="tag">잠정 선택</span></th><th>Socket.IO 직접 구현</th><th>Yjs (CRDT)</th></tr>
+<tr><td>방(룸) 개념·정원</td><td>내장(maxClients)</td><td>직접 구현</td><td>문서 단위, 정원 개념 없음</td></tr>
+<tr><td>서버 권한 판정</td><td>기본 구조(서버가 상태 소유)</td><td>직접 구현, 자유도 최대</td><td>약함. 클라이언트끼리 병합이 기본이라 권한은 별도 계층 필요</td></tr>
+<tr><td>잠금</td><td>상태에 lockOwner 필드로 간단</td><td>직접 구현</td><td>CRDT 철학과 충돌, 따로 구현</td></tr>
+<tr><td>상태 동기화</td><td>스키마 기반 델타 자동 전송</td><td>직접 diff 설계</td><td>자동 병합, 오프라인 편집 강함</td></tr>
+<tr><td>되돌리기</td><td>명령 이력으로 직접 구현</td><td>직접 구현</td><td>UndoManager 내장(단, 개인·권한 규칙과 맞추기 어려움)</td></tr>
+<tr><td>재접속·이어하기</td><td>재접속 토큰 지원</td><td>직접 구현</td><td>강함</td></tr>
+<tr><td>확장(여러 방 서버)</td><td>Redis presence/driver로 수평 확장</td><td>Redis adapter</td><td>y-websocket/y-redis 등</td></tr>
+<tr><td>학습·개발 속도</td><td>빠름</td><td>초기 빠름, 기능 늘수록 느려짐</td><td>권한 요구 때문에 오히려 느림</td></tr>
+<tr><td>이 제품과 맞는 정도</td><td><b>높음</b>: 방·정원·서버 판정·잠금이 요구사항 그대로</td><td>중간</td><td>낮음: 강사/학생 권한 차이가 핵심인 제품</td></tr>
+</table></div>
+<p style="color:var(--muted);font-size:13px">비교표의 라이브러리 기능은 일반 알려진 내용 기준. 채택 전 각 최신 문서로 재확인.</p>
+
+<!-- 10 -->
+<h2 id="s10">10. 1주 일정과 자르는 순서</h2>
+<div class="tbl"><table>
+<tr><th>일차</th><th>목표</th><th>완료 기준</th></tr>
+<tr><td>1</td><td>에디터 핵심: 라이브러리 배치, 기즈모, 카메라(줌·궤도)</td><td>1인으로 에셋 놓고 이동·회전·크기조절</td></tr>
+<tr><td>2</td><td>Colyseus 방, 5인 동기화, 잠금 테두리, 개인 되돌리기, 저장</td><td>브라우저 5개에서 같은 방 편집, 새로고침 후 복구</td></tr>
+<tr><td>3</td><td>명령 API에 챗봇 연결, 자동 배치 도구, 로컬 LLM, MD 파일</td><td>"탁자 주위에 의자 4개"가 한 번에 실행·되돌리기 1단위</td></tr>
+<tr><td>4</td><td>강사 계정 일괄 발급, 방 코드 입장, 대화 로그 / 작업 큐 골격</td><td>강사가 6개 방 생성, 학생 ID로 입장</td></tr>
+<tr><td>5</td><td>생성 파이프라인: 이미지 모델 → 확인 → TripoSG → 텍스처 → 감량</td><td>글 한 줄로 텍스처 입힌 GLB가 방에 배치</td></tr>
+<tr><td>6</td><td>웹VR 감상: 스냅샷, VR 굽기, 조원 아바타, 텔레포트</td><td>퀘스트에서 HTTPS 링크로 입장, 2인 이상 함께 감상</td></tr>
+<tr><td>7</td><td>강사 이력·복원, 캐릭터 업로드, 통합 테스트</td><td>7장 예상 버그 1~12 점검</td></tr>
+</table></div>
+
+<h3>못 끝날 때 아래부터 자름</h3>
+<ol>
+  <li>에디터 핵심: 배치·기즈모·카메라·라이브러리</li>
+  <li>5인 동기화·잠금·개인 되돌리기·저장</li>
+  <li>챗봇·명령 도구·자동 배치·로컬 LLM</li>
+  <li>강사 계정·방 코드·대화 로그</li>
+  <li>생성 파이프라인(이미지 모델 → TripoSG)·작업 큐</li>
+  <li>텍스처 생성(MV-Adapter). 안 되면 재질 프리셋 차선책</li>
+  <li>웹VR 감상(멀티 + 아바타)</li>
+  <li>강사 수정 이력·복원</li>
+  <li>캐릭터 업로드 (없으면 VR 아바타는 기본 머리+손)</li>
+</ol>
+<div class="warn">1주 안에 3단계(생성·텍스처·웹VR)까지는 하루에 큰 덩어리 하나 반을 끝내야 하는 속도. 5일차 GPU 파이프라인이 가장 큰 일정 위험(설치·VRAM·의존물 충돌).</div>
+
+<!-- 11 -->
+<h2 id="s11">11. 위험 항목</h2>
+<div class="tbl"><table>
+<tr><th>#</th><th>위험</th><th>영향</th><th>대응</th></tr>
+<tr><td>1</td><td><b>비상업 의존물</b>: RMBG-1.4(배경 제거), nvdiffrast(텍스처 렌더링)</td><td>그대로면 판매 불가</td><td>테스트는 그대로 사용. <b>판매 전 필수 과제</b>로 교체(배경 제거는 상업 가능 모델로, nvdiffrast는 대체 경로 또는 NVIDIA 계약). 텍스처 단계가 끝내 대체 안 되면 재질 프리셋 차선책이 판매판 기본</td></tr>
+<tr><td>2</td><td>생성 시간 미실측(추정 1~3분)</td><td>수업 중 대기 체감, 30명 동시 시 큐 적체</td><td>5일차 실측. 학생 확인 단계로 헛생성 차단, 횟수 제한</td></tr>
+<tr><td>3</td><td>로컬 LLM 도구 호출 품질</td><td>엉뚱한 도구·인자, 한국어 이해 부족</td><td>좌표 계산은 코드로, MD 파일에 예시 집중. 실패율 높으면 클라우드 차선</td></tr>
+<tr><td>4</td><td>GPU 1장에 LLM + 생성 동시</td><td>VRAM 부족, 응답 지연</td><td>LLM 상주 + 생성 동시 1개. 부족하면 LLM 경량화 또는 GPU 분리</td></tr>
+<tr><td>5</td><td>VR 성능(Quest 2)</td><td>프레임 저하, 멀미</td><td>8장 예산 준수, VR 굽기 단계</td></tr>
+<tr><td>6</td><td>사내 PICO 중국 내수판 브라우저 WebXR 미검증</td><td>사내 시연 기기로 못 씀</td><td>실기기로 HTTPS 테스트 페이지 1회 확인</td></tr>
+<tr><td>7</td><td>학생 업로드 캐릭터 품질 편차(믹사모 리깅 실패, 고폴리곤)</td><td>VR 프레임 저하, 깨진 아바타</td><td>업로드 시 감량·검사, 실패 시 기본 아바타</td></tr>
+<tr><td>8</td><td>미성년자 대상 생성물·대화</td><td>부적절 콘텐츠</td><td>프롬프트 필터, 강사 승인, 대화 로그</td></tr>
+</table></div>
+
+<!-- 12 -->
+<h2 id="s12">12. 보류 항목</h2>
+<ul>
+  <li><b>판매 모델</b>: 추후 구현. 검토안은 강사 구독 + 학생 좌석 + AI 생성 크레딧, 학교·교육청 단체 라이선스는 별도 견적.</li>
+  <li><b>편집 중인 방에 VR 실시간 접속</b>: 같은 Colyseus 방에 읽기 전용 참가자로 들어오는 방식. 여유 시 확장.</li>
+  <li>VR 안에서 편집, 태블릿 터치 조작, 학생 간 채팅, 학생 구역 나누기, 평가 기능.</li>
+  <li>동기화 서버 최종 확정(9장 비교표 기준).</li>
+</ul>
+
+<footer>훈아티스 내부 기획 v0.1 · 2026-10-13 · 미확인으로 표시한 항목은 채택 전 원문 재확인</footer>
+</div>
+</body>
+</html>
