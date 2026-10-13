@@ -21,12 +21,12 @@ export class ClassInvites{
   const {code}=z.object({code:codeSchema}).strict().parse(raw);
   const {rows}=await this.accounts.pool.query('SELECT c.id,c.name FROM coedit_class_invites i JOIN coedit_classes c ON c.id=i.class_id WHERE i.code=$1 AND i.enabled',[code]);
   if(!rows.length)throw Error('INVITE_CLOSED');
-  const rooms=(await this.accounts.pool.query('SELECT r.id,r.name,ARRAY(SELECT s.ordinal FROM coedit_students s WHERE s.room_id=r.id) AS occupied FROM coedit_class_rooms r WHERE r.class_id=$1 ORDER BY r.name,r.id',[rows[0].id])).rows;
+  const rooms=(await this.accounts.pool.query('SELECT r.id,r.name,ARRAY(SELECT s.ordinal FROM coedit_students s WHERE s.room_id=r.id AND NOT s.archived) AS occupied FROM coedit_class_rooms r WHERE r.class_id=$1 ORDER BY r.name,r.id',[rows[0].id])).rows;
   return classLobbySchema.parse({name:rows[0].name,rooms:rooms.map(r=>({id:r.id,name:r.name,seats:Array.from({length:5},(_,n)=>({ordinal:n+1,occupied:r.occupied.includes(n+1)}))}))});
  }
  async resume(raw:unknown){
   const {code,resumeKey}=resumeSchema.parse(raw);
-  const {rows}=await this.accounts.pool.query('SELECT r.code FROM coedit_students s JOIN coedit_class_rooms r ON r.id=s.room_id JOIN coedit_class_invites i ON i.class_id=r.class_id WHERE i.code=$1 AND s.credential_hash=$2',[code,credentialDigest(resumeKey)]);
+  const {rows}=await this.accounts.pool.query('SELECT r.code FROM coedit_students s JOIN coedit_class_rooms r ON r.id=s.room_id JOIN coedit_class_invites i ON i.class_id=r.class_id WHERE i.code=$1 AND s.credential_hash=$2 AND NOT s.archived',[code,credentialDigest(resumeKey)]);
   if(!rows.length)throw Error('UNAUTHENTICATED');
   return this.accounts.joinStudent({roomCode:rows[0].code,issuedId:resumeKey});
  }
@@ -39,7 +39,7 @@ export class ClassInvites{
    if(!rows.length||!rows[0].enabled)throw Error('INVITE_CLOSED');
    const room=await client.query('SELECT id FROM coedit_class_rooms WHERE id=$1 AND class_id=$2',[roomKey,rows[0].id]);
    if(!room.rows.length)throw Error('FORBIDDEN');
-   const digest=credentialDigest(resumeKey),existing=await client.query('SELECT credential_hash FROM coedit_students WHERE room_id=$1 AND ordinal=$2',[roomKey,ordinal]);
+   const digest=credentialDigest(resumeKey),existing=await client.query('SELECT credential_hash FROM coedit_students WHERE room_id=$1 AND ordinal=$2 AND NOT archived',[roomKey,ordinal]);
    if(existing.rows.length){if(existing.rows[0].credential_hash!==digest)throw Error('SEAT_TAKEN');}
    else{
     const previous=await client.query('SELECT id FROM coedit_students WHERE credential_hash=$1',[digest]);

@@ -1,3 +1,4 @@
+import {StudentConnections} from '../accounts/student-connections';
 import {Room,type Client} from '@colyseus/core';
 import {BUILTIN_LIBRARY,idSchema} from '@coedit/contracts';
 import {RoomService} from './room-service';
@@ -11,7 +12,7 @@ import type {AssetService} from '../assets/service';
 import type {RoomHistoryService} from '../storage/room-history';
 import {RoomCapacity} from './capacity';
 import type {RetextureService} from '../generation/retexture-service';
-export function createStudioRoom(sessions:SessionResolver,repository?:RoomRepository,localPreview=false,chat?:ChatService,images?:ImageService,assets?:AssetService,history?:RoomHistoryService,capacity=new RoomCapacity(),retexture?:RetextureService){
+export function createStudioRoom(sessions:SessionResolver,repository?:RoomRepository,localPreview=false,chat?:ChatService,images?:ImageService,assets?:AssetService,history?:RoomHistoryService,capacity=new RoomCapacity(),retexture?:RetextureService,connections=new StudentConnections()){
   return class StudioRoom extends Room {
     service!:RoomService;
     maxClients=64;
@@ -76,17 +77,18 @@ export function createStudioRoom(sessions:SessionResolver,repository?:RoomReposi
         if(previous!==JSON.stringify(this.service.locks))this.broadcast('event',{type:'locks',locks:this.service.locks});
       },1000);
     }
-    onAuth(_client:Client,options:{token:unknown;roomKey:unknown}){return sessions.read(options.token,options.roomKey);}
+    async onAuth(_client:Client,options:{token:unknown;roomKey:unknown}){const authRevision=connections.revision,identity=await sessions.read(options.token,options.roomKey);if(!connections.current(identity.actor,authRevision))throw Error('UNAUTHENTICATED');return {...identity,authRevision};}
     onJoin(client:Client){
       const identity=client.auth as IssuedSession;capacity.join(this.service.snapshot.roomId,client.sessionId,identity.role!=='teacher');
-      try{this.service.join(client.sessionId,identity);}catch(error){capacity.leave(this.service.snapshot.roomId,client.sessionId);throw error;}
+      try{this.service.join(client.sessionId,identity);connections.add(identity.actor,client.sessionId,client.auth.authRevision,()=>{this.onLeave(client);void client.leave(4003);});}catch(error){this.service.leave(client.sessionId);capacity.leave(this.service.snapshot.roomId,client.sessionId);throw error;}
     }
     async onDrop(client:Client){
+      if(!connections.current(client.auth.actor,client.auth.authRevision))return;
       this.service.drop(client.sessionId);
       this.broadcast('event',{type:'locks',locks:this.service.locks});
       try{await this.allowReconnection(client,15);}catch{/* onLeave releases the reserved membership */}
     }
-    onReconnect(client:Client){client.send('event',{type:'snapshot',snapshot:this.service.snapshot});}
-    onLeave(client:Client){capacity.leave(this.service.snapshot.roomId,client.sessionId);this.service.leave(client.sessionId);this.broadcast('event',{type:'locks',locks:this.service.locks});}
+    onReconnect(client:Client){if(!connections.current(client.auth.actor,client.auth.authRevision)){void client.leave(4003);return;}connections.add(client.auth.actor,client.sessionId,client.auth.authRevision,()=>{this.onLeave(client);void client.leave(4003);});client.send('event',{type:'snapshot',snapshot:this.service.snapshot});}
+    onLeave(client:Client){connections.remove(client.auth.actor,client.sessionId);capacity.leave(this.service.snapshot.roomId,client.sessionId);this.service.leave(client.sessionId);this.broadcast('event',{type:'locks',locks:this.service.locks});}
   };
 }

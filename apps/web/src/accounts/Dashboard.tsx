@@ -1,3 +1,4 @@
+import {StudentManagement} from './StudentManagement';
 import {ClassInvite} from './ClassInvite';
 import {useEffect,useRef,useState} from 'react';
 import {accountApi,saveLogin,logout,type IssuedStudent,type LoginIdentity} from './api';
@@ -10,6 +11,7 @@ import {TeacherLogs} from './TeacherLogs';
 export function Dashboard(){
   const [classes,setClasses]=useState<DashboardClassroom[]>([]),[name,setName]=useState(''),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false),[issued,setIssued]=useState<IssuedStudent[]>([]);
   const [roomCount,setRoomCount]=useState(6);
+  const [managedRoom,setManagedRoom]=useState<{id:string;name:string}|null>(null);
   const [logClass,setLogClass]=useState<string|null>(null);
   const [reviewClass,setReviewClass]=useState<string|null>(null);
   const loadSequence=useRef(0);
@@ -25,9 +27,10 @@ export function Dashboard(){
   return <main className="dashboard account-page"><header><div><p className="eyebrow">SPACE STUDIO · TEACHER</p><h1>내 수업</h1></div><nav><a href="/">편집기로</a><button onClick={()=>{void run(logout);}}>로그아웃</button></nav></header>
     <section className="class-create"><div><h2>새로운 공간 수업</h2><p>수업을 만들고 공통 초대 코드로 학생을 초대하세요. 한 조에 5명까지 입장해요.</p></div><form onSubmit={e=>{e.preventDefault();void run(async()=>{await accountApi('/classes',{name,roomCount});setName('');await load();});}}><label>수업 이름<input value={name} onChange={e=>setName(e.target.value)} required maxLength={80}/></label><label>방 개수<input type="number" min={1} max={30} value={roomCount} onChange={e=>setRoomCount(Number(e.target.value))} required/></label><button className="primary" disabled={busy}>수업 만들기</button></form></section>
     {notice&&<p role="alert" className="account-error">{notice}</p>}
+    {managedRoom&&<StudentManagement key={managedRoom.id} roomId={managedRoom.id} roomName={managedRoom.name} onClose={()=>setManagedRoom(null)} onChanged={load}/>}
     {logClass&&<TeacherLogs key={logClass} classId={logClass} onClose={()=>setLogClass(null)}/>}
     {reviewClass&&<ApprovalPanel key={reviewClass} classId={reviewClass} onClose={()=>setReviewClass(null)}/>}
-    {classes.map(c=><section className="class-card" key={c.id}><div className="class-heading"><h2>{c.name}</h2><button onClick={()=>setLogClass(c.id)}>학생 대화 로그 열기</button><button onClick={()=>setReviewClass(c.id)}>생성물 승인함 열기</button><button disabled={busy||c.rooms.every(r=>r.students===5)} onClick={()=>{void run(async()=>{const count=c.rooms.reduce((n,r)=>n+5-r.students,0);setIssued(await accountApi<IssuedStudent[]>('/classes/'+c.id+'/students',{count}));await load();});}}>학생 {c.rooms.reduce((n,r)=>n+5-r.students,0)}명 발급</button></div><ClassInvite classId={c.id} name={c.name}/><GenerationSettings classId={c.id} value={c.generation_limit} onSaved={load}/><div className="room-grid">{c.rooms.map(r=><button key={r.id} aria-label={r.name+' 편집'} className="room-card" onClick={()=>{void run(()=>enter(r.id));}}><div className="room-art"><RoomThumbnail snapshot={r.snapshot} library={c.library} error={r.thumbnailError}/></div><h3>{r.name}</h3><span>발급 학생 {r.students} / 5</span><span className="approval-badge">승인 대기 {r.pendingApproval}</span><code>{r.code}</code></button>)}</div></section>)}
+    {classes.map(c=><section className="class-card" key={c.id}><div className="class-heading"><h2>{c.name}</h2><button onClick={()=>setLogClass(c.id)}>학생 대화 로그 열기</button><button onClick={()=>setReviewClass(c.id)}>생성물 승인함 열기</button><button disabled={busy||c.rooms.every(r=>r.students===5)} onClick={()=>{void run(async()=>{const count=c.rooms.reduce((n,r)=>n+5-r.students,0);setIssued(await accountApi<IssuedStudent[]>('/classes/'+c.id+'/students',{count}));await load();});}}>학생 {c.rooms.reduce((n,r)=>n+5-r.students,0)}명 발급</button></div><ClassInvite classId={c.id} name={c.name}/><GenerationSettings classId={c.id} value={c.generation_limit} onSaved={load}/><div className="room-grid">{c.rooms.map(r=><div key={r.id} className="room-card-container"><button aria-label={r.name+' 편집'} className="room-card" onClick={()=>{void run(()=>enter(r.id));}}><div className="room-art"><RoomThumbnail snapshot={r.snapshot} library={c.library} error={r.thumbnailError}/></div><h3>{r.name}</h3><span>발급 학생 {r.students} / 5</span><span className="approval-badge">승인 대기 {r.pendingApproval}</span><code>{r.code}</code></button><button className="student-manage-button" onClick={()=>setManagedRoom({id:r.id,name:r.name})}>{r.name} 학생 관리</button></div>)}</div></section>)}
     {issued.length>0&&<section className="issued"><div className="class-heading"><div><h2>발급한 학생 ID</h2><p>이 화면을 닫기 전에 내려받아 학생에게 전달해 주세요.</p></div><button onClick={download}>발급 ID 내려받기</button></div><div className="table-scroll"><table aria-label="발급 학생 목록"><thead><tr><th>방 코드</th><th>번호</th><th>발급 ID</th></tr></thead><tbody>{issued.map(s=><tr key={s.actor}><td>{s.roomCode}</td><td>{s.ordinal}</td><td><code>{s.issuedId}</code></td></tr>)}</tbody></table></div></section>}
   </main>;
 }

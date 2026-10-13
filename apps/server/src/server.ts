@@ -1,3 +1,7 @@
+import {StudentConnections} from './accounts/student-connections';
+import {StudentManagement} from './accounts/student-management';
+import {studentManagementRoutes} from './accounts/student-management-routes';
+import {removeStudentObjects} from './rooms/remove-student-objects';
 import {inviteRoutes} from './accounts/invite-routes';
 import {mountWebSurface} from './web-surface';
 import {Server} from '@colyseus/core';
@@ -24,7 +28,7 @@ import {RoomCapacity} from './rooms/capacity';
 import {createViewingRoom} from './vr/viewing-room';
 import type {RetextureService} from './generation/retexture-service';
 export async function startServer(port=2567,localPreview=false,options:{repository?:RoomRepository;accounts?:AccountService;chat?:ChatService;images?:ImageService;assets?:AssetService;history?:RoomHistoryService;vr?:VrBakeService;retexture?:RetextureService;webRoot?:string;registrationEnabled?:boolean}={}){
-  const sessions=new SessionStore();
+  const sessions=new SessionStore(),connections=new StudentConnections();let endpoint='';
   // The upstream 4 KiB default rejects valid 200-op commands and 4000-character Korean chat.
   const transport=new WebSocketTransport({maxPayload:256*1024});
   const app=transport.getExpressApp();
@@ -57,16 +61,18 @@ export async function startServer(port=2567,localPreview=false,options:{reposito
   if(options.accounts)app.use('/api',logRoutes(new TeacherLogService(options.accounts)));
   if(options.accounts)app.use('/api',inviteRoutes(options.accounts));
   if(options.accounts)app.use('/api',accountRoutes(options.accounts,options.repository&&options.assets?new DashboardService(options.accounts,options.repository,options.assets):undefined,options.registrationEnabled));
+  if(options.accounts)app.use('/api',studentManagementRoutes(new StudentManagement(options.accounts,connections,async(token,roomId,actor)=>removeStudentObjects(endpoint,token,roomId,(await options.accounts!.session(token)).actor,actor))));
   if(options.webRoot)mountWebSurface(app,options.webRoot);
   const resolver={read:async(token:unknown,roomKey:unknown)=>{
     try{return sessions.read(token,roomKey);}catch(error){if(!options.accounts)throw error;return options.accounts.resolveRoomToken(token,roomKey);}
   }};
   const server=new Server({transport,gracefullyShutdown:false,greet:false});
   const capacity=new RoomCapacity();
-  server.define('studio',createStudioRoom(resolver,options.repository,localPreview,options.chat,options.images,options.assets,options.history,capacity,options.retexture)).filterBy(['roomKey']);
-  if(options.vr)server.define('viewing',createViewingRoom(resolver,options.vr,capacity)).filterBy(['roomKey','snapshotId']);
+  server.define('studio',createStudioRoom(resolver,options.repository,localPreview,options.chat,options.images,options.assets,options.history,capacity,options.retexture,connections)).filterBy(['roomKey']);
+  if(options.vr)server.define('viewing',createViewingRoom(resolver,options.vr,capacity,connections)).filterBy(['roomKey','snapshotId']);
   await server.listen(port,'127.0.0.1');
   const address=transport.server!.address();
   if(!address||typeof address==='string')throw Error('Missing server address');
-  return {url:'http://127.0.0.1:'+address.port,sessions,close:()=>server.gracefullyShutdown(false)};
+  endpoint='http://127.0.0.1:'+address.port;
+  return {url:endpoint,sessions,close:()=>server.gracefullyShutdown(false)};
 }

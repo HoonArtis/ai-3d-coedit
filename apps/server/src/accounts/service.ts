@@ -14,7 +14,7 @@ export class AccountService{
   async migrate(){
     const client=await this.pool.connect();
     try{await client.query('BEGIN');await client.query("SELECT pg_advisory_xact_lock(hashtext(current_schema() || ':coedit-accounts'))");
-      for(const file of ['002-accounts.sql','009-class-invites.sql'])await client.query(await readFile(new URL('../../../../infra/migrations/'+file,import.meta.url),'utf8'));
+      for(const file of ['002-accounts.sql','009-class-invites.sql','010-student-archive.sql'])await client.query(await readFile(new URL('../../../../infra/migrations/'+file,import.meta.url),'utf8'));
       await client.query('COMMIT');
     }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
   }
@@ -36,7 +36,7 @@ export class AccountService{
   async session(token:unknown):Promise<AccountSession>{
     if(typeof token!=='string'||token.length>256)throw Error('UNAUTHENTICATED');
     const {rows}=await this.pool.query(`SELECT actor,role FROM coedit_account_sessions s WHERE token_hash=$1 AND expires_at>now() AND
-      ((role='teacher' AND EXISTS(SELECT 1 FROM coedit_teachers WHERE id=s.actor)) OR (role='student' AND EXISTS(SELECT 1 FROM coedit_students WHERE id=s.actor)))`,[credentialDigest(token)]);
+      ((role='teacher' AND EXISTS(SELECT 1 FROM coedit_teachers WHERE id=s.actor)) OR (role='student' AND EXISTS(SELECT 1 FROM coedit_students WHERE id=s.actor AND NOT archived)))`,[credentialDigest(token)]);
     if(!rows.length)throw Error('UNAUTHENTICATED');return rows[0];
   }
   async logout(token:string){await this.pool.query('DELETE FROM coedit_account_sessions WHERE token_hash=$1',[credentialDigest(token)]);}
@@ -72,7 +72,7 @@ export class AccountService{
     const actor=await this.teacher(token);z.number().int().min(1).max(150).parse(count);const client=await this.pool.connect();
     try{
       await client.query('BEGIN');await this.ownClass(client,actor,classId,true);
-      const {rows}=await client.query('SELECT r.id,r.code,(SELECT count(*)::int FROM coedit_students s WHERE s.room_id=r.id) AS used,ARRAY(SELECT s.ordinal FROM coedit_students s WHERE s.room_id=r.id) AS occupied FROM coedit_class_rooms r WHERE class_id=$1 ORDER BY name,id',[classId]);
+      const {rows}=await client.query('SELECT r.id,r.code,(SELECT count(*)::int FROM coedit_students s WHERE s.room_id=r.id AND NOT s.archived) AS used,ARRAY(SELECT s.ordinal FROM coedit_students s WHERE s.room_id=r.id AND NOT s.archived) AS occupied FROM coedit_class_rooms r WHERE class_id=$1 ORDER BY name,id',[classId]);
       if(rows.reduce((n,r)=>n+5-r.used,0)<count)throw Error('CAPACITY');
       const issued:{actor:string;issuedId:string;roomKey:string;roomCode:string;ordinal:number}[]=[];
       for(const room of rows){
@@ -87,18 +87,18 @@ export class AccountService{
   }
   async joinStudent(raw:unknown){
     const input=z.object({roomCode:z.string().min(1).max(40),issuedId:z.string().min(1).max(80)}).strict().parse(raw);
-    const {rows}=await this.pool.query('SELECT s.id,s.room_id FROM coedit_students s JOIN coedit_class_rooms r ON r.id=s.room_id WHERE r.code=$1 AND s.credential_hash=$2',[input.roomCode.toUpperCase(),credentialDigest(input.issuedId)]);
+    const {rows}=await this.pool.query('SELECT s.id,s.room_id FROM coedit_students s JOIN coedit_class_rooms r ON r.id=s.room_id WHERE r.code=$1 AND s.credential_hash=$2 AND NOT s.archived',[input.roomCode.toUpperCase(),credentialDigest(input.issuedId)]);
     if(!rows.length)throw Error('UNAUTHENTICATED');return {...await this.issue(rows[0].id,'student'),roomKey:rows[0].room_id};
   }
   async resolveRoomToken(token:unknown,roomKey:unknown):Promise<IssuedSession>{
     const session=await this.session(token);if(typeof roomKey!=='string')throw Error('FORBIDDEN');
     const allowed=session.role==='teacher'
       ?await this.pool.query('SELECT r.id FROM coedit_class_rooms r JOIN coedit_classes c ON r.class_id=c.id WHERE r.id=$1 AND c.teacher_id=$2',[roomKey,session.actor])
-      :await this.pool.query('SELECT id FROM coedit_students WHERE room_id=$1 AND id=$2',[roomKey,session.actor]);
+      :await this.pool.query('SELECT id FROM coedit_students WHERE room_id=$1 AND id=$2 AND NOT archived',[roomKey,session.actor]);
     if(!allowed.rows.length)throw Error('FORBIDDEN');return {...session,roomKey};
   }
   async listClasses(token:string){
     const actor=await this.teacher(token);const {rows}=await this.pool.query('SELECT id,name,generation_limit FROM coedit_classes WHERE teacher_id=$1 ORDER BY name,id',[actor]);
-    return Promise.all(rows.map(async c=>({...c,rooms:(await this.pool.query('SELECT r.id,r.name,r.code,(SELECT count(*)::int FROM coedit_students s WHERE s.room_id=r.id) AS students FROM coedit_class_rooms r WHERE class_id=$1 ORDER BY name,id',[c.id])).rows})));
+    return Promise.all(rows.map(async c=>({...c,rooms:(await this.pool.query('SELECT r.id,r.name,r.code,(SELECT count(*)::int FROM coedit_students s WHERE s.room_id=r.id AND NOT s.archived) AS students FROM coedit_class_rooms r WHERE class_id=$1 ORDER BY name,id',[c.id])).rows})));
   }
 }
