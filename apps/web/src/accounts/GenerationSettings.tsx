@@ -1,0 +1,5 @@
+import {useEffect,useState} from 'react';import {generationLimitSchema} from '@coedit/contracts';import {accountApi} from './api';
+export function GenerationSettings({classId,value,onSaved}:{classId:string;value:number;onSaved:()=>Promise<void>}){
+ const [draft,setDraft]=useState(String(value)),[notice,setNotice]=useState(''),[busy,setBusy]=useState(false);useEffect(()=>setDraft(String(value)),[value]);
+ return <form className="generation-settings" onSubmit={event=>{event.preventDefault();void(async()=>{setBusy(true);setNotice('');try{const generationLimit=generationLimitSchema.parse(draft.trim()===''?NaN:Number(draft));await accountApi('/classes/'+classId+'/settings',{generationLimit});await onSaved();setNotice('저장됐어요.');}catch{setNotice('0~1000 사이의 정수를 입력하고 접근 권한을 확인해 주세요.');}finally{setBusy(false);}})();}}><label>학생 1인 생성 한도<input aria-label="학생 1인 생성 한도" type="number" min="0" max="1000" step="1" value={draft} onChange={e=>setDraft(e.target.value)} required/></label><button disabled={busy}>한도 저장</button><small>0은 새 생성을 중지합니다. 이미 사용한 횟수는 유지됩니다.</small>{notice&&<span role="status">{notice}</span>}</form>;
+}

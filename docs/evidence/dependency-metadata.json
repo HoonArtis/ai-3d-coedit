@@ -1,0 +1,832 @@
+[
+  {
+    "name": "react",
+    "version": "19.3.0",
+    "license": "MIT",
+    "repository": {
+      "url": "git+https://github.com/react/react.git",
+      "type": "git",
+      "directory": "packages/react"
+    },
+    "engines": {
+      "node": ">=0.10.0"
+    },
+    "dist": {
+      "shasum": "e20aa3a14687075ce863351b5878b0608c3fbfb2",
+      "tarball": "https://registry.npmjs.org/react/-/react-19.3.0.tgz",
+      "fileCount": 27,
+      "integrity": "sha512-E8LUcbtBWt20bbl2YoHfx4ZDBdxVTfOKtCZn9cDSJ4l6/nuoApcpIBcj47t2wZoVX8g2ZHuMHbiShgCR1T5Sog==",
+      "signatures": [
+        {
+          "sig": "MEUCIALru2uJjzTwQTeh/ax6FRZSyVBDySuUEr4k+TiaANpDAiEAgJVCX1upjcvo4FzKCrJW9vcVnWVJwMbuM4Wsc4UM61o=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEYCIQCLRI5uegHedldoJjX7BioMz8AnR5jZmFZB2+1PMyrFagIhAMlHH0dBWncX0Nq4vSqkVKZtP7Jolgae2aodnOtIRrQK",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/react@19.3.0",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 178663
+    }
+  },
+  {
+    "name": "react-dom",
+    "version": "19.3.0",
+    "license": "MIT",
+    "repository": {
+      "url": "git+https://github.com/react/react.git",
+      "type": "git",
+      "directory": "packages/react-dom"
+    },
+    "peerDependencies": {
+      "react": "^19.3.0"
+    },
+    "dependencies": {
+      "scheduler": "^0.28.0"
+    },
+    "dist": {
+      "shasum": "a0ff19161d7f4e9be5469a07278b0c06e00f9001",
+      "tarball": "https://registry.npmjs.org/react-dom/-/react-dom-19.3.0.tgz",
+      "fileCount": 43,
+      "integrity": "sha512-JDk8dgif51OjFoDE70+OT9ICyYr+69HlmihNwp1+Nsfbna3t5sIiCa9ZJktDmQ4/1b/rn26hIAR2uYXDMr5r0Q==",
+      "signatures": [
+        {
+          "sig": "MEUCIQDl7gfoVlOoqKLgPU325X6EcrNHIYuFJJX0R9PHDs9KygIgAQaRzlBCG57IDn6XBjaOL/adBCuf/oiguaTixpmBBjw=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEUCIBJlBwP9e+XpqYfXpAJxCFTZ2i9tt8XCm9JYmuFMXsm1AiEAi9g3MN8fg6vModu7alAeUKmJ6iWO6untLGlvHfX1mb4=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/react-dom@19.3.0",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 8063782
+    }
+  },
+  {
+    "name": "three",
+    "version": "0.186.1",
+    "license": "MIT",
+    "repository": {
+      "url": "git+https://github.com/mrdoob/three.js.git",
+      "type": "git"
+    },
+    "dist": {
+      "shasum": "6d50f70c2c437f844179bbb56d6f5b774e1ca38a",
+      "tarball": "https://registry.npmjs.org/three/-/three-0.186.1.tgz",
+      "fileCount": 1263,
+      "integrity": "sha512-blFeqb49wRCSGUGj7gtpfnSGHy2lwDk94RhUmS1c/hTby70kvChbWpkJ4Pm1390LqzzvTmzgXKHPEafJwCb8jA==",
+      "signatures": [
+        {
+          "sig": "MEUCICldcpbcHhT4cNN5FeIhlbfekATi/CJUpk7mUDtPas5yAiEA/apNIzYS5sOdYRaeAK5Uae2O23E0Hl7Mo5TqNt9GWxA=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEUCIQCR0d1POSyDcCWApl93klyA2uB9zYBro/9ru2SUGgXSkAIgVdc8c/NKCiqjo3zmTooBB+GimZ+6BwK/1VLTO83itr4=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 20443256
+    }
+  },
+  {
+    "name": "@react-three/fiber",
+    "version": "9.8.1",
+    "license": "MIT",
+    "repository": {
+      "url": "git+https://github.com/pmndrs/react-three-fiber.git",
+      "type": "git"
+    },
+    "peerDependencies": {
+      "expo": ">=43.0",
+      "react": ">=19 <19.4",
+      "three": ">=0.156",
+      "expo-gl": ">=11.0",
+      "react-dom": ">=19 <19.4",
+      "expo-asset": ">=8.4",
+      "react-native": ">=0.78",
+      "expo-file-system": ">=11.0"
+    },
+    "dependencies": {
+      "buffer": "^6.0.3",
+      "zustand": "^5.0.3",
+      "its-fine": "^2.1.1",
+      "base64-js": "^1.5.1",
+      "scheduler": "^0.28.0",
+      "@types/webxr": "*",
+      "suspend-react": "^0.1.3",
+      "@babel/runtime": "^7.17.8",
+      "react-use-measure": "^2.1.7",
+      "use-sync-external-store": "^1.4.0"
+    },
+    "dist": {
+      "shasum": "9379621d5f3730ec50eab597c551fffb80abd4b2",
+      "tarball": "https://registry.npmjs.org/@react-three/fiber/-/fiber-9.8.1.tgz",
+      "fileCount": 40,
+      "integrity": "sha512-GbNP4r6F/gpclFKkLGHzXcuwFWAzLyKsmrQGcDuwK3wQnwLH6F1TfGtEYjHy8OQoGsajwT19B9jtVLLjjfH09w==",
+      "signatures": [
+        {
+          "sig": "MEYCIQCrat91GYYEEVOBhJDoX8kZNa/ElRKLj+4zISkES76c4QIhAMPENtddANqNhvd70D6j9oCTYydTa0/tbqC1NmPX664z",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEYCIQDE4Hzgxw7g80047qkecopjWojjk0C3tYe8fmih+JcsCAIhAJkfnDAgdDsrx5+PO9SAYhoPCqscfYy6zFDPYal0o6tX",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 2378458
+    }
+  },
+  {
+    "name": "@react-three/drei",
+    "version": "10.7.9",
+    "license": "MIT",
+    "repository": {
+      "url": "git+https://github.com/pmndrs/drei.git",
+      "type": "git"
+    },
+    "peerDependencies": {
+      "react": "^19",
+      "three": ">=0.159",
+      "react-dom": "^19",
+      "@react-three/fiber": "^9.0.0"
+    },
+    "dependencies": {
+      "maath": "^0.10.8",
+      "hls.js": "^1.5.17",
+      "zustand": "^5.0.1",
+      "meshline": "^3.3.1",
+      "stats-gl": "^2.2.8",
+      "stats.js": "^0.17.0",
+      "cross-env": "^7.0.3",
+      "detect-gpu": "^5.0.56",
+      "glsl-noise": "^0.0.0",
+      "tunnel-rat": "^0.1.2",
+      "three-stdlib": "^2.35.6",
+      "suspend-react": "^0.1.3",
+      "utility-types": "^3.11.0",
+      "@babel/runtime": "^7.26.0",
+      "three-mesh-bvh": "^0.8.3",
+      "camera-controls": "^3.1.0",
+      "troika-three-text": "^0.52.4",
+      "@use-gesture/react": "^10.3.1",
+      "@monogrid/gainmap-js": "^3.0.6",
+      "@mediapipe/tasks-vision": "0.10.17",
+      "use-sync-external-store": "^1.4.0"
+    },
+    "dist": {
+      "shasum": "bc5f6ee0b1b40980b438f3c1dac88f039ad69b5e",
+      "tarball": "https://registry.npmjs.org/@react-three/drei/-/drei-10.7.9.tgz",
+      "fileCount": 483,
+      "integrity": "sha512-wP4Y6o58KFi+hT1zCfjJarRtPCT6WW/lo53WMiA/aCORuUvBzW916XsCtadnIB1KB+3IQNcDU5JeVh/gYb8MYw==",
+      "signatures": [
+        {
+          "sig": "MEYCIQD84caNkrxIFrzlkuo0e/rPucYE6pZAzAE3pjhPZLoJTAIhAPe5+GhZhqFW1nFeir7EXiyQSSFOhNT7/LNWal7+rGqY",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEQCICEGA32dE4ixQWAQI3VTj+4XS5xSrUjKhyVsQ7HeMWiIAiADvs9+O8l9M+DK/qkhsbzun6PiXL332A1m2dp1ShlNgQ==",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@react-three%2fdrei@10.7.9",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 1753692
+    }
+  },
+  {
+    "name": "typescript",
+    "version": "7.0.2",
+    "license": "Apache-2.0",
+    "repository": {
+      "url": "git+https://github.com/microsoft/TypeScript.git",
+      "type": "git"
+    },
+    "engines": {
+      "node": ">=16.20.0"
+    },
+    "dependencies": {
+      "@typescript/typescript-aix-ppc64": "7.0.2",
+      "@typescript/typescript-linux-arm": "7.0.2",
+      "@typescript/typescript-linux-x64": "7.0.2",
+      "@typescript/typescript-sunos-x64": "7.0.2",
+      "@typescript/typescript-win32-x64": "7.0.2",
+      "@typescript/typescript-darwin-x64": "7.0.2",
+      "@typescript/typescript-netbsd-x64": "7.0.2",
+      "@typescript/typescript-freebsd-x64": "7.0.2",
+      "@typescript/typescript-linux-arm64": "7.0.2",
+      "@typescript/typescript-linux-ppc64": "7.0.2",
+      "@typescript/typescript-linux-s390x": "7.0.2",
+      "@typescript/typescript-openbsd-x64": "7.0.2",
+      "@typescript/typescript-win32-arm64": "7.0.2",
+      "@typescript/typescript-darwin-arm64": "7.0.2",
+      "@typescript/typescript-netbsd-arm64": "7.0.2",
+      "@typescript/typescript-freebsd-arm64": "7.0.2",
+      "@typescript/typescript-linux-loong64": "7.0.2",
+      "@typescript/typescript-linux-riscv64": "7.0.2",
+      "@typescript/typescript-openbsd-arm64": "7.0.2",
+      "@typescript/typescript-linux-mips64el": "7.0.2"
+    },
+    "dist": {
+      "shasum": "9ec773d7954a8c182c17cc5bbd575aa28bc51582",
+      "tarball": "https://registry.npmjs.org/typescript/-/typescript-7.0.2.tgz",
+      "fileCount": 416,
+      "integrity": "sha512-8FYau96o3NKOhbjKi/qNvG/W5jhzxkbdm5sj9AbZ/5T5sWqn3hJgLfGx27sRKZWTvyzCP8dLRBTf5tBTSRVUNA==",
+      "signatures": [
+        {
+          "sig": "MEUCIHn8lVrLBbTJToaOcV3IJ0oVPREmFT5BhqmO2niVNCaSAiEAjbubGExGAYMSJN39iEgX/eDYhwBGnh/iyyGTRigXGjY=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 2497498
+    }
+  },
+  {
+    "name": "vite",
+    "version": "8.3.4",
+    "license": "MIT",
+    "repository": {
+      "url": "git+https://github.com/vitejs/vite.git",
+      "type": "git",
+      "directory": "packages/vite"
+    },
+    "engines": {
+      "node": "^20.19.0 || >=22.12.0"
+    },
+    "peerDependencies": {
+      "tsx": "^4.8.1",
+      "jiti": ">=1.21.0",
+      "less": "^4.0.0",
+      "sass": "^1.70.0",
+      "yaml": "^2.4.2",
+      "stylus": ">=0.54.8",
+      "terser": "^5.16.0",
+      "esbuild": "^0.27.0 || ^0.28.0",
+      "sugarss": "^5.0.0",
+      "@types/node": "^20.19.0 || >=22.12.0",
+      "sass-embedded": "^1.70.0",
+      "@vitejs/devtools": "^0.7.1"
+    },
+    "dependencies": {
+      "postcss": "^8.5.29",
+      "rolldown": "~1.2.12",
+      "picomatch": "^4.0.7",
+      "tinyglobby": "^0.2.17",
+      "lightningcss": "^1.33.0"
+    },
+    "dist": {
+      "shasum": "ba08678ba41ba53f41c251b1772946c27b1c874e",
+      "tarball": "https://registry.npmjs.org/vite/-/vite-8.3.4.tgz",
+      "fileCount": 37,
+      "integrity": "sha512-IftLE8phJhdNRIGNEV4JCCvfNScoZQVfcXaN8TQropWGJtOHcu+iAB9pHcuGvmEb/kddw0LBe/jS8ztdC6xdiQ==",
+      "signatures": [
+        {
+          "sig": "MEUCIQCeAXB/HwdxpjsWJtL4xB1XW4EQghm8FuRmtk5k3Ok9+AIgIFJBcqIWVFWx5JeaTOpO/Noixu1/SIVjcexDfJ4S5PU=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEUCIQDtkEePcVc6vZxhoADsFqkp0VBbSgevSPxwgXXoG/UidQIgLb5bHn+iddppIY99rGaeeiM+n0AMTnlfU1QwNL/lwig=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/vite@8.3.4",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 2376813
+    }
+  },
+  {
+    "name": "@vitejs/plugin-react",
+    "version": "6.1.2",
+    "license": "MIT",
+    "repository": {
+      "url": "git+https://github.com/vitejs/vite-plugin-react.git",
+      "type": "git",
+      "directory": "packages/plugin-react"
+    },
+    "engines": {
+      "node": "^20.19.0 || >=22.12.0"
+    },
+    "peerDependencies": {
+      "vite": "^8.0.0",
+      "oxc-transform-react": "^0.152.0",
+      "@rolldown/plugin-babel": "^0.1.7 || ^0.2.0",
+      "babel-plugin-react-compiler": "^1.0.0"
+    },
+    "dependencies": {
+      "@rolldown/pluginutils": "^1.0.1"
+    },
+    "dist": {
+      "shasum": "924d47e890a78cdf2b72f3f41fe8ab98e089b81e",
+      "tarball": "https://registry.npmjs.org/@vitejs/plugin-react/-/plugin-react-6.1.2.tgz",
+      "fileCount": 8,
+      "integrity": "sha512-fhJNGUdscQa4HkI0xFxwonWyhnVReCPDbXI7FH7jmzpnVCrFQI7PRrhWecO263610vOrs9tr2Y4xcf8uAdFxbw==",
+      "signatures": [
+        {
+          "sig": "MEUCIQCgpYsgjqTlOLHoKHGebF/CVGDeZXj631NLMep/SKoPxwIgQWZS4mOR+zKRUVL7FUDOOFDZyuMuywEGKrwry5GdV1Q=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEUCIQDLH4vCHenzBgP8wEYtZ9kCyKB71ErIPflGwaTlK1x9UwIgD2g6OSfhpU2OeghhDhPrAlwcunG8FMKXva4cki2sYlM=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@vitejs%2fplugin-react@6.1.2",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 46296
+    }
+  },
+  {
+    "name": "vitest",
+    "version": "5.0.4",
+    "license": "MIT",
+    "repository": {
+      "url": "git+https://github.com/vitest-dev/vitest.git",
+      "type": "git",
+      "directory": "packages/vitest"
+    },
+    "engines": {
+      "node": "^22.12.0 || ^24.0.0 || >=26.0.0"
+    },
+    "peerDependencies": {
+      "vite": "^6.4.0 || ^7.0.0 || ^8.0.0",
+      "jsdom": "*",
+      "happy-dom": "*",
+      "@vitest/ui": "5.0.4",
+      "@types/node": "^22.0.0 || >=24.0.0",
+      "@edge-runtime/vm": "*",
+      "@opentelemetry/api": "^1.9.0",
+      "@vitest/coverage-v8": "5.0.4",
+      "@vitest/browser-preview": "5.0.4",
+      "@vitest/coverage-istanbul": "5.0.4",
+      "@vitest/browser-playwright": "5.0.4",
+      "@vitest/browser-webdriverio": "^5.0.0-beta.5 || >=5.0.0"
+    },
+    "dependencies": {
+      "chai": "^6.3.0",
+      "obug": "^3.0.0",
+      "std-env": "^4.3.0",
+      "tinyexec": "^1.3.1",
+      "picomatch": "^4.0.7",
+      "tinybench": "^6.2.2",
+      "tinyglobby": "^0.2.17",
+      "@types/chai": "^5.2.2",
+      "expect-type": "^1.4.0",
+      "magic-string": "^1.4.3",
+      "@vitest/mocker": "5.0.4",
+      "es-module-lexer": "^2.3.2",
+      "why-is-node-running": "3.2.1"
+    },
+    "dist": {
+      "shasum": "bffa8d58f1d5cbeadc66d92a111a64603f2b44a6",
+      "tarball": "https://registry.npmjs.org/vitest/-/vitest-5.0.4.tgz",
+      "fileCount": 104,
+      "integrity": "sha512-z0WxZRV2Sg48wF0FSgMq3TFG8JS38/Qr96vZVZdX6+Em9raQTvnXQvdTFJe2m3rfyJnEHeHQ/snceIdi8D1pVg==",
+      "signatures": [
+        {
+          "sig": "MEUCIDfNHu26ZoNABxCSVqDQyX5A7FP9jdyeD1Kz31moHzQXAiEArR3m0pwrVN7YWAGBAHxT7IoFEmEf25oRp90P6M1ANZY=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/vitest@5.0.4",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 2813851
+    }
+  },
+  {
+    "name": "@playwright/test",
+    "version": "1.64.0",
+    "license": "Apache-2.0",
+    "repository": {
+      "url": "git+https://github.com/microsoft/playwright.git",
+      "type": "git"
+    },
+    "engines": {
+      "node": ">=20"
+    },
+    "dependencies": {
+      "playwright": "1.64.0"
+    },
+    "dist": {
+      "shasum": "af51c4f1dd5f689b2ff16e6eacf27ac00843f239",
+      "tarball": "https://registry.npmjs.org/@playwright/test/-/test-1.64.0.tgz",
+      "fileCount": 11,
+      "integrity": "sha512-oTN9FNYuN6bqQMwiho6jJKLCG2/QOYCixGXuCjRmzOq23eODeukuY2XiAVoVpAECbuezMt1MHQjAiQxK8F+Y+g==",
+      "signatures": [
+        {
+          "sig": "MEUCIGwd51zzl/s8Ynfqb0g5X4T+qVJV9EBVQ/iTzmv37UcCAiEAh2l1BiEXafRIyIvzZNem1KBq9ghLXR3nlaCvwN0/ico=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEQCIBopA8fVjn2UeqqCfyPot2liG+Devo2O0ihw6z9lbhgNAiB+H4G3cKuPWJRlL4qND+igTMpXrIR0QBLfyapqtbt5jQ==",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/@playwright%2ftest@1.64.0",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 28542
+    }
+  },
+  {
+    "name": "@types/react",
+    "version": "19.3.0",
+    "license": "MIT",
+    "repository": {
+      "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+      "type": "git",
+      "directory": "types/react"
+    },
+    "peerDependencies": {},
+    "dependencies": {
+      "csstype": "^3.2.2"
+    },
+    "dist": {
+      "shasum": "3b3ce8d8c1627fb5ccd4dadd57ef445c5a153b77",
+      "tarball": "https://registry.npmjs.org/@types/react/-/react-19.3.0.tgz",
+      "fileCount": 18,
+      "integrity": "sha512-N0rFCuH9YoxG9/m61l9MfpJKfmLOVU0em7ipIz6TRgSSkvReLB9vL85GB+yr8Bs5leqpvg96JSwF4ZS1s4viQg==",
+      "signatures": [
+        {
+          "sig": "MEQCICO9E9W9sN+6oHDGno2fJYJ8YEsNOa01MoJJmauunAjGAiAVusL8FBYYoRgnVrnz0RY2KMSjP1OlJ7GunY0YhIr0GA==",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEYCIQCG/2kbQCjMBz9wJNsFnPRUQFtQzxGIbkrwTxQ3ZYlQrwIhAKZAxRpE46wtsHz27OGDgRmXLV83Q5GivNToLaMzF7Q2",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 408108
+    }
+  },
+  {
+    "name": "@types/react-dom",
+    "version": "19.3.0",
+    "license": "MIT",
+    "repository": {
+      "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+      "type": "git",
+      "directory": "types/react-dom"
+    },
+    "peerDependencies": {
+      "@types/react": "^19.3.0"
+    },
+    "dependencies": {},
+    "dist": {
+      "shasum": "90294a9266efd928a5266f2110d60d5dba5015d2",
+      "tarball": "https://registry.npmjs.org/@types/react-dom/-/react-dom-19.3.0.tgz",
+      "fileCount": 19,
+      "integrity": "sha512-ZI7bU42mZXXKHn/qNLEw2IrbiINU7X5+vfgdixBHkCNpYWXjKgfQ/P+uyGb5CjOLB9UcnTeg3rylQtV2hym44Q==",
+      "signatures": [
+        {
+          "sig": "MEYCIQDeggFlao9be7yHQ/b9bEJ/aNUgA9ewpLiMScDNunzitAIhAKh8Ct2ZYAjnfZI/KeuIMkZ0Qz2vlOS1C1PkdT2UacvQ",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEYCIQDfRDroOzjwBEz1yqXRbBWKCYOt7p/DKB+WIMPoMWCfUAIhAMPChj/cPQOALZVIGvV0h+QYQERrlQ5RJZb3dptWvQFV",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 32862
+    }
+  },
+  {
+    "name": "@types/three",
+    "version": "0.186.0",
+    "license": "MIT",
+    "repository": {
+      "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+      "type": "git",
+      "directory": "types/three"
+    },
+    "peerDependencies": {},
+    "dependencies": {
+      "fflate": "~0.8.3",
+      "@types/webxr": ">=0.5.17",
+      "meshoptimizer": "~1.1.1",
+      "@types/stats.js": "*",
+      "@tweenjs/tween.js": "~23.1.3",
+      "@dimforge/rapier3d-compat": "~0.12.0"
+    },
+    "dist": {
+      "shasum": "fc936323d7eeb885052fd5de352e3772f488ea99",
+      "tarball": "https://registry.npmjs.org/@types/three/-/three-0.186.0.tgz",
+      "fileCount": 1073,
+      "integrity": "sha512-mxYSBpDC+D0pLfSP6sW4WZTcT+nrtmZcimMqnVmy36Hte3XpeYSrvgg4TRdaM1GemGog1AWzI5qL2VoIfMXbJQ==",
+      "signatures": [
+        {
+          "sig": "MEUCIC4xmlEXpUXO/uMKanjOYzXejEUlL53JnYyqK2WzJ3gQAiEAxaizpvNdG3zT1V+AX/7MzGhHexGd89HJUGBTd/8VlhM=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEYCIQCSnNLgcJ3FljA7QVKGKMm3GGgRLUeu38zzZ6MLdK9YXgIhAJXoQ3vetAh7WU14/vQJUK6poA/8fP1FZgRKxNWnjD6o",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 1930073
+    }
+  },
+  {
+    "name": "@types/node",
+    "version": "26.6.5",
+    "license": "MIT",
+    "repository": {
+      "url": "https://github.com/DefinitelyTyped/DefinitelyTyped.git",
+      "type": "git",
+      "directory": "types/node"
+    },
+    "peerDependencies": {},
+    "dependencies": {
+      "undici-types": "~8.9.0"
+    },
+    "dist": {
+      "shasum": "cb35209e7767c503551b5fa42a48231c7441d979",
+      "tarball": "https://registry.npmjs.org/@types/node/-/node-26.6.5.tgz",
+      "fileCount": 109,
+      "integrity": "sha512-uMzsv9stDdofIZBx4UGh4Z9ZgXnGC9seRDscilBcTHAeOFk67MZg/k9bWVfO+bk4qZmG+l52hRnLwUiH2LnJTg==",
+      "signatures": [
+        {
+          "sig": "MEUCICpys+wvg3B8d5GwZcaXjRtY1v/tZfhWxMGpWP4IOdAdAiEAgcy71FiMA4XW+gZuA1uwcohcHn4HX5XA7kP5acWz1ug=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEQCIEiHeuNSZyMm4RJY9UUaiZV+sUiEfPPm3I+s3NOb0TLkAiAr2YOepe3DCFvKZJpzhpAhACkiMUzzfENI/Lh148EbgA==",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 2546175
+    }
+  },
+  {
+    "name": "zod",
+    "version": "4.6.7",
+    "license": "MIT",
+    "repository": {
+      "url": "git+https://github.com/colinhacks/zod.git",
+      "type": "git"
+    },
+    "dist": {
+      "shasum": "e806cf64a7f4e37635ce9f2f52c04c3766f75e5b",
+      "tarball": "https://registry.npmjs.org/zod/-/zod-4.6.7.tgz",
+      "fileCount": 840,
+      "integrity": "sha512-g8W2D2kU6a8untc053fX1uVBKzM7yqAxW/3zwk83+6RyF2+SKOuV+c0wBDhUwzV1PaGapmZH+rmcUzPf+3CGwg==",
+      "signatures": [
+        {
+          "sig": "MEUCIQCwQ7Os025hoW1C24cDvgD4t5gynQpYlWHx1ok/Bke33AIgPP2J7w4z9B/fqA62pHpEBvjlB5ScCMm3c0adt03XQlY=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/zod@4.6.7",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 6148944
+    }
+  },
+  {
+    "name": "colyseus",
+    "version": "0.18.9",
+    "license": "MIT",
+    "repository": {
+      "url": "git://github.com/colyseus/colyseus.git",
+      "type": "git"
+    },
+    "engines": {
+      "node": ">= 22.x"
+    },
+    "peerDependencies": {
+      "vite": ">=6.0.0",
+      "@colyseus/auth": "0.18.x",
+      "@colyseus/core": "0.18.x",
+      "@colyseus/schema": "^5.0.8",
+      "@colyseus/redis-driver": "0.18.x",
+      "@colyseus/ws-transport": "0.18.x",
+      "@colyseus/redis-presence": "0.18.x",
+      "@colyseus/uwebsockets-transport": "0.18.x"
+    },
+    "dependencies": {
+      "@colyseus/auth": "^0.18.4",
+      "@colyseus/core": "^0.18.18",
+      "@colyseus/tools": "^0.18.7",
+      "@colyseus/monitor": "^0.18.6",
+      "@colyseus/playground": "^0.18.5",
+      "@colyseus/redis-driver": "^0.18.4",
+      "@colyseus/ws-transport": "^0.18.4",
+      "@colyseus/redis-presence": "^0.18.5"
+    },
+    "dist": {
+      "shasum": "66ad19950aa5c2ca58b0fc14bad526da883d797d",
+      "tarball": "https://registry.npmjs.org/colyseus/-/colyseus-0.18.9.tgz",
+      "fileCount": 39,
+      "integrity": "sha512-PrfVXiMlhdhmq8Yb4lINjhV/3SPfIL9ETkVx1e/owOrd1V8C9eaOEKWRQErLM1gE8Hcgz2uFIUXH0CxCU7O2sw==",
+      "signatures": [
+        {
+          "sig": "MEYCIQCqbiJNnBJYhV6kXeLkqaGJDFfwnhnHu++6IB7W18HEdQIhAP1CxGlQJBZ0C9RSjDu/vNGvuqVItCzOezhDGiDxPZXp",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEQCIHrPjRYlmiO+5oxM66WHcF6PIWVrJCVLQxMly/dY71yDAiARJbgRaEnKKeLw+xOEi3qLAG3e+GFEmIiCcOMgObv62Q==",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 244555
+    }
+  },
+  {
+    "name": "@colyseus/sdk",
+    "version": "0.18.5",
+    "license": "MIT",
+    "repository": {
+      "url": "git://github.com/colyseus/colyseus.git",
+      "type": "git"
+    },
+    "engines": {
+      "node": ">= 12.x"
+    },
+    "peerDependencies": {
+      "@colyseus/core": "0.18.x"
+    },
+    "dependencies": {
+      "ws": "^8.13.0",
+      "tslib": "^2.1.0",
+      "msgpackr": "^2.0.1",
+      "@colyseus/schema": "^5.0.8",
+      "@colyseus/better-call": "^1.3.1",
+      "@colyseus/shared-types": "^0.18.3"
+    },
+    "dist": {
+      "shasum": "16d46cd9a106c1988dc2db5489031a3574ec9039",
+      "tarball": "https://registry.npmjs.org/@colyseus/sdk/-/sdk-0.18.5.tgz",
+      "fileCount": 321,
+      "integrity": "sha512-wHlUCq+oPeiI74mNM5p6yr8WE5EBJXwNxVIPnov7D8+Q/F6p7dyjWec3PfKOSv9or3uP5OjsCYKPwlC2hkxlHQ==",
+      "signatures": [
+        {
+          "sig": "MEUCIQDiLnL5Iv7jHcYgICMD//rdpVh3jEk/Kc6WxD6dVT2jdAIgFJK/RK6nFwVUsn2sJY2yRHslsdn78j0AB/u/7LHMwa8=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEUCIFvA4AqYn1KqQF9iWhn9s204XJBfDtZpNGMnU7TjB1+nAiEAnNZ9RrK+b86NlfdXw83yS51yt+pZOqNYZfkkAXrT7j8=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 6348929
+    }
+  },
+  {
+    "name": "pg",
+    "version": "8.23.1",
+    "license": "MIT",
+    "repository": {
+      "url": "git://github.com/brianc/node-postgres.git",
+      "type": "git",
+      "directory": "packages/pg"
+    },
+    "engines": {
+      "node": ">= 16.0.0"
+    },
+    "peerDependencies": {
+      "pg-native": ">=3.0.1"
+    },
+    "dependencies": {
+      "pgpass": "1.0.5",
+      "pg-pool": "^3.14.0",
+      "pg-types": "2.2.0",
+      "pg-protocol": "^1.16.1",
+      "pg-cloudflare": "^1.4.1",
+      "pg-connection-string": "^2.14.1"
+    },
+    "dist": {
+      "shasum": "e4848051a04aa2f968fd5671d075f89e5e7918b9",
+      "tarball": "https://registry.npmjs.org/pg/-/pg-8.23.1.tgz",
+      "fileCount": 20,
+      "integrity": "sha512-aL96AHANtWjPLDOLqnhx+ngp9+UK7ETEU8VJrDCGvsSSi/mGLcWYsS6Herg7lmaBJe4uwrfqsa7gTEFaSizDoQ==",
+      "signatures": [
+        {
+          "sig": "MEUCIQCaQ7YY2yU8gtOVUdpEmdwhMZX8RimNffuKliyHO8GPcQIgdnqtDpcBEkCylJPazoNxAcwG0J+2ErEXsbGHsceQDbQ=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEUCIQCoTOteRl6SbOEx95tHOsn0FgIOYsb5wPdT77A0PUDC8wIgUGnJrpGJKdY8o6QUGoU0GRtQVHfVx3aHN7ChoRaAMmo=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 102632
+    }
+  },
+  {
+    "name": "bullmq",
+    "version": "6.3.14",
+    "license": "MIT",
+    "repository": {
+      "url": "git+https://github.com/taskforcesh/bullmq.git",
+      "type": "git"
+    },
+    "engines": {
+      "node": ">=14.17.0"
+    },
+    "peerDependencies": {
+      "pg": ">=8.0.0",
+      "redis": ">=5.0.0",
+      "ioredis": ">=5.0.0",
+      "bullmq-otel": ">=2.0.0"
+    },
+    "dependencies": {
+      "tslib": "2.8.1",
+      "semver": "7.8.5",
+      "msgpackr": "2.1.0",
+      "cron-parser": "5.10.2",
+      "node-abort-controller": "3.1.1"
+    },
+    "dist": {
+      "shasum": "09f6d2a1a4aa33ad2e70fb1bcf17c9dd9460a500",
+      "tarball": "https://registry.npmjs.org/bullmq/-/bullmq-6.3.14.tgz",
+      "fileCount": 712,
+      "integrity": "sha512-iXpDyX45fonQugWAHw+FNPH/YIjqzmzi/xxs31dzWGNP7j6b4jAVN0oNWU5cz0mVi1RofEkrlRwRbLqhqNkjHw==",
+      "signatures": [
+        {
+          "sig": "MEYCIQDgJwCoC9IgkwevPSeea5xF1c6Lyev+Gw+T3Yfd3NLmZgIhAPxpxGJyrRkyOcDvqLqT2hUGJ5TxvSybwd/TsB+vfpcz",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEUCIQCFnPdsjIhUmtqrGtuwlhz1vdZwjJ1u8/il9Rq5NeFvtgIgRAzqKSuuUUR2CgOch5iut+MWd/IF4XVTLam/m7hLbOY=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "attestations": {
+        "url": "https://registry.npmjs.org/-/npm/v1/attestations/bullmq@6.3.14",
+        "provenance": {
+          "predicateType": "https://slsa.dev/provenance/v1"
+        }
+      },
+      "unpackedSize": 3012063
+    }
+  },
+  {
+    "name": "ioredis",
+    "version": "6.0.0",
+    "license": "MIT",
+    "repository": {
+      "url": "git+https://github.com/redis/ioredis.git",
+      "type": "git"
+    },
+    "engines": {
+      "node": ">=20.0.0"
+    },
+    "dependencies": {
+      "debug": "4.4.3",
+      "denque": "2.1.0",
+      "redis-errors": "1.2.0",
+      "cluster-key-slot": "1.1.1",
+      "@ioredis/commands": "2.0.0",
+      "standard-as-callback": "2.1.0"
+    },
+    "dist": {
+      "shasum": "b757c590547c43a5e18ea9c312d05c5c46c7e6fa",
+      "tarball": "https://registry.npmjs.org/ioredis/-/ioredis-6.0.0.tgz",
+      "fileCount": 105,
+      "integrity": "sha512-f+Dtubxfpf6KYFq7WVXJoOLn0bk4TJrMrN9SzeE+jrWrCWj7XX3fA6vkryafhADX+GMymRxgDJDOI33COkJc0w==",
+      "signatures": [
+        {
+          "sig": "MEQCIBHyvjKf8Kpmfyw8QUg8XM6oqoyEZX8BNvs59ButYlDCAiAWu+2XPRNmnz/kwExx2+Wb69/Jf1C7rQ46uslKgQxjPA==",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        },
+        {
+          "sig": "MEUCIQCO6+4A11lr0f0J0QDpFRTGkX+zySv5sMZ8Zk8FmZiWjwIgDA4i6z6aqHTFSQ0zXaP0mhT6ma9T//fnkLmJ3sMs2GE=",
+          "keyid": "SHA256:DhQ8wR5APBvFHLF/+Tc+AYvPOdTpcIDqOhxsBHRwC7U"
+        }
+      ],
+      "unpackedSize": 1290811
+    }
+  }
+]

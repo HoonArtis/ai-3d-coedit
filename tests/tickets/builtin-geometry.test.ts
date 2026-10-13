@@ -1,0 +1,4 @@
+import {test,expect} from 'vitest';import {Box3,Mesh} from 'three';import {BUILTIN_LIBRARY} from '@coedit/contracts';import {buildBuiltinModel,disposeBuiltinModel} from '@coedit/geometry';
+test('shared builtin models preserve visible geometry and fit the authoritative catalog bounds',()=>{
+ for(const asset of Object.values(BUILTIN_LIBRARY)){const model=buildBuiltinModel(asset);model.updateMatrixWorld(true);const box=new Box3().setFromObject(model);expect(box.min.y).toBeGreaterThanOrEqual(-.001);const size=box.max.clone().sub(box.min);expect(size.x).toBeGreaterThan(0);expect(size.y).toBeGreaterThan(0);expect(size.z).toBeGreaterThan(0);size.toArray().forEach((n,i)=>expect(n).toBeLessThanOrEqual(asset.dimensions[i]+.001));let triangles=0;model.traverse(node=>{if(node instanceof Mesh)triangles+=(node.geometry.index?.count??node.geometry.getAttribute('position').count)/3;});expect(triangles).toBeLessThanOrEqual(2500);disposeBuiltinModel(model);}
+});

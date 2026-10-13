@@ -1,0 +1,32 @@
+import {test,expect,afterAll,beforeAll} from 'vitest';
+import {Pool} from 'pg';
+import {randomUUID} from 'node:crypto';
+import {mkdtemp,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join,resolve,dirname,basename} from 'node:path';
+import {LocalObjectStore} from '../../apps/server/src/storage/object-store';
+import {SubmissionService} from '../../apps/server/src/storage/submissions';
+import {PostgresRoomRepository} from '../../apps/server/src/storage/postgres-room';
+import {RoomService} from '../../apps/server/src/rooms/room-service';
+import {DurableRoom} from '../../apps/server/src/rooms/durable-room';
+import {context,command} from '../fixtures/scene';
+const pool=new Pool({connectionString:process.env.TEST_DATABASE_URL??'postgres://coedit:coedit_local_only@127.0.0.1:54329/coedit'});
+const repo=new PostgresRoomRepository(pool);const ids:string[]=[];let directory:string;
+beforeAll(async()=>{await repo.migrate();directory=await mkdtemp(join(tmpdir(),'coedit-submission-'));});
+afterAll(async()=>{for(const id of ids)await pool.query('DELETE FROM coedit_rooms WHERE id=$1',[id]);await pool.end();if(dirname(resolve(directory))!==resolve(tmpdir())||!basename(directory).startsWith('coedit-submission-'))throw Error('Unsafe test cleanup');await rm(directory,{recursive:true,force:true});});
+test('submission preserves the exact snapshot even after further scene edits',async()=>{
+  const id=randomUUID();ids.push(id);const room=new RoomService(id,context.library);const durable=await DurableRoom.open(room,repo);room.join('a',{actor:'alice',role:'student'});
+  await durable.submit('a',command([{op:'place',id:'a',assetId:'chair',position:[0,0,0]}]));
+  const store=new LocalObjectStore(directory);const submissions=new SubmissionService(pool,repo,store);
+  const submitted=await submissions.submit(id);
+  await durable.submit('a',command([{op:'place',id:'b',assetId:'chair',position:[2,0,0]}],{requestId:'second'}));
+  const read=await submissions.read(id,submitted.id);expect(read.seq).toBe(1);expect(Object.keys(read.objects)).toEqual(['a']);
+  await expect(submissions.read('another-room',submitted.id)).rejects.toThrow('NOT_FOUND');
+  await expect(store.get('../escape')).rejects.toThrow('INVALID_OBJECT_KEY');
+});
+test('failed object upload never creates a submission record',async()=>{
+  const id=randomUUID();ids.push(id);const room=new RoomService(id,context.library);await DurableRoom.open(room,repo);
+  const submissions=new SubmissionService(pool,repo,{put:async()=>{throw Error('offline');},get:async()=>{throw Error('offline');}});
+  await expect(submissions.submit(id)).rejects.toThrow('offline');
+  expect((await pool.query('SELECT count(*)::int AS n FROM coedit_submissions WHERE room_id=$1',[id])).rows[0].n).toBe(0);
+});

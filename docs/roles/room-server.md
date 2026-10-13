@@ -33,5 +33,5 @@
 
 ## 경계
 
-- 동기화 서버 최종 확정은 보류. 비교는 `index.html` 9장.
+- 동기화 서버는 Colyseus로 채택했다. 실험·비교 근거는 `../decisions/room-server.md`.
 - 생성 작업은 큐에 넣기만 하고 직접 실행하지 않는다(`generation-gpu.md`).

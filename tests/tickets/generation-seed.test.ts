@@ -1,0 +1,2 @@
+import {test,expect} from 'vitest';import {generationSeed} from '../../apps/workers/src/generation-seed';
+test('redraw versions change the seed while retries retain it',()=>{expect(generationSeed('job',1)).toBe(generationSeed('job',1));expect(generationSeed('job',2)).not.toBe(generationSeed('job',1));expect(generationSeed('other',1)).not.toBe(generationSeed('job',1));expect(generationSeed('job',1)).toBeGreaterThanOrEqual(0);});

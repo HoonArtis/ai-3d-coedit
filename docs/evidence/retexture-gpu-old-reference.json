@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-13T17:44:28.003Z",
+  "seconds": 106.576,
+  "phases": [
+    "texture_queued",
+    "optimize_queued",
+    "pending_approval"
+  ],
+  "usage": {
+    "used": 2,
+    "limit": 3
+  },
+  "target": {
+    "assetId": "generated-dc51fb3babece25b55af122e7c2fd6cee28f31acbf796d0622af5617fa8abbf9",
+    "objectId": "whale",
+    "revision": 1,
+    "generation": 0
+  },
+  "staleRejected": true,
+  "appliedSeq": 2,
+  "undoSeq": 3,
+  "artifactId": "bd5cc639cf2862b60728c760cc7a1cfafe2da27c5a02d480ddc244c4426af0db",
+  "manifest": {
+    "formatVersion": 1,
+    "jobId": "10bc0898-0b6c-417b-a09c-50b98520a316",
+    "version": 1,
+    "generation": 0,
+    "originalKey": "610a08a0df1b70ecf12eb1685d530ce5af4f30fcb25ffb0d48b60a3e0f639b0d",
+    "desktop": {
+      "key": "719244a3dc736933a99098369ec4f4e4129324b64edbc9e682a1e8035a8fc663",
+      "triangles": 4842,
+      "drawCalls": 1,
+      "dimensions": [
+        1.9166504740715027,
+        1.0266032257350162,
+        0.6247894167900085
+      ],
+      "textures": [
+        {
+          "width": 1024,
+          "height": 1024,
+          "format": "ktx2"
+        }
+      ]
+    },
+    "provenance": {
+      "texture": "mv-adapter",
+      "researchOnly": true,
+      "sources": [
+        {
+          "name": "RMBG-1.4 (generation pipeline)",
+          "revision": "2ceba5a5efaec153162aedea169f76caf9b46cf8",
+          "license": "BRIA noncommercial"
+        },
+        {
+          "name": "nvdiffrast",
+          "revision": "253ac4fcea7de5f396371124af597e6cc957bfae",
+          "license": "NVIDIA research only"
+        }
+      ]
+    }
+  }
+}

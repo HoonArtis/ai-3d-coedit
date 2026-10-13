@@ -1,0 +1,15 @@
+{
+  "torch": "2.11.0+cu128",
+  "diffusers": "0.40.0",
+  "transformers": "5.16.1",
+  "accelerate": "1.14.0",
+  "peft": "0.18.0",
+  "torchvision": "0.26.0.dev20260213+cu128",
+  "huggingface-hub": "1.29.0",
+  "numpy": "2.4.6",
+  "trimesh": "5.1.1",
+  "omegaconf": "2.4.0",
+  "jaxtyping": "0.3.11",
+  "scikit-image": "0.26.0",
+  "Pillow": "12.0.0"
+}

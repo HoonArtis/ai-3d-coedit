@@ -1,0 +1,960 @@
+{
+  "date": "2026-10-13T19:19:17.655Z",
+  "conditions": "30 real Colyseus connections, 6 rooms, PostgreSQL/Redis, separate Ollama/SDXL/RMBG/TripoSG/MV-Adapter/CPU workers; no model fixtures",
+  "rooms": [
+    {
+      "roomId": "7d1b0ac8-484f-466d-a79c-d919b40e9c3b",
+      "studentCount": 5,
+      "ai": {
+        "requestId": "accept-ai-0",
+        "summary": "내 컬러 블록을 높이 1미터로 이동해 줘.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "move",
+            "id": "student-0",
+            "value": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "result": {
+          "ok": true,
+          "snapshot": {
+            "version": 1,
+            "roomId": "7d1b0ac8-484f-466d-a79c-d919b40e9c3b",
+            "generation": 0,
+            "seq": 6,
+            "objects": {
+              "student-0": {
+                "id": "student-0",
+                "assetId": "cube",
+                "owner": "bbaee11d-c1a0-4956-bf2f-7b34c837d57c",
+                "name": "컬러 블록",
+                "position": [
+                  0,
+                  1,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 6,
+                "lastActor": "bbaee11d-c1a0-4956-bf2f-7b34c837d57c"
+              },
+              "student-4": {
+                "id": "student-4",
+                "assetId": "cube",
+                "owner": "d2573279-3cd1-46cd-b924-3b0d276cd2d1",
+                "name": "컬러 블록",
+                "position": [
+                  8,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 2,
+                "lastActor": "d2573279-3cd1-46cd-b924-3b0d276cd2d1"
+              },
+              "student-1": {
+                "id": "student-1",
+                "assetId": "cube",
+                "owner": "8d2e6a9f-749d-41b2-8cdd-c0b5214f6a50",
+                "name": "컬러 블록",
+                "position": [
+                  2,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 3,
+                "lastActor": "8d2e6a9f-749d-41b2-8cdd-c0b5214f6a50"
+              },
+              "student-2": {
+                "id": "student-2",
+                "assetId": "cube",
+                "owner": "fd24d8ee-f779-4c48-925a-d8f7d52ed06e",
+                "name": "컬러 블록",
+                "position": [
+                  4,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 4,
+                "lastActor": "fd24d8ee-f779-4c48-925a-d8f7d52ed06e"
+              },
+              "student-3": {
+                "id": "student-3",
+                "assetId": "cube",
+                "owner": "ff73a17d-0a7e-42ef-9706-75987779d70d",
+                "name": "컬러 블록",
+                "position": [
+                  6,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 5,
+                "lastActor": "ff73a17d-0a7e-42ef-9706-75987779d70d"
+              }
+            }
+          },
+          "changedIds": [
+            "student-0"
+          ]
+        }
+      },
+      "generation": {
+        "jobId": "de51fc6a-9cf8-4a50-93f5-2b922b70605a",
+        "artifactId": "cf959e7b0d3047d7396406f18fceb67f0260b04fa638f3f3933b3b9acb7e41ac",
+        "usage": {
+          "used": 1,
+          "limit": 3
+        },
+        "seconds": 581.879
+      }
+    },
+    {
+      "roomId": "c55de5ab-abbf-431c-a633-6214cad2ee6e",
+      "studentCount": 5,
+      "ai": {
+        "requestId": "accept-ai-5",
+        "summary": "내 컬러 블록을 높이 1미터로 이동해 줘.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "move",
+            "id": "student-5",
+            "value": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "result": {
+          "ok": true,
+          "snapshot": {
+            "version": 1,
+            "roomId": "c55de5ab-abbf-431c-a633-6214cad2ee6e",
+            "generation": 0,
+            "seq": 6,
+            "objects": {
+              "student-7": {
+                "id": "student-7",
+                "assetId": "cube",
+                "owner": "0d4c27d5-a619-4274-8e97-c9dd379ac766",
+                "name": "컬러 블록",
+                "position": [
+                  4,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 1,
+                "lastActor": "0d4c27d5-a619-4274-8e97-c9dd379ac766"
+              },
+              "student-6": {
+                "id": "student-6",
+                "assetId": "cube",
+                "owner": "0d21d42d-115c-4943-bf58-d73a566026d0",
+                "name": "컬러 블록",
+                "position": [
+                  2,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 2,
+                "lastActor": "0d21d42d-115c-4943-bf58-d73a566026d0"
+              },
+              "student-8": {
+                "id": "student-8",
+                "assetId": "cube",
+                "owner": "53989af0-2d47-4f51-823c-484e3ff9148b",
+                "name": "컬러 블록",
+                "position": [
+                  6,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 3,
+                "lastActor": "53989af0-2d47-4f51-823c-484e3ff9148b"
+              },
+              "student-5": {
+                "id": "student-5",
+                "assetId": "cube",
+                "owner": "43e0b254-2ea2-4612-89e4-ebe354dd2abb",
+                "name": "컬러 블록",
+                "position": [
+                  0,
+                  1,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 6,
+                "lastActor": "43e0b254-2ea2-4612-89e4-ebe354dd2abb"
+              },
+              "student-9": {
+                "id": "student-9",
+                "assetId": "cube",
+                "owner": "9471708f-15c1-4ed7-bdbb-665cb0093eac",
+                "name": "컬러 블록",
+                "position": [
+                  8,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 5,
+                "lastActor": "9471708f-15c1-4ed7-bdbb-665cb0093eac"
+              }
+            }
+          },
+          "changedIds": [
+            "student-5"
+          ]
+        }
+      },
+      "generation": {
+        "jobId": "c2aacae0-c58c-49ac-abb3-0a81a5cfda46",
+        "artifactId": "912f297d8ca3ef902545242b2291b0b44dafb99bb4da63368251b893879c393e",
+        "usage": {
+          "used": 1,
+          "limit": 3
+        },
+        "seconds": 690.307
+      }
+    },
+    {
+      "roomId": "6b79302b-09c2-4e90-bc3f-668b43730e16",
+      "studentCount": 5,
+      "ai": {
+        "requestId": "accept-ai-10",
+        "summary": "내 컬러 블록을 높이 1미터로 이동해 줘.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "move",
+            "id": "student-10",
+            "value": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "result": {
+          "ok": true,
+          "snapshot": {
+            "version": 1,
+            "roomId": "6b79302b-09c2-4e90-bc3f-668b43730e16",
+            "generation": 0,
+            "seq": 6,
+            "objects": {
+              "student-10": {
+                "id": "student-10",
+                "assetId": "cube",
+                "owner": "c6ef7300-f1b3-4afe-8e01-b1a01aeee4f4",
+                "name": "컬러 블록",
+                "position": [
+                  0,
+                  1,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 6,
+                "lastActor": "c6ef7300-f1b3-4afe-8e01-b1a01aeee4f4"
+              },
+              "student-11": {
+                "id": "student-11",
+                "assetId": "cube",
+                "owner": "240d9ee4-148a-466e-aae1-ff38a59cdb0d",
+                "name": "컬러 블록",
+                "position": [
+                  2,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 2,
+                "lastActor": "240d9ee4-148a-466e-aae1-ff38a59cdb0d"
+              },
+              "student-12": {
+                "id": "student-12",
+                "assetId": "cube",
+                "owner": "05dd3a07-d1a7-4aed-bea3-d88f0b9f51cf",
+                "name": "컬러 블록",
+                "position": [
+                  4,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 3,
+                "lastActor": "05dd3a07-d1a7-4aed-bea3-d88f0b9f51cf"
+              },
+              "student-13": {
+                "id": "student-13",
+                "assetId": "cube",
+                "owner": "5e98a267-98e6-4168-a6ab-8c5d75116a32",
+                "name": "컬러 블록",
+                "position": [
+                  6,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 4,
+                "lastActor": "5e98a267-98e6-4168-a6ab-8c5d75116a32"
+              },
+              "student-14": {
+                "id": "student-14",
+                "assetId": "cube",
+                "owner": "62b7e08b-c56e-4bdb-a682-af17a409f0a0",
+                "name": "컬러 블록",
+                "position": [
+                  8,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 5,
+                "lastActor": "62b7e08b-c56e-4bdb-a682-af17a409f0a0"
+              }
+            }
+          },
+          "changedIds": [
+            "student-10"
+          ]
+        }
+      },
+      "explicitFallback": {
+        "reason": "TEXTURE_FAILED",
+        "preset": "wood",
+        "selectedBy": "test student acting through public choosePreset API"
+      },
+      "generation": {
+        "jobId": "63b82796-665c-4ce0-92d6-cf3f00e07e70",
+        "artifactId": "3e7f6e170ddee7d0a010400f2c4ef3b5bd1375c69bffec95ce11a60eaf069c20",
+        "usage": {
+          "used": 1,
+          "limit": 3
+        },
+        "seconds": 1097.217
+      }
+    },
+    {
+      "roomId": "c3f0f7ed-12bb-4a84-af66-139b1641677b",
+      "studentCount": 5,
+      "ai": {
+        "requestId": "accept-ai-15",
+        "summary": "내 컬러 블록을 높이 1미터로 이동해 줘.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "move",
+            "id": "student-15",
+            "value": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "result": {
+          "ok": true,
+          "snapshot": {
+            "version": 1,
+            "roomId": "c3f0f7ed-12bb-4a84-af66-139b1641677b",
+            "generation": 0,
+            "seq": 6,
+            "objects": {
+              "student-15": {
+                "id": "student-15",
+                "assetId": "cube",
+                "owner": "af04d132-8d69-4d70-b9b9-ec1a4f767d10",
+                "name": "컬러 블록",
+                "position": [
+                  0,
+                  1,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 6,
+                "lastActor": "af04d132-8d69-4d70-b9b9-ec1a4f767d10"
+              },
+              "student-16": {
+                "id": "student-16",
+                "assetId": "cube",
+                "owner": "76c650af-3472-4a9a-a82b-7d62689db10c",
+                "name": "컬러 블록",
+                "position": [
+                  2,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 2,
+                "lastActor": "76c650af-3472-4a9a-a82b-7d62689db10c"
+              },
+              "student-17": {
+                "id": "student-17",
+                "assetId": "cube",
+                "owner": "50cd9042-e074-417b-a1b2-7d553f97d6d5",
+                "name": "컬러 블록",
+                "position": [
+                  4,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 3,
+                "lastActor": "50cd9042-e074-417b-a1b2-7d553f97d6d5"
+              },
+              "student-18": {
+                "id": "student-18",
+                "assetId": "cube",
+                "owner": "252abd13-cdbd-4ba1-87e1-ef4af5dd6ac1",
+                "name": "컬러 블록",
+                "position": [
+                  6,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 4,
+                "lastActor": "252abd13-cdbd-4ba1-87e1-ef4af5dd6ac1"
+              },
+              "student-19": {
+                "id": "student-19",
+                "assetId": "cube",
+                "owner": "50988ef4-c78d-483a-b6f3-8d07ecd5fd04",
+                "name": "컬러 블록",
+                "position": [
+                  8,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 5,
+                "lastActor": "50988ef4-c78d-483a-b6f3-8d07ecd5fd04"
+              }
+            }
+          },
+          "changedIds": [
+            "student-15"
+          ]
+        }
+      },
+      "generation": {
+        "jobId": "39126d16-88d6-4a45-a568-d4fc9ca6918e",
+        "artifactId": "d87d490dba9ddf89cdb66ef72cf93e6c59050b183c0c2ee504ca5e9a1fa8500f",
+        "usage": {
+          "used": 1,
+          "limit": 3
+        },
+        "seconds": 1023.561
+      }
+    },
+    {
+      "roomId": "f5bb3467-9d1b-41df-abcc-ab18048a4c26",
+      "studentCount": 5,
+      "ai": {
+        "requestId": "accept-ai-20",
+        "summary": "내 컬러 블록을 높이 1미터로 이동해 줘.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "move",
+            "id": "student-20",
+            "value": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "result": {
+          "ok": true,
+          "snapshot": {
+            "version": 1,
+            "roomId": "f5bb3467-9d1b-41df-abcc-ab18048a4c26",
+            "generation": 0,
+            "seq": 6,
+            "objects": {
+              "student-22": {
+                "id": "student-22",
+                "assetId": "cube",
+                "owner": "2f51b218-c17f-40a1-89cc-f9db0abdaef0",
+                "name": "컬러 블록",
+                "position": [
+                  4,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 1,
+                "lastActor": "2f51b218-c17f-40a1-89cc-f9db0abdaef0"
+              },
+              "student-20": {
+                "id": "student-20",
+                "assetId": "cube",
+                "owner": "d3df63cd-f631-4a60-8ccd-7d36e229841e",
+                "name": "컬러 블록",
+                "position": [
+                  0,
+                  1,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 6,
+                "lastActor": "d3df63cd-f631-4a60-8ccd-7d36e229841e"
+              },
+              "student-21": {
+                "id": "student-21",
+                "assetId": "cube",
+                "owner": "16e92441-fd44-44c0-bf86-c97d07739b03",
+                "name": "컬러 블록",
+                "position": [
+                  2,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 3,
+                "lastActor": "16e92441-fd44-44c0-bf86-c97d07739b03"
+              },
+              "student-23": {
+                "id": "student-23",
+                "assetId": "cube",
+                "owner": "efc8d760-1a19-4dd9-95e7-90125f5f5b14",
+                "name": "컬러 블록",
+                "position": [
+                  6,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 4,
+                "lastActor": "efc8d760-1a19-4dd9-95e7-90125f5f5b14"
+              },
+              "student-24": {
+                "id": "student-24",
+                "assetId": "cube",
+                "owner": "5a862ea5-5afb-400f-80f9-b1ebfe8c1355",
+                "name": "컬러 블록",
+                "position": [
+                  8,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 5,
+                "lastActor": "5a862ea5-5afb-400f-80f9-b1ebfe8c1355"
+              }
+            }
+          },
+          "changedIds": [
+            "student-20"
+          ]
+        }
+      },
+      "generation": {
+        "jobId": "05a76257-9745-48b3-9252-366cdf2251a0",
+        "artifactId": "f5b81b58ed82047a17977dfd8576614cb582d537c2e91f9e082a94d50d85fb89",
+        "usage": {
+          "used": 1,
+          "limit": 3
+        },
+        "seconds": 935.568
+      }
+    },
+    {
+      "roomId": "754912b8-d651-4a88-9596-8d037482db29",
+      "studentCount": 5,
+      "ai": {
+        "requestId": "accept-ai-25",
+        "summary": "내 컬러 블록을 높이 1미터로 이동해 줘.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "move",
+            "id": "student-25",
+            "value": [
+              0,
+              1,
+              0
+            ]
+          }
+        ],
+        "result": {
+          "ok": true,
+          "snapshot": {
+            "version": 1,
+            "roomId": "754912b8-d651-4a88-9596-8d037482db29",
+            "generation": 0,
+            "seq": 6,
+            "objects": {
+              "student-25": {
+                "id": "student-25",
+                "assetId": "cube",
+                "owner": "cddf9919-b443-4250-903c-7142deca18d9",
+                "name": "컬러 블록",
+                "position": [
+                  0,
+                  1,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 6,
+                "lastActor": "cddf9919-b443-4250-903c-7142deca18d9"
+              },
+              "student-27": {
+                "id": "student-27",
+                "assetId": "cube",
+                "owner": "84bd9e81-395e-45d2-80e0-ffcb2600b250",
+                "name": "컬러 블록",
+                "position": [
+                  4,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 2,
+                "lastActor": "84bd9e81-395e-45d2-80e0-ffcb2600b250"
+              },
+              "student-28": {
+                "id": "student-28",
+                "assetId": "cube",
+                "owner": "477ef970-e1b9-40e5-8a88-114e753bd673",
+                "name": "컬러 블록",
+                "position": [
+                  6,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 3,
+                "lastActor": "477ef970-e1b9-40e5-8a88-114e753bd673"
+              },
+              "student-26": {
+                "id": "student-26",
+                "assetId": "cube",
+                "owner": "4bba8dee-f2da-44a9-af4b-e30ef4cbc4e5",
+                "name": "컬러 블록",
+                "position": [
+                  2,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 4,
+                "lastActor": "4bba8dee-f2da-44a9-af4b-e30ef4cbc4e5"
+              },
+              "student-29": {
+                "id": "student-29",
+                "assetId": "cube",
+                "owner": "341ae1ff-dc3b-49e5-aa63-b890a2ba4d47",
+                "name": "컬러 블록",
+                "position": [
+                  8,
+                  0,
+                  0
+                ],
+                "rotation": [
+                  0,
+                  0,
+                  0
+                ],
+                "scale": [
+                  1,
+                  1,
+                  1
+                ],
+                "revision": 5,
+                "lastActor": "341ae1ff-dc3b-49e5-aa63-b890a2ba4d47"
+              }
+            }
+          },
+          "changedIds": [
+            "student-25"
+          ]
+        }
+      },
+      "generation": {
+        "jobId": "81156ce8-b343-40fc-a828-d6b5182a57f2",
+        "artifactId": "1ad6fe1206bf43a8525afb46c1e871b08eff98162c922ced013451129e3c2ceb",
+        "usage": {
+          "used": 1,
+          "limit": 3
+        },
+        "seconds": 817.12
+      }
+    }
+  ],
+  "connections": 30
+}

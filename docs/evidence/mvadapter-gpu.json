@@ -1,0 +1,14 @@
+{
+  "model": "huanngzh/mv-adapter",
+  "revision": "6de4033df6b53366f3c009d22f5ec434bb55e59f",
+  "codeRevision": "4277e0018232bac82bb2c103caf0893cedb711be",
+  "mode": "research-only-nvdiffrast",
+  "completion": "OpenCV CPU Telea UV padding; official mesh preprocessing; no neural upscaler/inpainter",
+  "resolution": 512,
+  "uvSize": 4096,
+  "steps": 30,
+  "seed": 42,
+  "seconds": 88.294,
+  "peakAllocatedMiB": 10001.8,
+  "peakReservedMiB": 11584.0
+}

@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-13T14:27:46.758Z",
+  "scope": "real queued background + MV texture + CPU optimization; uses previously generated actual shape/image",
+  "seconds": 101.945,
+  "phases": [
+    "texture_queued",
+    "optimize_queued",
+    "pending_approval"
+  ],
+  "usage": {
+    "used": 1,
+    "limit": 3
+  },
+  "artifactId": "6ed6ec52a44894b74767b3a2ceef7ac1599fe32fb6981017a8c820ac7f4167bf",
+  "manifest": {
+    "formatVersion": 1,
+    "jobId": "46c30fef-4066-4100-8258-ed3797a389e6",
+    "version": 1,
+    "generation": 0,
+    "originalKey": "eb0680cea917ebb3041794cf62c1fb029fec084ccb14b984df38f6394a3ff3ff",
+    "desktop": {
+      "key": "233d4c475d74c8eaf3313017b6d6eab1f48adf270316759126941678ba825955",
+      "triangles": 4842,
+      "drawCalls": 1,
+      "dimensions": [
+        1.9089418053627014,
+        1.021827919408679,
+        0.6167165040969849
+      ],
+      "textures": [
+        {
+          "width": 1024,
+          "height": 1024,
+          "format": "ktx2"
+        }
+      ]
+    },
+    "provenance": {
+      "texture": "mv-adapter",
+      "researchOnly": true,
+      "sources": [
+        {
+          "name": "RMBG-1.4 (generation pipeline)",
+          "revision": "2ceba5a5efaec153162aedea169f76caf9b46cf8",
+          "license": "BRIA noncommercial"
+        },
+        {
+          "name": "nvdiffrast",
+          "revision": "253ac4fcea7de5f396371124af597e6cc957bfae",
+          "license": "NVIDIA research only"
+        }
+      ]
+    }
+  }
+}

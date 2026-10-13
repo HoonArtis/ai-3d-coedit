@@ -1,0 +1,26 @@
+node_modules/
+dist/
+test-results/
+playwright-report/
+.superpowers/
+.worktrees/
+.env
+__pycache__/
+.cache/
+.venv/
+*.pyc
+apps/web/public/basis/
+
+# Runtime uploads and immutable generated artifacts; never source-control student data.
+.data/
+
+# Private machine configuration, credentials and backups.
+.env.*
+!.env.example
+.secrets/
+backups/
+*.pem
+*.key
+*.pfx
+*.p12
+*.dump

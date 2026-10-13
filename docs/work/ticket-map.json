@@ -1,0 +1,1477 @@
+[
+  {
+    "id": "CORE-01-01",
+    "parent": "CORE-01",
+    "task": "T01",
+    "title": "개발·테스트 실행 환경",
+    "deps": [
+      "LIC-01-03"
+    ]
+  },
+  {
+    "id": "CORE-01-02",
+    "parent": "CORE-01",
+    "task": "T01",
+    "title": "명령 봉투·세션 컨텍스트 계약",
+    "deps": [
+      "LIC-01-03",
+      "CORE-01-01"
+    ]
+  },
+  {
+    "id": "CORE-01-03",
+    "parent": "CORE-01",
+    "task": "T01",
+    "title": "op별 인자 검증 계약",
+    "deps": [
+      "LIC-01-03",
+      "CORE-01-02"
+    ]
+  },
+  {
+    "id": "CORE-01-04",
+    "parent": "CORE-01",
+    "task": "T01",
+    "title": "씬·응답·이벤트·transport 계약",
+    "deps": [
+      "LIC-01-03",
+      "CORE-01-03"
+    ]
+  },
+  {
+    "id": "CORE-02-01",
+    "parent": "CORE-02",
+    "task": "T01",
+    "title": "생성·복제의 소유권 상태 전이",
+    "deps": [
+      "CORE-01-04",
+      "PERF-01-01"
+    ]
+  },
+  {
+    "id": "CORE-02-02",
+    "parent": "CORE-02",
+    "task": "T01",
+    "title": "변형 명령의 순수 상태 전이",
+    "deps": [
+      "CORE-01-04",
+      "PERF-01-01",
+      "CORE-02-01"
+    ]
+  },
+  {
+    "id": "CORE-02-03",
+    "parent": "CORE-02",
+    "task": "T01",
+    "title": "삭제·이름 변경·조회 처리",
+    "deps": [
+      "CORE-01-04",
+      "PERF-01-01",
+      "CORE-02-02"
+    ]
+  },
+  {
+    "id": "CORE-02-04",
+    "parent": "CORE-02",
+    "task": "T01",
+    "title": "여러 op의 원자 상태 계산",
+    "deps": [
+      "CORE-01-04",
+      "PERF-01-01",
+      "CORE-02-03"
+    ]
+  },
+  {
+    "id": "CORE-03-01",
+    "parent": "CORE-03",
+    "task": "T01",
+    "title": "패키지 공개 경계 검사",
+    "deps": [
+      "CORE-01-04"
+    ]
+  },
+  {
+    "id": "CORE-03-02",
+    "parent": "CORE-03",
+    "task": "T01",
+    "title": "순환 의존 검사",
+    "deps": [
+      "CORE-01-04",
+      "CORE-03-01"
+    ]
+  },
+  {
+    "id": "CORE-03-03",
+    "parent": "CORE-03",
+    "task": "T01",
+    "title": "검증 명령과 완료 절차 연결",
+    "deps": [
+      "CORE-01-04",
+      "CORE-03-02"
+    ]
+  },
+  {
+    "id": "ED-01-01",
+    "parent": "ED-01",
+    "task": "T02",
+    "title": "빈 템플릿·그리드·패널 화면",
+    "deps": [
+      "CORE-01-04"
+    ]
+  },
+  {
+    "id": "ED-01-02",
+    "parent": "ED-01",
+    "task": "T02",
+    "title": "마우스 카메라 조작",
+    "deps": [
+      "CORE-01-04",
+      "ED-01-01"
+    ]
+  },
+  {
+    "id": "ED-01-03",
+    "parent": "ED-01",
+    "task": "T02",
+    "title": "개인 카메라 명령",
+    "deps": [
+      "CORE-01-04",
+      "ED-01-02"
+    ]
+  },
+  {
+    "id": "ED-02-01",
+    "parent": "ED-02",
+    "task": "T02",
+    "title": "라이브러리 드래그 배치",
+    "deps": [
+      "ED-01-03",
+      "CORE-02-04"
+    ]
+  },
+  {
+    "id": "ED-02-02",
+    "parent": "ED-02",
+    "task": "T02",
+    "title": "이동 기즈모",
+    "deps": [
+      "ED-01-03",
+      "CORE-02-04",
+      "ED-02-01"
+    ]
+  },
+  {
+    "id": "ED-02-03",
+    "parent": "ED-02",
+    "task": "T02",
+    "title": "회전 기즈모",
+    "deps": [
+      "ED-01-03",
+      "CORE-02-04",
+      "ED-02-02"
+    ]
+  },
+  {
+    "id": "ED-02-04",
+    "parent": "ED-02",
+    "task": "T02",
+    "title": "크기 기즈모",
+    "deps": [
+      "ED-01-03",
+      "CORE-02-04",
+      "ED-02-03"
+    ]
+  },
+  {
+    "id": "ED-02-05",
+    "parent": "ED-02",
+    "task": "T02",
+    "title": "속성 숫자 입력 동기화",
+    "deps": [
+      "ED-01-03",
+      "CORE-02-04",
+      "ED-02-04"
+    ]
+  },
+  {
+    "id": "ED-02-06",
+    "parent": "ED-02",
+    "task": "T02",
+    "title": "복제·삭제·이름 메뉴",
+    "deps": [
+      "ED-01-03",
+      "CORE-02-04",
+      "ED-02-05"
+    ]
+  },
+  {
+    "id": "ED-02-07",
+    "parent": "ED-02",
+    "task": "T02",
+    "title": "바닥 스냅 조작",
+    "deps": [
+      "ED-01-03",
+      "CORE-02-04",
+      "ED-02-06",
+      "AI-01-01"
+    ]
+  },
+  {
+    "id": "ED-03-01",
+    "parent": "ED-03",
+    "task": "T02",
+    "title": "네트워크 transport와 5창 반영",
+    "deps": [
+      "ED-02-07",
+      "ROOM-02-04",
+      "ROOM-03-04",
+      "ROOM-04-04"
+    ]
+  },
+  {
+    "id": "ED-03-02",
+    "parent": "ED-03",
+    "task": "T02",
+    "title": "선택 잠금과 색 테두리",
+    "deps": [
+      "ED-02-07",
+      "ROOM-02-04",
+      "ROOM-03-04",
+      "ROOM-04-04",
+      "ED-03-01"
+    ]
+  },
+  {
+    "id": "ED-03-03",
+    "parent": "ED-03",
+    "task": "T02",
+    "title": "강제 해제 시 드래그 취소",
+    "deps": [
+      "ED-02-07",
+      "ROOM-02-04",
+      "ROOM-03-04",
+      "ROOM-04-04",
+      "ED-03-02"
+    ]
+  },
+  {
+    "id": "ED-03-04",
+    "parent": "ED-03",
+    "task": "T02",
+    "title": "개인 undo/redo UI",
+    "deps": [
+      "ED-02-07",
+      "ROOM-02-04",
+      "ROOM-03-04",
+      "ROOM-04-04",
+      "ED-03-03"
+    ]
+  },
+  {
+    "id": "ED-04-01",
+    "parent": "ED-04",
+    "task": "T02",
+    "title": "개인 대화와 실행 요약 패널",
+    "deps": [
+      "ED-03-04",
+      "AI-03-04",
+      "GEN-02-04"
+    ]
+  },
+  {
+    "id": "ED-04-02",
+    "parent": "ED-04",
+    "task": "T02",
+    "title": "LLM 대기 순번 표시",
+    "deps": [
+      "ED-03-04",
+      "AI-03-04",
+      "GEN-02-04",
+      "ED-04-01"
+    ]
+  },
+  {
+    "id": "ED-04-03",
+    "parent": "ED-04",
+    "task": "T02",
+    "title": "이미지 확인·다시 그리기 UI",
+    "deps": [
+      "ED-03-04",
+      "AI-03-04",
+      "GEN-02-04",
+      "ED-04-02"
+    ]
+  },
+  {
+    "id": "ED-04-04",
+    "parent": "ED-04",
+    "task": "T02",
+    "title": "3D 생성 단계·횟수·오류 표시",
+    "deps": [
+      "ED-03-04",
+      "AI-03-04",
+      "GEN-02-04",
+      "ED-04-03"
+    ]
+  },
+  {
+    "id": "ED-05-01",
+    "parent": "ED-05",
+    "task": "T02",
+    "title": "복원된 씬의 선택 정리",
+    "deps": [
+      "ED-03-04",
+      "ROOM-06-05"
+    ]
+  },
+  {
+    "id": "ED-05-02",
+    "parent": "ED-05",
+    "task": "T02",
+    "title": "복원된 씬의 포커스 정리",
+    "deps": [
+      "ED-03-04",
+      "ROOM-06-05",
+      "ED-05-01"
+    ]
+  },
+  {
+    "id": "ROOM-01-01",
+    "parent": "ROOM-01",
+    "task": "T03",
+    "title": "동기화 후보 요구사항 비교",
+    "deps": [
+      "CORE-01-04"
+    ]
+  },
+  {
+    "id": "ROOM-01-02",
+    "parent": "ROOM-01",
+    "task": "T03",
+    "title": "방 adapter 최소 재현",
+    "deps": [
+      "CORE-01-04",
+      "ROOM-01-01"
+    ]
+  },
+  {
+    "id": "ROOM-01-03",
+    "parent": "ROOM-01",
+    "task": "T03",
+    "title": "서버 선정 근거·계약 확정",
+    "deps": [
+      "CORE-01-04",
+      "ROOM-01-02"
+    ]
+  },
+  {
+    "id": "ROOM-02-01",
+    "parent": "ROOM-02",
+    "task": "T03",
+    "title": "수업·방 입장과 정원",
+    "deps": [
+      "ROOM-01-03",
+      "CORE-02-04"
+    ]
+  },
+  {
+    "id": "ROOM-02-02",
+    "parent": "ROOM-02",
+    "task": "T03",
+    "title": "인증 주체 명령 접수",
+    "deps": [
+      "ROOM-01-03",
+      "CORE-02-04",
+      "ROOM-02-01"
+    ]
+  },
+  {
+    "id": "ROOM-02-03",
+    "parent": "ROOM-02",
+    "task": "T03",
+    "title": "요청 ID 중복 방지",
+    "deps": [
+      "ROOM-01-03",
+      "CORE-02-04",
+      "ROOM-02-02"
+    ]
+  },
+  {
+    "id": "ROOM-02-04",
+    "parent": "ROOM-02",
+    "task": "T03",
+    "title": "서버 순번·방송·재접속",
+    "deps": [
+      "ROOM-01-03",
+      "CORE-02-04",
+      "ROOM-02-03"
+    ]
+  },
+  {
+    "id": "ROOM-03-01",
+    "parent": "ROOM-03",
+    "task": "T03",
+    "title": "단일 객체 잠금 획득·해제",
+    "deps": [
+      "ROOM-02-04"
+    ]
+  },
+  {
+    "id": "ROOM-03-02",
+    "parent": "ROOM-03",
+    "task": "T03",
+    "title": "여러 대상 잠금 원자 획득",
+    "deps": [
+      "ROOM-02-04",
+      "ROOM-03-01"
+    ]
+  },
+  {
+    "id": "ROOM-03-03",
+    "parent": "ROOM-03",
+    "task": "T03",
+    "title": "단절·하트비트 잠금 회수",
+    "deps": [
+      "ROOM-02-04",
+      "ROOM-03-02"
+    ]
+  },
+  {
+    "id": "ROOM-03-04",
+    "parent": "ROOM-03",
+    "task": "T03",
+    "title": "강제 해제·낡은 쓰기 거부",
+    "deps": [
+      "ROOM-02-04",
+      "ROOM-03-03"
+    ]
+  },
+  {
+    "id": "ROOM-04-01",
+    "parent": "ROOM-04",
+    "task": "T03",
+    "title": "트랜잭션 확정과 요청 단위 이력",
+    "deps": [
+      "ROOM-03-04"
+    ]
+  },
+  {
+    "id": "ROOM-04-02",
+    "parent": "ROOM-04",
+    "task": "T03",
+    "title": "개인 undo 권한·역명령",
+    "deps": [
+      "ROOM-03-04",
+      "ROOM-04-01"
+    ]
+  },
+  {
+    "id": "ROOM-04-03",
+    "parent": "ROOM-04",
+    "task": "T03",
+    "title": "개인 redo와 분기 무효화",
+    "deps": [
+      "ROOM-03-04",
+      "ROOM-04-02"
+    ]
+  },
+  {
+    "id": "ROOM-04-04",
+    "parent": "ROOM-04",
+    "task": "T03",
+    "title": "드래그 프리뷰와 이력 분리",
+    "deps": [
+      "ROOM-03-04",
+      "ROOM-04-03"
+    ]
+  },
+  {
+    "id": "ROOM-05-01",
+    "parent": "ROOM-05",
+    "task": "T03",
+    "title": "방 저장 스키마·repository 계약",
+    "deps": [
+      "ROOM-04-04"
+    ]
+  },
+  {
+    "id": "ROOM-05-02",
+    "parent": "ROOM-05",
+    "task": "T03",
+    "title": "내구 커밋과 성공 방송 순서",
+    "deps": [
+      "ROOM-04-04",
+      "ROOM-05-01"
+    ]
+  },
+  {
+    "id": "ROOM-05-03",
+    "parent": "ROOM-05",
+    "task": "T03",
+    "title": "서버 재시작 복구",
+    "deps": [
+      "ROOM-04-04",
+      "ROOM-05-02"
+    ]
+  },
+  {
+    "id": "ROOM-05-04",
+    "parent": "ROOM-05",
+    "task": "T03",
+    "title": "저장 직후 크래시·재전송",
+    "deps": [
+      "ROOM-04-04",
+      "ROOM-05-03"
+    ]
+  },
+  {
+    "id": "ROOM-05-05",
+    "parent": "ROOM-05",
+    "task": "T03",
+    "title": "제출 스냅샷 저장",
+    "deps": [
+      "ROOM-04-04",
+      "ROOM-05-04"
+    ]
+  },
+  {
+    "id": "ROOM-06-01",
+    "parent": "ROOM-06",
+    "task": "T03",
+    "title": "에셋 이력 조회",
+    "deps": [
+      "ROOM-05-05"
+    ]
+  },
+  {
+    "id": "ROOM-06-02",
+    "parent": "ROOM-06",
+    "task": "T03",
+    "title": "에셋 단위 복원",
+    "deps": [
+      "ROOM-05-05",
+      "ROOM-06-01"
+    ]
+  },
+  {
+    "id": "ROOM-06-03",
+    "parent": "ROOM-06",
+    "task": "T03",
+    "title": "방 스냅샷 복원·세대 증가",
+    "deps": [
+      "ROOM-05-05",
+      "ROOM-06-02"
+    ]
+  },
+  {
+    "id": "ROOM-06-04",
+    "parent": "ROOM-06",
+    "task": "T03",
+    "title": "복원 후 undo/redo 무효화",
+    "deps": [
+      "ROOM-05-05",
+      "ROOM-06-03"
+    ]
+  },
+  {
+    "id": "ROOM-06-05",
+    "parent": "ROOM-06",
+    "task": "T03",
+    "title": "요청 단위 복원 알림",
+    "deps": [
+      "ROOM-05-05",
+      "ROOM-06-04"
+    ]
+  },
+  {
+    "id": "AI-01-01",
+    "parent": "AI-01",
+    "task": "T04",
+    "title": "바닥·겹침 계산",
+    "deps": [
+      "CORE-02-04"
+    ]
+  },
+  {
+    "id": "AI-01-02",
+    "parent": "AI-01",
+    "task": "T04",
+    "title": "원형 자동 배치",
+    "deps": [
+      "CORE-02-04",
+      "AI-01-01"
+    ]
+  },
+  {
+    "id": "AI-01-03",
+    "parent": "AI-01",
+    "task": "T04",
+    "title": "행 정렬·균등 분배",
+    "deps": [
+      "CORE-02-04",
+      "AI-01-02"
+    ]
+  },
+  {
+    "id": "AI-01-04",
+    "parent": "AI-01",
+    "task": "T04",
+    "title": "시드 기반 흩뿌리기",
+    "deps": [
+      "CORE-02-04",
+      "AI-01-03"
+    ]
+  },
+  {
+    "id": "AI-01-05",
+    "parent": "AI-01",
+    "task": "T04",
+    "title": "위에 놓기·방향 맞추기",
+    "deps": [
+      "CORE-02-04",
+      "AI-01-04"
+    ]
+  },
+  {
+    "id": "AI-02-01",
+    "parent": "AI-02",
+    "task": "T04",
+    "title": "op 기반 도구 정의",
+    "deps": [
+      "AI-01-05",
+      "LIC-02-03"
+    ]
+  },
+  {
+    "id": "AI-02-02",
+    "parent": "AI-02",
+    "task": "T04",
+    "title": "학생 MD 시스템 프롬프트",
+    "deps": [
+      "AI-01-05",
+      "LIC-02-03",
+      "AI-02-01"
+    ]
+  },
+  {
+    "id": "AI-02-03",
+    "parent": "AI-02",
+    "task": "T04",
+    "title": "로컬·클라우드 모델 adapter",
+    "deps": [
+      "AI-01-05",
+      "LIC-02-03",
+      "AI-02-02"
+    ]
+  },
+  {
+    "id": "AI-02-04",
+    "parent": "AI-02",
+    "task": "T04",
+    "title": "20문항 모델 평가·선정",
+    "deps": [
+      "AI-01-05",
+      "LIC-02-03",
+      "AI-02-03"
+    ]
+  },
+  {
+    "id": "AI-03-01",
+    "parent": "AI-03",
+    "task": "T04",
+    "title": "학생별 대화 세션",
+    "deps": [
+      "AI-02-04",
+      "ROOM-04-04",
+      "GEN-01-04",
+      "ACC-01-05"
+    ]
+  },
+  {
+    "id": "AI-03-02",
+    "parent": "AI-03",
+    "task": "T04",
+    "title": "LLM 큐·대기 순번",
+    "deps": [
+      "AI-02-04",
+      "ROOM-04-04",
+      "GEN-01-04",
+      "ACC-01-05",
+      "AI-03-01"
+    ]
+  },
+  {
+    "id": "AI-03-03",
+    "parent": "AI-03",
+    "task": "T04",
+    "title": "도구 결과를 단일 명령으로 실행",
+    "deps": [
+      "AI-02-04",
+      "ROOM-04-04",
+      "GEN-01-04",
+      "ACC-01-05",
+      "AI-03-02"
+    ]
+  },
+  {
+    "id": "AI-03-04",
+    "parent": "AI-03",
+    "task": "T04",
+    "title": "대화·명령 결과 로그 저장",
+    "deps": [
+      "AI-02-04",
+      "ROOM-04-04",
+      "GEN-01-04",
+      "ACC-01-05",
+      "AI-03-03"
+    ]
+  },
+  {
+    "id": "GEN-01-01",
+    "parent": "GEN-01",
+    "task": "T05",
+    "title": "단계별 작업 등록·중복 방지",
+    "deps": [
+      "CORE-01-04",
+      "LIC-01-03"
+    ]
+  },
+  {
+    "id": "GEN-01-02",
+    "parent": "GEN-01",
+    "task": "T05",
+    "title": "GPU 직렬 처리·LLM 별도 제한",
+    "deps": [
+      "CORE-01-04",
+      "LIC-01-03",
+      "GEN-01-01"
+    ]
+  },
+  {
+    "id": "GEN-01-03",
+    "parent": "GEN-01",
+    "task": "T05",
+    "title": "단계 상태·대기 순번 이벤트",
+    "deps": [
+      "CORE-01-04",
+      "LIC-01-03",
+      "GEN-01-02"
+    ]
+  },
+  {
+    "id": "GEN-01-04",
+    "parent": "GEN-01",
+    "task": "T05",
+    "title": "실패·타임아웃·재시도 회수",
+    "deps": [
+      "CORE-01-04",
+      "LIC-01-03",
+      "GEN-01-03"
+    ]
+  },
+  {
+    "id": "GEN-02-01",
+    "parent": "GEN-02",
+    "task": "T05",
+    "title": "글 이미지 생성·그림 반입",
+    "deps": [
+      "GEN-01-04",
+      "ACC-01-05",
+      "LIC-02-03"
+    ]
+  },
+  {
+    "id": "GEN-02-02",
+    "parent": "GEN-02",
+    "task": "T05",
+    "title": "부적절 입력 필터",
+    "deps": [
+      "GEN-01-04",
+      "ACC-01-05",
+      "LIC-02-03",
+      "GEN-02-01"
+    ]
+  },
+  {
+    "id": "GEN-02-03",
+    "parent": "GEN-02",
+    "task": "T05",
+    "title": "수업별 생성 횟수 적용",
+    "deps": [
+      "GEN-01-04",
+      "ACC-01-05",
+      "LIC-02-03",
+      "GEN-02-02"
+    ]
+  },
+  {
+    "id": "GEN-02-04",
+    "parent": "GEN-02",
+    "task": "T05",
+    "title": "이미지 확인 버전과 재생성",
+    "deps": [
+      "GEN-01-04",
+      "ACC-01-05",
+      "LIC-02-03",
+      "GEN-02-03"
+    ]
+  },
+  {
+    "id": "GEN-03-01",
+    "parent": "GEN-03",
+    "task": "T05",
+    "title": "배경 제거 adapter",
+    "deps": [
+      "GEN-02-04",
+      "LIC-02-03"
+    ]
+  },
+  {
+    "id": "GEN-03-02",
+    "parent": "GEN-03",
+    "task": "T05",
+    "title": "TripoSG 형상 실행",
+    "deps": [
+      "GEN-02-04",
+      "LIC-02-03",
+      "GEN-03-01"
+    ]
+  },
+  {
+    "id": "GEN-03-03",
+    "parent": "GEN-03",
+    "task": "T05",
+    "title": "형상 GPU 실행·오류 실측",
+    "deps": [
+      "GEN-02-04",
+      "LIC-02-03",
+      "GEN-03-02"
+    ]
+  },
+  {
+    "id": "GEN-04-01",
+    "parent": "GEN-04",
+    "task": "T05",
+    "title": "MV-Adapter 텍스처 실행",
+    "deps": [
+      "GEN-03-03"
+    ]
+  },
+  {
+    "id": "GEN-04-02",
+    "parent": "GEN-04",
+    "task": "T05",
+    "title": "retexture 작업 연결",
+    "deps": [
+      "GEN-03-03",
+      "GEN-04-01"
+    ]
+  },
+  {
+    "id": "GEN-04-03",
+    "parent": "GEN-04",
+    "task": "T05",
+    "title": "재질 프리셋 차선책",
+    "deps": [
+      "GEN-03-03",
+      "GEN-04-02"
+    ]
+  },
+  {
+    "id": "GEN-05-01",
+    "parent": "GEN-05",
+    "task": "T05",
+    "title": "데스크톱 메시 감량",
+    "deps": [
+      "GEN-03-03",
+      "PERF-01-01"
+    ]
+  },
+  {
+    "id": "GEN-05-02",
+    "parent": "GEN-05",
+    "task": "T05",
+    "title": "1024 KTX2 변환",
+    "deps": [
+      "GEN-03-03",
+      "GEN-05-01",
+      "PERF-01-01"
+    ]
+  },
+  {
+    "id": "GEN-05-03",
+    "parent": "GEN-05",
+    "task": "T05",
+    "title": "산출물 저장·manifest 등록",
+    "deps": [
+      "GEN-03-03",
+      "GEN-05-02",
+      "PERF-01-01"
+    ]
+  },
+  {
+    "id": "GEN-05-04",
+    "parent": "GEN-05",
+    "task": "T05",
+    "title": "승인 대기·세대 검증",
+    "deps": [
+      "GEN-03-03",
+      "GEN-05-03",
+      "PERF-01-01"
+    ]
+  },
+  {
+    "id": "GEN-06-01",
+    "parent": "GEN-06",
+    "task": "T05",
+    "title": "캐릭터 업로드 검증·FBX 변환",
+    "deps": [
+      "GEN-05-04",
+      "VR-02-05"
+    ]
+  },
+  {
+    "id": "GEN-06-02",
+    "parent": "GEN-06",
+    "task": "T05",
+    "title": "리깅·애니메이션 보존·감량",
+    "deps": [
+      "GEN-05-04",
+      "VR-02-05",
+      "GEN-06-01"
+    ]
+  },
+  {
+    "id": "GEN-06-03",
+    "parent": "GEN-06",
+    "task": "T05",
+    "title": "맵 대기 애니메이션",
+    "deps": [
+      "GEN-05-04",
+      "VR-02-05",
+      "GEN-06-02"
+    ]
+  },
+  {
+    "id": "GEN-06-04",
+    "parent": "GEN-06",
+    "task": "T05",
+    "title": "VR 캐릭터 연결·기본 대체",
+    "deps": [
+      "GEN-05-04",
+      "VR-02-05",
+      "GEN-06-03"
+    ]
+  },
+  {
+    "id": "ACC-01-01",
+    "parent": "ACC-01",
+    "task": "T06",
+    "title": "강사 인증·세션 권한",
+    "deps": [
+      "ROOM-02-04"
+    ]
+  },
+  {
+    "id": "ACC-01-02",
+    "parent": "ACC-01",
+    "task": "T06",
+    "title": "수업·방 생성",
+    "deps": [
+      "ROOM-02-04",
+      "ACC-01-01"
+    ]
+  },
+  {
+    "id": "ACC-01-03",
+    "parent": "ACC-01",
+    "task": "T06",
+    "title": "학생 계정 일괄 발급",
+    "deps": [
+      "ROOM-02-04",
+      "ACC-01-02"
+    ]
+  },
+  {
+    "id": "ACC-01-04",
+    "parent": "ACC-01",
+    "task": "T06",
+    "title": "방 코드·학생 ID 입장",
+    "deps": [
+      "ROOM-02-04",
+      "ACC-01-03"
+    ]
+  },
+  {
+    "id": "ACC-01-05",
+    "parent": "ACC-01",
+    "task": "T06",
+    "title": "작품 계정 귀속·재입장",
+    "deps": [
+      "ROOM-02-04",
+      "ACC-01-04"
+    ]
+  },
+  {
+    "id": "ACC-02-01",
+    "parent": "ACC-02",
+    "task": "T06",
+    "title": "조별 방 목록·썸네일",
+    "deps": [
+      "ACC-01-05",
+      "ROOM-05-05"
+    ]
+  },
+  {
+    "id": "ACC-02-02",
+    "parent": "ACC-02",
+    "task": "T06",
+    "title": "대시보드에서 강사 입장",
+    "deps": [
+      "ACC-01-05",
+      "ROOM-05-05",
+      "ACC-02-01"
+    ]
+  },
+  {
+    "id": "ACC-02-03",
+    "parent": "ACC-02",
+    "task": "T06",
+    "title": "학생 생성 한도 설정",
+    "deps": [
+      "ACC-01-05",
+      "ROOM-05-05",
+      "ACC-02-02"
+    ]
+  },
+  {
+    "id": "ACC-03-01",
+    "parent": "ACC-03",
+    "task": "T06",
+    "title": "승인·거절 서버 판정",
+    "deps": [
+      "ACC-01-05",
+      "GEN-05-04"
+    ]
+  },
+  {
+    "id": "ACC-03-02",
+    "parent": "ACC-03",
+    "task": "T06",
+    "title": "미승인 산출물 접근 제한",
+    "deps": [
+      "ACC-01-05",
+      "GEN-05-04",
+      "ACC-03-01"
+    ]
+  },
+  {
+    "id": "ACC-03-03",
+    "parent": "ACC-03",
+    "task": "T06",
+    "title": "승인함 UI와 배치 연결",
+    "deps": [
+      "ACC-01-05",
+      "GEN-05-04",
+      "ACC-03-02"
+    ]
+  },
+  {
+    "id": "ACC-04-01",
+    "parent": "ACC-04",
+    "task": "T06",
+    "title": "학생별 로그 조회 권한·페이지",
+    "deps": [
+      "ACC-02-03",
+      "AI-03-04"
+    ]
+  },
+  {
+    "id": "ACC-04-02",
+    "parent": "ACC-04",
+    "task": "T06",
+    "title": "로그 열람 UI",
+    "deps": [
+      "ACC-02-03",
+      "AI-03-04",
+      "ACC-04-01"
+    ]
+  },
+  {
+    "id": "ACC-05-01",
+    "parent": "ACC-05",
+    "task": "T06",
+    "title": "에셋 이력 선택 UI",
+    "deps": [
+      "ACC-02-03",
+      "ROOM-06-05",
+      "ED-05-02"
+    ]
+  },
+  {
+    "id": "ACC-05-02",
+    "parent": "ACC-05",
+    "task": "T06",
+    "title": "에셋 복원 실행 UI",
+    "deps": [
+      "ACC-02-03",
+      "ROOM-06-05",
+      "ED-05-02",
+      "ACC-05-01"
+    ]
+  },
+  {
+    "id": "ACC-05-03",
+    "parent": "ACC-05",
+    "task": "T06",
+    "title": "방 스냅샷 복원 UI",
+    "deps": [
+      "ACC-02-03",
+      "ROOM-06-05",
+      "ED-05-02",
+      "ACC-05-02"
+    ]
+  },
+  {
+    "id": "VR-01-01",
+    "parent": "VR-01",
+    "task": "T07",
+    "title": "스냅샷 굽기 작업 등록",
+    "deps": [
+      "GEN-05-04",
+      "ROOM-05-05",
+      "PERF-01-01"
+    ]
+  },
+  {
+    "id": "VR-01-02",
+    "parent": "VR-01",
+    "task": "T07",
+    "title": "VR LOD 감량",
+    "deps": [
+      "GEN-05-04",
+      "ROOM-05-05",
+      "VR-01-01",
+      "PERF-01-01"
+    ]
+  },
+  {
+    "id": "VR-01-03",
+    "parent": "VR-01",
+    "task": "T07",
+    "title": "아틀라스·정적 병합·KTX2",
+    "deps": [
+      "GEN-05-04",
+      "ROOM-05-05",
+      "VR-01-02",
+      "PERF-01-01"
+    ]
+  },
+  {
+    "id": "VR-01-04",
+    "parent": "VR-01",
+    "task": "T07",
+    "title": "VR 산출물 공개",
+    "deps": [
+      "GEN-05-04",
+      "ROOM-05-05",
+      "VR-01-03",
+      "PERF-01-01"
+    ]
+  },
+  {
+    "id": "VR-02-01",
+    "parent": "VR-02",
+    "task": "T07",
+    "title": "HTTPS·사용자 동작 VR 진입",
+    "deps": [
+      "VR-01-04",
+      "ACC-01-05",
+      "LIC-02-03"
+    ]
+  },
+  {
+    "id": "VR-02-02",
+    "parent": "VR-02",
+    "task": "T07",
+    "title": "읽기 전용 스냅샷 뷰어",
+    "deps": [
+      "VR-01-04",
+      "ACC-01-05",
+      "LIC-02-03",
+      "VR-02-01"
+    ]
+  },
+  {
+    "id": "VR-02-03",
+    "parent": "VR-02",
+    "task": "T07",
+    "title": "텔레포트 이동",
+    "deps": [
+      "VR-01-04",
+      "ACC-01-05",
+      "LIC-02-03",
+      "VR-02-02"
+    ]
+  },
+  {
+    "id": "VR-02-04",
+    "parent": "VR-02",
+    "task": "T07",
+    "title": "감상 방 정원·포즈 동기화",
+    "deps": [
+      "VR-01-04",
+      "ACC-01-05",
+      "LIC-02-03",
+      "VR-02-03"
+    ]
+  },
+  {
+    "id": "VR-02-05",
+    "parent": "VR-02",
+    "task": "T07",
+    "title": "기본 머리·손 아바타",
+    "deps": [
+      "VR-01-04",
+      "ACC-01-05",
+      "LIC-02-03",
+      "VR-02-04"
+    ]
+  },
+  {
+    "id": "VR-03-01",
+    "parent": "VR-03",
+    "task": "T07",
+    "title": "Quest 실기기 동작 확인",
+    "deps": [
+      "VR-02-05"
+    ]
+  },
+  {
+    "id": "VR-03-02",
+    "parent": "VR-03",
+    "task": "T07",
+    "title": "PICO 중국 내수판 지원 확인",
+    "deps": [
+      "VR-02-05",
+      "VR-03-01"
+    ]
+  },
+  {
+    "id": "PERF-01-01",
+    "parent": "PERF-01",
+    "task": "T08",
+    "title": "공통 예산 상수·Python 전달",
+    "deps": [
+      "CORE-01-04"
+    ]
+  },
+  {
+    "id": "PERF-01-02",
+    "parent": "PERF-01",
+    "task": "T08",
+    "title": "서버 상한·UI 경고 연결",
+    "deps": [
+      "CORE-01-04",
+      "PERF-01-01",
+      "CORE-02-04",
+      "ROOM-06-02",
+      "ED-03-01",
+      "AI-03-03"
+    ]
+  },
+  {
+    "id": "PERF-01-03",
+    "parent": "PERF-01",
+    "task": "T08",
+    "title": "산출물 예산 검증기",
+    "deps": [
+      "CORE-01-04",
+      "PERF-01-01"
+    ]
+  },
+  {
+    "id": "PERF-02-01",
+    "parent": "PERF-02",
+    "task": "T08",
+    "title": "최대 씬·측정 수집",
+    "deps": [
+      "ED-03-04",
+      "GEN-05-04",
+      "VR-02-05"
+    ]
+  },
+  {
+    "id": "PERF-02-02",
+    "parent": "PERF-02",
+    "task": "T08",
+    "title": "내장 그래픽 편집 실측",
+    "deps": [
+      "ED-03-04",
+      "GEN-05-04",
+      "VR-02-05",
+      "PERF-02-01"
+    ]
+  },
+  {
+    "id": "PERF-02-03",
+    "parent": "PERF-02",
+    "task": "T08",
+    "title": "Quest 2 VR 실측",
+    "deps": [
+      "ED-03-04",
+      "GEN-05-04",
+      "VR-02-05",
+      "PERF-02-02"
+    ]
+  },
+  {
+    "id": "PERF-03-01",
+    "parent": "PERF-03",
+    "task": "T08",
+    "title": "동시성·권한 회귀 묶음",
+    "deps": [
+      "ACC-03-03",
+      "ACC-04-02",
+      "ACC-05-03",
+      "ED-04-04",
+      "GEN-04-03",
+      "VR-03-02",
+      "PERF-02-03"
+    ]
+  },
+  {
+    "id": "PERF-03-02",
+    "parent": "PERF-03",
+    "task": "T08",
+    "title": "복원·생성 경합 회귀 묶음",
+    "deps": [
+      "ACC-03-03",
+      "ACC-04-02",
+      "ACC-05-03",
+      "ED-04-04",
+      "GEN-04-03",
+      "VR-03-02",
+      "PERF-02-03",
+      "PERF-03-01"
+    ]
+  },
+  {
+    "id": "PERF-03-03",
+    "parent": "PERF-03",
+    "task": "T08",
+    "title": "30명 수업 편집·AI·승인 흐름",
+    "deps": [
+      "ACC-03-03",
+      "ACC-04-02",
+      "ACC-05-03",
+      "ED-04-04",
+      "GEN-04-03",
+      "VR-03-02",
+      "PERF-02-03",
+      "PERF-03-02"
+    ]
+  },
+  {
+    "id": "PERF-03-04",
+    "parent": "PERF-03",
+    "task": "T08",
+    "title": "제출·재시작·2인 VR 흐름",
+    "deps": [
+      "ACC-03-03",
+      "ACC-04-02",
+      "ACC-05-03",
+      "ED-04-04",
+      "GEN-04-03",
+      "VR-03-02",
+      "PERF-02-03",
+      "PERF-03-03"
+    ]
+  },
+  {
+    "id": "LIC-01-01",
+    "parent": "LIC-01",
+    "task": "T09",
+    "title": "웹·빌드·테스트 의존물 확인",
+    "deps": []
+  },
+  {
+    "id": "LIC-01-02",
+    "parent": "LIC-01",
+    "task": "T09",
+    "title": "서버·저장·큐 의존물 확인",
+    "deps": [
+      "LIC-01-01"
+    ]
+  },
+  {
+    "id": "LIC-01-03",
+    "parent": "LIC-01",
+    "task": "T09",
+    "title": "의존물 등록·lockfile 검토 기준",
+    "deps": [
+      "LIC-01-02"
+    ]
+  },
+  {
+    "id": "LIC-02-01",
+    "parent": "LIC-02",
+    "task": "T09",
+    "title": "LLM·이미지 모델 후보 확인",
+    "deps": [
+      "LIC-01-03"
+    ]
+  },
+  {
+    "id": "LIC-02-02",
+    "parent": "LIC-02",
+    "task": "T09",
+    "title": "GPU 자동 의존물 확인",
+    "deps": [
+      "LIC-01-03",
+      "LIC-02-01"
+    ]
+  },
+  {
+    "id": "LIC-02-03",
+    "parent": "LIC-02",
+    "task": "T09",
+    "title": "XR 버전·조건 확인",
+    "deps": [
+      "LIC-01-03",
+      "LIC-02-02"
+    ]
+  },
+  {
+    "id": "LIC-03-01",
+    "parent": "LIC-03",
+    "task": "T09",
+    "title": "배경 제거 판매 경로",
+    "deps": [
+      "LIC-02-03",
+      "GEN-04-03"
+    ]
+  },
+  {
+    "id": "LIC-03-02",
+    "parent": "LIC-03",
+    "task": "T09",
+    "title": "텍스처 판매 경로",
+    "deps": [
+      "LIC-02-03",
+      "GEN-04-03",
+      "LIC-03-01"
+    ]
+  },
+  {
+    "id": "LIC-03-03",
+    "parent": "LIC-03",
+    "task": "T09",
+    "title": "판매 산출물 의존물 감사",
+    "deps": [
+      "LIC-02-03",
+      "GEN-04-03",
+      "LIC-03-02"
+    ]
+  }
+]

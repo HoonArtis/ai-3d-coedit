@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-13T19:29:51.545Z",
+  "https": true,
+  "wssConnections": 2,
+  "restart": true,
+  "processIds": [
+    11648,
+    43540
+  ],
+  "immutableEnvironment": true,
+  "seq": 1,
+  "snapshotId": "d2d3d0fd-09eb-42dc-ad49-17ed6b0ab54e",
+  "errors": [],
+  "limits": "Two real Chromium HTTPS/WSS viewers, synthetic socket pose source; XR support flag stubbed, no headset/session input tested; local self-signed certificate accepted only by test contexts"
+}

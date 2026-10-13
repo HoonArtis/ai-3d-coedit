@@ -1,0 +1,12 @@
+import {readFile,writeFile} from 'node:fs/promises';
+import {LocalObjectStore} from '@coedit/artifacts';
+import {emptyScene,BUILTIN_LIBRARY} from '@coedit/contracts';
+import {bakeVrJob} from '../apps/workers/src/vr/job';
+const store=new LocalObjectStore('.data/objects'),evidence=JSON.parse(await readFile('docs/evidence/textured-artifact.json','utf8'));
+const snapshot=emptyScene('vr-smoke'),library={...BUILTIN_LIBRARY,whale:{id:'whale',name:'고래',kind:'generated' as const,color:'#ffffff',dimensions:evidence.manifest.desktop.dimensions,artifactId:evidence.artifactId}};
+for(let i=0;i<200;i++)snapshot.objects[`object-${i}`]={id:`object-${i}`,assetId:i%2?'whale':'tree',owner:'student',name:'asset',position:[(i%20)*3,0,Math.floor(i/20)*3],rotation:[0,(i%4)*Math.PI/2,0],scale:[1,1,1],revision:1,lastActor:'student'};
+const sourceKey=await store.put(new TextEncoder().encode(JSON.stringify({formatVersion:1,snapshotId:'vr-smoke',snapshot,library}))),before=await store.get(evidence.manifest.originalKey),started=performance.now();
+const result=await bakeVrJob(store,{stage:'vr-bake',jobId:'vr-smoke',inputVersion:1,roomId:'vr-smoke',actor:'student',generation:0,payload:{sourceKey}});
+if(!Buffer.from(before).equals(await store.get(evidence.manifest.originalKey)))throw Error('ORIGINAL_CHANGED');
+const bytes=await store.get(result.manifest.key);await writeFile('.cache/smoke/vr-scene.glb',bytes);
+const report={date:new Date().toISOString(),seconds:(performance.now()-started)/1000,bytes:bytes.length,...result};await writeFile('docs/evidence/vr-bake.json',JSON.stringify(report,null,2));console.log(JSON.stringify({seconds:report.seconds,bytes:report.bytes,triangles:result.manifest.triangles,drawCalls:result.manifest.drawCalls,objects:result.manifest.objects.length,assets:result.manifest.assets}));

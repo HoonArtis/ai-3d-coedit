@@ -1,0 +1,33 @@
+{
+  "date": "2026-10-13T13:32:49.713Z",
+  "failure": {
+    "jobId": "gpu-1c6d9043d5d9b894289baec2e4ec5fe2c48831b69ea5dc7676ef9284dfbf03ab",
+    "stage": "shape",
+    "inputVersion": 1,
+    "status": "failed",
+    "position": 0,
+    "attempts": 2,
+    "error": "WORKER_EXIT_75: {\"error\": \"GPU_OUT_OF_MEMORY\"}\r\n"
+  },
+  "recovery": {
+    "jobId": "gpu-e275d0bd1ed637464b1b5fa8152da4c3f498295977de5576724dee9b4348d522",
+    "stage": "shape",
+    "inputVersion": 1,
+    "status": "completed",
+    "position": 0,
+    "attempts": 1,
+    "result": {
+      "model": "VAST-AI/TripoSG",
+      "revision": "2c1c516d22d58db486a058d98d31bb6177344e06",
+      "decoder": "hierarchical-scikit-image",
+      "triangles": 52816,
+      "seed": 42,
+      "steps": 30,
+      "seconds": 29.615,
+      "gpu": "NVIDIA GeForce RTX 5060 Ti",
+      "peakAllocatedMiB": 4898.3,
+      "peakReservedMiB": 5772
+    }
+  },
+  "condition": "Real CUDA impossible allocation in separate process; same BullMQ worker then runs actual TripoSG on saved foreground. Peak PyTorch memory is not total device usage."
+}

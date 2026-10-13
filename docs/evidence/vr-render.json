@@ -1,0 +1,19 @@
+{
+  "measurements": [
+    {
+      "frame": 1,
+      "calls": 2,
+      "triangles": 267000,
+      "points": 0,
+      "lines": 0
+    },
+    {
+      "frame": 2,
+      "calls": 2,
+      "triangles": 267000,
+      "points": 0,
+      "lines": 0
+    }
+  ],
+  "textureFormats": true
+}

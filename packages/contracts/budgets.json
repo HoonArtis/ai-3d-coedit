@@ -1,0 +1,6 @@
+{
+  "version":1,"roomAssets":200,"desktopAssetTriangles":5000,
+  "desktopRoomTriangles":1000000,"textureSize":1024,
+  "vrAssetTriangles":2500,"vrRoomTriangles":500000,
+  "vrDrawCalls":150,"avatarTriangles":10000
+}

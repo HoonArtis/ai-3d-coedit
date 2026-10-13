@@ -1,0 +1,63 @@
+{
+  "name": "ai-3d-coedit",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=24.11.0"
+  },
+  "scripts": {
+    "predev": "node tools/prepare-web-assets.ts",
+    "prebuild": "node tools/prepare-web-assets.ts",
+    "dev": "vite --config apps/web/vite.config.ts",
+    "dev:server": "tsx apps/server/src/dev.ts",
+    "dev:llm": "tsx apps/llm/src/worker.ts",
+    "build": "tsc --noEmit && vite build --config apps/web/vite.config.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "check:work": "py docs/work/check_work.py",
+    "check:modules": "node tools/check-modules.ts",
+    "dev:gpu": "tsx apps/workers/src/gpu-worker.ts",
+    "dev:cpu": "tsx apps/workers/src/cpu-worker.ts"
+  },
+  "dependencies": {
+    "@colyseus/core": "0.18.18",
+    "@colyseus/sdk": "0.18.5",
+    "@colyseus/ws-transport": "0.18.4",
+    "@gltf-transform/core": "4.5.1",
+    "@gltf-transform/extensions": "4.5.1",
+    "@gltf-transform/functions": "4.5.1",
+    "@react-three/drei": "10.7.9",
+    "@react-three/fiber": "9.8.1",
+    "@react-three/xr": "6.6.31",
+    "bullmq": "6.3.14",
+    "express": "5.3.0",
+    "ioredis": "6.0.0",
+    "meshoptimizer": "1.3.0",
+    "pg": "8.23.1",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "sharp": "0.35.5",
+    "three": "0.186.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.0",
+    "@types/express": "5.0.6",
+    "@types/node": "26.6.5",
+    "@types/pg": "8.23.1",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/three": "0.186.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "vite": "8.3.4",
+    "vitest": "5.0.4"
+  }
+}

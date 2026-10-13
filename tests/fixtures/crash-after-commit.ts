@@ -1,0 +1,11 @@
+import {Pool} from 'pg';
+import {RoomService} from '../../apps/server/src/rooms/room-service';
+import {DurableRoom} from '../../apps/server/src/rooms/durable-room';
+import {PostgresRoomRepository} from '../../apps/server/src/storage/postgres-room';
+import {BUILTIN_LIBRARY} from '@coedit/contracts';
+const pool=new Pool({connectionString:process.env.TEST_DATABASE_URL??'postgres://coedit:coedit_local_only@127.0.0.1:54329/coedit'});
+const room=new RoomService(process.argv[2],BUILTIN_LIBRARY);
+const durable=await DurableRoom.open(room,new PostgresRoomRepository(pool));
+room.join('a',{actor:'alice',role:'student'});
+const result=await durable.submit('a',{actor:'alice',source:'gizmo',requestId:'r1',lockTokens:{a:'lease1'},ops:[{op:'place',id:'o',assetId:'chair',position:[0,0,0]}]});
+process.exit(result.ok?24:25);

@@ -1,0 +1,25 @@
+{
+  "date": "2026-10-13T13:29:11.895Z",
+  "imageSeconds": 21.28,
+  "totalSeconds": 50.69,
+  "job": {
+    "id": "6a8a5d28-df1c-4297-a695-c95c450427ce",
+    "actor": "2d58eacb-85f5-4410-bcf9-9e729f5fb68e",
+    "roomId": "659784d0-1266-45b4-aefe-b0e17b57c474",
+    "generation": 0,
+    "version": 1,
+    "state": "shape_ready",
+    "source": {
+      "kind": "text",
+      "prompt": "a whimsical blue whale shaped wooden bench"
+    },
+    "imageKey": "19eb880513630276b60cfef06d9eee210bacd0b9c16e794be81a6e81aef9fa2d",
+    "shapeKey": "dec8b1fdad9e486c6dd316e6ba6c26dae8af5880e227bd8a42eb6fb3fdc2bcba",
+    "error": null
+  },
+  "usage": {
+    "used": 1,
+    "limit": 3
+  },
+  "conditions": "Actual PostgreSQL + Redis + separate GPU worker; SDXL + RMBG + TripoSG. Texture/optimization/approval excluded."
+}

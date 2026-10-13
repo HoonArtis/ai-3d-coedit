@@ -9,6 +9,7 @@ type Command = {
   actor: string;                         // 사용자 ID
   source: "gizmo" | "chat" | "teacher";
   requestId: string;                     // 챗봇 요청 1회 = requestId 1개 = 트랜잭션 1개
+  expectedGeneration?: number;           // 비동기 AI 요청이 읽은 작품 세대; 적용 시 다르면 거부
   ops: Op[];                             // 하나라도 실패하면 전체 롤백
 };
 ```
@@ -43,3 +44,16 @@ type Command = {
 - 자동 배치 op의 좌표는 서버(또는 공용 배치 모듈)가 계산한다. 클라이언트·LLM이 보낸 좌표를 그대로 믿지 않는다.
 - 방 에셋 상한과 감량 수치는 `budgets.md`가 원본이다.
 - 에셋 소유권: 만든 사람 소유. 강사의 수정은 소유권을 바꾸지 않고, 복제본은 복제한 사람 소유.
+
+## 구현 계약 v1
+
+공개 원본: `packages/contracts/src/index.ts`. 좌표는 m, 회전은 rad, 크기는 축별 배율 0.01~100. ID는 영문/숫자로 시작하는 1~80자(영문·숫자·언더바·하이픈). 명령에 `version: 1`(생략 시 1), `lockTokens: Record<objectId, token>`(생략 시 빈 값)를 추가한다. 카메라 op는 서버 명령 스키마에서 거부한다. 서버 인증 세션의 actor/source 검사를 통과해야 도메인에 전달한다. 순수 조회는 seq를 증가시키지 않는다.
+
+`undo`의 선택적 `expectedSeq`는 챗봇 완료 카드가 원래 명령만 취소하도록 개인 이력 맨 위의 seq를 확인한다. 다른 작업이 뒤에 있으면 `HISTORY_NOT_LATEST`로 거부하며 아무 작업도 취소하지 않는다. 일반 Ctrl+Z/Y는 이 조건 없이 기존 개인 스택 순서를 따른다.
+
+
+### 승인 결과 적용
+
+`replace_asset {id, assetId, expectedRevision, expectedGeneration}`는 승인 라이브러리 결과를 기존 객체에 적용한다. 기존 id·소유자·이름·TRS를 유지하고 revision/lastActor만 갱신한다. 학생은 자기 객체의 선택 잠금이 필요하며, revision 또는 방 generation이 달라졌으면 `STALE_RETEXTURE`로 원자 거부한다. 공통 durable 명령 기록·개인 undo/redo를 그대로 사용한다.
+
+`retexture {id,prompt}`는 해당 객체의 권한·잠금을 확인한 뒤 원본 shape와 요청 당시 revision/generation을 보관한다. 공식 TG2MV 경로에서 기존 기하와 새 재질 설명으로 텍스처를 생성하고 감량/승인으로 진행한다. 새 형상이나 참고 이미지를 만들지 않는다. 승인만으로 현재 씬을 자동 변경하지 않으며 승인 결과 카드에서 명시적으로 적용한다. 변경된 객체/복원된 방이면 라이브러리에만 남긴다. 재질 변경은 기존 생성 사용량 1회에 포함된다.

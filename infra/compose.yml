@@ -1,0 +1,28 @@
+name: coedit
+services:
+  postgres:
+    image: postgres:17-alpine@sha256:18cfe3ef5e6815560c98237d6216d1e5119702fb0f3894c8785dd58b8bbe5d73
+    environment:
+      POSTGRES_USER: coedit
+      POSTGRES_PASSWORD: coedit_local_only
+      POSTGRES_DB: coedit
+    ports: ["127.0.0.1:54329:5432"]
+    volumes: ["coedit-postgres:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U coedit -d coedit"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+  redis:
+    image: redis:7.2-alpine@sha256:29e8589c3f9ba699b5f7aa4b3c7733c58852a3626439e619aa0ee78de08c6ca0
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "always", "--maxmemory-policy", "noeviction"]
+    ports: ["127.0.0.1:63799:6379"]
+    volumes: ["coedit-redis:/data"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+volumes:
+  coedit-postgres:
+  coedit-redis:

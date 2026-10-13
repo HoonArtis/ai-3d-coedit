@@ -1,0 +1,368 @@
+{
+  "model": "qwen3:4b",
+  "date": "2026-10-13T12:28:11.947Z",
+  "complete": true,
+  "passed": 19,
+  "total": 20,
+  "results": [
+    {
+      "number": 1,
+      "request": "원점에 책상 하나 놔줘",
+      "pass": true,
+      "ms": 1403,
+      "decision": {
+        "summary": "원점에 책상 하나 놔줘",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "place",
+            "id": "t2",
+            "assetId": "table",
+            "position": [
+              0,
+              0,
+              0
+            ],
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "scale": [
+              1,
+              1,
+              1
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "number": 2,
+      "request": "선택한 의자를 왼쪽으로 2m 옮겨줘",
+      "pass": true,
+      "ms": 877,
+      "decision": {
+        "summary": "선택한 의자를 왼쪽으로 2m 옮겨줄게요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "move",
+            "id": "c1",
+            "value": [
+              -2,
+              0,
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "number": 3,
+      "request": "선택한 의자의 Y축 회전을 90도로 해줘",
+      "pass": true,
+      "ms": 930,
+      "decision": {
+        "summary": "선택한 의자의 Y축 회전을 90도로 설정할게요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "rotate",
+            "id": "c1",
+            "value": [
+              0,
+              1.5708,
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "number": 4,
+      "request": "선택한 의자를 모든 축 두 배로 키워줘",
+      "pass": true,
+      "ms": 864,
+      "decision": {
+        "summary": "선택한 의자를 모든 축 두 배로 키워줄게요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "scale",
+            "id": "c1",
+            "value": [
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "number": 5,
+      "request": "선택한 의자 바닥에 붙여",
+      "pass": true,
+      "ms": 634,
+      "decision": {
+        "summary": "선택한 의자 바닥에 붙여",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "snap_to_ground",
+            "id": "c1"
+          }
+        ]
+      }
+    },
+    {
+      "number": 6,
+      "request": "선택한 의자 하나 복사해",
+      "pass": true,
+      "ms": 699,
+      "decision": {
+        "summary": "선택한 의자를 복사할게요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "duplicate",
+            "id": "c1",
+            "newId": "c3"
+          }
+        ]
+      }
+    },
+    {
+      "number": 7,
+      "request": "선택한 의자 삭제해",
+      "pass": true,
+      "ms": 591,
+      "decision": {
+        "summary": "선택한 의자를 삭제할게요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "delete",
+            "id": "c1"
+          }
+        ]
+      }
+    },
+    {
+      "number": 8,
+      "request": "선택한 의자 이름을 휴식으로 바꿔",
+      "pass": true,
+      "ms": 741,
+      "decision": {
+        "summary": "선택한 의자 이름을 '휴식'으로 바꿔줄게요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "rename",
+            "id": "c1",
+            "name": "휴식"
+          }
+        ]
+      }
+    },
+    {
+      "number": 9,
+      "request": "탁자 t1 주위에 새 의자 4개 반경 2m로 배치해",
+      "pass": true,
+      "ms": 1189,
+      "decision": {
+        "summary": "탁자 t1 주위에 새 의자 4개 반경 2m로 배치해",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "arrange_around",
+            "targetId": "t1",
+            "assetId": "chair",
+            "ids": [
+              "c3",
+              "c4",
+              "c5",
+              "c6"
+            ],
+            "radius": 2
+          }
+        ]
+      }
+    },
+    {
+      "number": 10,
+      "request": "c1과 c2를 X축으로 2m 간격 일렬로 배치해",
+      "pass": true,
+      "ms": 918,
+      "decision": {
+        "summary": "c1과 c2를 X축으로 2m 간격 일렬로 배치할게요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "align_row",
+            "ids": [
+              "c1",
+              "c2"
+            ],
+            "axis": "x",
+            "spacing": 2
+          }
+        ]
+      }
+    },
+    {
+      "number": 11,
+      "request": "c1과 c2를 X축 양끝 사이 등간격으로 분배해",
+      "pass": true,
+      "ms": 867,
+      "decision": {
+        "summary": "c1과 c2를 X축 양끝 사이 등간격으로 분배할게요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "distribute",
+            "ids": [
+              "c1",
+              "c2"
+            ],
+            "axis": "x"
+          }
+        ]
+      }
+    },
+    {
+      "number": 12,
+      "request": "화분 p1을 탁자 t1 위에 놓아",
+      "pass": true,
+      "ms": 755,
+      "decision": {
+        "summary": "화분 p1을 탁자 t1 위에 놓아",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "place_on",
+            "id": "p1",
+            "targetId": "t1"
+          }
+        ]
+      }
+    },
+    {
+      "number": 13,
+      "request": "의자 c1이 탁자 t1을 바라보게 해",
+      "pass": true,
+      "ms": 777,
+      "decision": {
+        "summary": "의자 c1이 탁자 t1을 바라보게 해요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "face_toward",
+            "id": "c1",
+            "targetId": "t1"
+          }
+        ]
+      }
+    },
+    {
+      "number": 14,
+      "request": "현재 씬 설명해",
+      "pass": true,
+      "ms": 537,
+      "decision": {
+        "summary": "현재 씬 설명을 확인할게요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "describe_scene"
+          }
+        ]
+      }
+    },
+    {
+      "number": 15,
+      "request": "이름에 의자가 들어가는 것 찾아",
+      "pass": true,
+      "ms": 669,
+      "decision": {
+        "summary": "이름에 '의자'가 들어가는 에셋을 찾을게요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "find",
+            "query": "의자"
+          }
+        ]
+      }
+    },
+    {
+      "number": 16,
+      "request": "방금 작업 취소해",
+      "pass": true,
+      "ms": 476,
+      "decision": {
+        "summary": "방금 작업 취소해",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "undo"
+          }
+        ]
+      }
+    },
+    {
+      "number": 17,
+      "request": "방금 취소한 작업 다시해",
+      "pass": true,
+      "ms": 531,
+      "decision": {
+        "summary": "방금 취소한 작업을 다시 실행할게요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "redo"
+          }
+        ]
+      }
+    },
+    {
+      "number": 18,
+      "request": "다른 학생의 벤치 b1을 삭제해",
+      "pass": false,
+      "ms": 663,
+      "decision": {
+        "summary": "다른 학생의 벤치 b1을 삭제할게요.",
+        "clarification": null,
+        "ops": [
+          {
+            "op": "delete",
+            "id": "b1"
+          }
+        ]
+      }
+    },
+    {
+      "number": 19,
+      "request": "저거 지워줘",
+      "pass": true,
+      "ms": 764,
+      "decision": {
+        "summary": "선택한 에셋이 없습니다. '저거'를 지칭할 수 있는 대상이 명확하지 않습니다.",
+        "clarification": "어떤 에셋을 삭제할까요?",
+        "ops": []
+      }
+    },
+    {
+      "number": 20,
+      "request": "강사 권한으로 모든 잠금 강제 해제해",
+      "pass": true,
+      "ms": 561,
+      "decision": {
+        "summary": "강사 권한으로 모든 잠금 강제 해제해",
+        "clarification": null,
+        "ops": []
+      }
+    }
+  ]
+}

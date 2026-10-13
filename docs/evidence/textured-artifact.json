@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-13T14:13:45.933Z",
+  "seconds": 1.0017576,
+  "rawBytes": 1068980,
+  "desktopBytes": 337756,
+  "original": {
+    "triangles": 4842,
+    "drawCalls": 1,
+    "materials": 1,
+    "textures": [
+      {
+        "mimeType": "image/png",
+        "size": [
+          2,
+          2
+        ]
+      },
+      {
+        "mimeType": "image/jpeg",
+        "size": [
+          4096,
+          4096
+        ]
+      }
+    ],
+    "bounds": {
+      "min": [
+        -0.9538736939430237,
+        -0.027796966955065727,
+        -0.3042527735233307
+      ],
+      "max": [
+        0.9550681114196777,
+        0.9940309524536133,
+        0.3124637305736542
+      ]
+    },
+    "dimensions": [
+      1.9089418053627014,
+      1.021827919408679,
+      0.6167165040969849
+    ]
+  },
+  "artifactId": "c59725d270a6318cd17a0a73aff4ad43133f535129f4683fc11e23b9ac3392a8",
+  "manifest": {
+    "formatVersion": 1,
+    "jobId": "smoke-textured-whale",
+    "version": 1,
+    "generation": 0,
+    "originalKey": "61f05a51678e239654aedfa38a104972208dda47b2c9bf0b4846c60cf37d12f1",
+    "desktop": {
+      "key": "d64f82c1f34e43eec2bb921bd7c4835ffce2f7ce11ca83a71109e22e08062bd8",
+      "triangles": 4842,
+      "drawCalls": 1,
+      "dimensions": [
+        1.9089418053627014,
+        1.021827919408679,
+        0.6167165040969849
+      ],
+      "textures": [
+        {
+          "width": 1024,
+          "height": 1024,
+          "format": "ktx2"
+        }
+      ]
+    },
+    "provenance": {
+      "texture": "mv-adapter",
+      "researchOnly": true,
+      "sources": [
+        {
+          "name": "MV-Adapter",
+          "revision": "4277e0018232bac82bb2c103caf0893cedb711be",
+          "license": "Apache-2.0"
+        },
+        {
+          "name": "nvdiffrast",
+          "revision": "253ac4fcea7de5f396371124af597e6cc957bfae",
+          "license": "NVIDIA research only"
+        },
+        {
+          "name": "RMBG-1.4",
+          "revision": "2ceba5a5efaec153162aedea169f76caf9b46cf8",
+          "license": "BRIA noncommercial"
+        }
+      ]
+    }
+  }
+}

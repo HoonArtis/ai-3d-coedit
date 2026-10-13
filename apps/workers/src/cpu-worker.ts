@@ -1,0 +1,10 @@
+import {characterJob} from './characters/job';
+import {JobQueues} from '@coedit/jobs';
+import {LocalObjectStore} from '@coedit/artifacts';
+import {optimizeJob} from './optimization/job';
+import {bakeVrJob} from './vr/job';
+const queues=new JobQueues(),store=new LocalObjectStore(process.env.OBJECT_STORE_DIR??'.data/objects');
+await queues.ready();const worker=queues.worker('cpu',input=>input.stage==='character'?characterJob(store,input):input.stage==='vr-bake'?bakeVrJob(store,input):optimizeJob(store,input));
+console.log('CPU worker ready (artifact optimization, VR bake and publication)');
+let stopping=false;const stop=async()=>{if(stopping)return;stopping=true;await worker.close();await queues.close();};
+process.on('SIGINT',()=>void stop());process.on('SIGTERM',()=>void stop());

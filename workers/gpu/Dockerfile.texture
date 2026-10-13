@@ -1,0 +1,8 @@
+FROM pytorch/pytorch:2.7.1-cuda12.8-cudnn9-devel@sha256:3d614dfd422b7e43647491cbf07d6acc516c032fc49c594a94afdebd52552fb9
+RUN apt-get update && apt-get install -y --no-install-recommends git libgl1 libglib2.0-0 ninja-build && rm -rf /var/lib/apt/lists/*
+RUN python -m pip install --no-cache-dir diffusers==0.33.1 transformers==4.51.3 accelerate==1.6.0 peft==0.15.2 numpy==1.26.4 trimesh==4.6.8 einops==0.8.1 omegaconf==2.3.0 spandrel==0.4.1 open3d==0.19.0 pymeshlab==2023.12.post3 cvcuda-cu12==0.18.0 gltflib==1.0.13 opencv-python-headless==4.11.0.86
+ENV TORCH_CUDA_ARCH_LIST=12.0 MAX_JOBS=2
+RUN python -m pip install --no-cache-dir --no-build-isolation git+https://github.com/NVlabs/nvdiffrast.git@253ac4fcea7de5f396371124af597e6cc957bfae
+RUN python -m pip install --no-cache-dir imageio==2.37.0 jaxtyping==0.3.2 typeguard==2.13.3
+ENV HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1 PYTHONUNBUFFERED=1
+WORKDIR /workspace

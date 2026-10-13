@@ -1,0 +1,10 @@
+import {z} from 'zod';
+import {idSchema} from './primitives';
+import {chatRequestSchema,replySchema,resultSchema} from './chat';
+import {commandSchema} from './command';
+export const logCursorSchema=z.string().regex(/^[1-9]\d{0,18}$/);
+export const teacherLogQuerySchema=z.object({before:logCursorSchema.optional(),limit:z.number().int().min(1).max(50).default(20)}).strict();
+export const studentRosterSchema=z.array(z.object({actor:idSchema,roomId:idSchema,roomName:z.string(),ordinal:z.number().int().min(1).max(5)}).strict());
+export const teacherLogPageSchema=z.object({entries:z.array(z.object({cursor:logCursorSchema,roomId:idSchema,actor:idSchema,status:z.enum(['pending','applying','finished','cancelled']),request:chatRequestSchema.extend({message:z.string().max(4000)}),response:replySchema.nullable(),modelOutput:z.unknown(),command:commandSchema.nullable(),committedResult:resultSchema.nullable()}).strict()),nextCursor:logCursorSchema.nullable()}).strict();
+export type StudentRoster=z.infer<typeof studentRosterSchema>;
+export type TeacherLogPage=z.infer<typeof teacherLogPageSchema>;
