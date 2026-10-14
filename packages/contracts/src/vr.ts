@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {blockAvatarSchema} from './avatar-profile';
 import {idSchema,objectKeySchema,vec3Schema} from './primitives';
 import {snapshotSchema,librarySchema} from './scene';
 import {BUDGETS} from './budgets';
@@ -28,6 +29,6 @@ export const vrEnvironmentSchema=z.object({manifest:vrManifestSchema,obstacles:z
 export type VrEnvironment=z.infer<typeof vrEnvironmentSchema>;
 const trackedPoseSchema=z.object({position:z.tuple([z.number().finite().min(-50).max(50),z.number().finite().min(-2).max(5),z.number().finite().min(-50).max(50)]),quaternion:z.tuple([z.number().finite(),z.number().finite(),z.number().finite(),z.number().finite()]).refine(q=>Math.abs(Math.hypot(...q)-1)<.01)}).strict();
 export const vrPoseSchema=z.object({seq:z.number().int().nonnegative(),head:trackedPoseSchema,left:trackedPoseSchema.nullable(),right:trackedPoseSchema.nullable()}).strict();
-export const vrAvatarsSchema=z.object({avatars:z.array(vrPoseSchema.extend({actor:idSchema,connectionId:idSchema,avatarId:objectKeySchema.nullable().optional()}).strict()).max(5)}).strict();
+export const vrAvatarsSchema=z.object({avatars:z.array(vrPoseSchema.extend({actor:idSchema,connectionId:idSchema,avatarId:objectKeySchema.nullable().optional(),blockAvatar:blockAvatarSchema.nullable().optional()}).strict()).max(5)}).strict();
 export type VrPose=z.infer<typeof vrPoseSchema>;
 export type VrAvatar=z.infer<typeof vrAvatarsSchema>['avatars'][number];

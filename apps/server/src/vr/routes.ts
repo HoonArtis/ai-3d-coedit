@@ -5,6 +5,8 @@ import {bearer} from '../accounts/routes';
 import type {VrBakeService} from './bake-service';
 export function vrRoutes(service:VrBakeService){
  const router=Router();
+ router.get('/rooms/:roomId/avatar',async(req,res)=>res.json(await service.profiles.read(bearer(req),idSchema.parse(req.params.roomId))));
+ router.post('/rooms/:roomId/avatar',json({limit:'2kb',strict:false}),async(req,res)=>res.json(await service.profiles.save(bearer(req),idSchema.parse(req.params.roomId),req.body)));
  router.post('/rooms/:roomId/vr',json({limit:'4kb'}),async(req,res)=>{
   const {requestId}=z.object({requestId:idSchema}).strict().parse(req.body),token=bearer(req),roomId=idSchema.parse(req.params.roomId);
   const submission=await service.submit(token,roomId,requestId);

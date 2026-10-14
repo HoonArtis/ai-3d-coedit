@@ -19,7 +19,7 @@ export class ChatService{
    const lastSuccess=history.findLastIndex(r=>r.result?.ok),clarified=history.slice(lastSuccess+1).some(r=>!!r.clarification);
    try{
     const messages:ChatMessage[]=history.slice(-19).flatMap(r=>[{role:'user' as const,content:r.message},{role:'assistant' as const,content:r.summary}]);messages.push({role:'user',content:input.message});
-    const jobInput=await this.repository.jobInput(roomId,session.actor,input.requestId,{jobId:input.requestId,inputVersion:1,actor:session.actor,roomId,generation:room.snapshot.generation,stage:'llm',payload:{messages,context:JSON.parse(JSON.stringify({actor:session.actor,selectedId:input.selectedId,cameraCenter:input.cameraCenter,scene:room.snapshot,library:room.getLibrary(),clarified}))}});
+    const jobInput=await this.repository.jobInput(roomId,session.actor,input.requestId,{jobId:input.requestId,inputVersion:1,actor:session.actor,roomId,generation:room.snapshot.generation,stage:'llm',payload:{messages,context:JSON.parse(JSON.stringify({actor:session.actor,selectedId:input.selectedId,cameraCenter:input.cameraCenter,scene:room.snapshot,library:room.getLibraryFor(clientId),clarified}))}});
     const jobId=await this.queues.enqueue(jobInput);
     const deadline=Date.now()+this.timeoutMs;let output:unknown;
     for(;;){

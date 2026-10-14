@@ -1,3 +1,3 @@
 export { applyCommand } from './apply-command';
-export {canWrite} from './access';
+export {canWrite,canUseAsset} from './access';
 export {restoreScene,type ResolvedRestoration} from './restoration';

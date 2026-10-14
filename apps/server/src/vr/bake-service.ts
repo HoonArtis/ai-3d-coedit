@@ -1,4 +1,5 @@
 import {readFile} from 'node:fs/promises';
+import {AvatarProfileService} from './avatar-profile-service';
 import {BUILTIN_LIBRARY,idSchema,objectKeySchema,vrSourceSchema,vrBakeRecordSchema,vrManifestSchema,vrEnvironmentSchema,type JobInput} from '@coedit/contracts';
 import {boundsOf,findSpawn} from '@coedit/placement';
 import type {ObjectStore} from '@coedit/artifacts';
@@ -7,9 +8,11 @@ import type {AccountService} from '../accounts/service';
 import type {SubmissionService} from '../storage/submissions';
 import type {AssetService} from '../assets/service';
 export class VrBakeService{
-  constructor(private accounts:AccountService,private submissions:SubmissionService,private queues:JobQueues,private store:ObjectStore,private assets:Pick<AssetService,'catalogForRoom'>&Partial<Pick<AssetService,'avatarFor'>>){}
+  readonly profiles:AvatarProfileService;
+  constructor(private accounts:AccountService,private submissions:SubmissionService,private queues:JobQueues,private store:ObjectStore,private assets:Pick<AssetService,'catalogForRoom'>&Partial<Pick<AssetService,'avatarFor'>>){this.profiles=new AvatarProfileService(accounts);}
   async avatarFor(actor:string,roomId:string){return await this.assets.avatarFor?.(actor,roomId)??null;}
-  async migrate(){await this.accounts.pool.query(await readFile(new URL('../../../../infra/migrations/007-vr.sql',import.meta.url),'utf8'));}
+  viewerSession(token:unknown,roomId:unknown){return this.accounts.resolveRoomToken(token,roomId,true);}
+  async migrate(){await this.accounts.pool.query(await readFile(new URL('../../../../infra/migrations/007-vr.sql',import.meta.url),'utf8'));await this.profiles.migrate();}
   async submit(token:string,roomId:string,requestId:string){
     const session=await this.accounts.resolveRoomToken(token,roomId);
     return this.submissions.submit(roomId,{actor:session.actor,requestId:idSchema.parse(requestId)});
@@ -51,7 +54,7 @@ export class VrBakeService{
     await this.store.get(manifest.key);return manifest;
   }
   async artifact(token:string,roomId:string,snapshotId:string){
-    await this.accounts.resolveRoomToken(token,roomId);
+    await this.accounts.resolveRoomToken(token,roomId,true);
     const row=(await this.accounts.pool.query("SELECT b.manifest_id,b.source_key FROM coedit_vr_bakes b JOIN coedit_submissions s ON s.id=b.snapshot_id WHERE b.snapshot_id=$1 AND s.room_id=$2 AND b.state='ready'",[snapshotId,roomId])).rows[0];
     if(!row)throw Error('VR_NOT_READY');
     const manifest=await this.verifyManifest(row.manifest_id,snapshotId,row.source_key);
@@ -64,7 +67,7 @@ export class VrBakeService{
     return vrEnvironmentSchema.parse({manifest,obstacles,spawn:findSpawn(obstacles)});
   }
   async list(token:string,roomId:string){
-    await this.accounts.resolveRoomToken(token,roomId);
+    await this.accounts.resolveRoomToken(token,roomId,true);
     const {rows}=await this.accounts.pool.query('SELECT b.snapshot_id AS "snapshotId",s.room_id AS "roomId",s.seq,s.generation,b.state,b.manifest_id AS "manifestId",b.error FROM coedit_vr_bakes b JOIN coedit_submissions s ON s.id=b.snapshot_id WHERE s.room_id=$1 ORDER BY b.created_at DESC LIMIT 100',[roomId]);
     return rows.map(row=>vrBakeRecordSchema.parse({...row,seq:Number(row.seq),generation:Number(row.generation)}));
   }

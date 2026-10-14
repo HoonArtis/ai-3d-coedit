@@ -17,6 +17,7 @@ export * from './dashboard';
 export * from './room-history';
 export * from './teacher-logs';
 export * from './vr';
+export * from './avatar-profile';
 export * from './character';
 
 export * from './class-invites';

@@ -1,0 +1,23 @@
+import {test,expect,beforeAll,afterAll} from 'vitest';
+import {Pool} from 'pg';
+import {randomUUID} from 'node:crypto';
+import {AccountService} from '../../apps/server/src/accounts/service';
+import {AvatarProfileService} from '../../apps/server/src/vr/avatar-profile-service';
+const connectionString='postgres://coedit:coedit_local_only@127.0.0.1:54329/coedit',schema='avatar_test_'+randomUUID().replaceAll('-',''),admin=new Pool({connectionString}),pool=new Pool({connectionString,options:'-c search_path='+schema}),accounts=new AccountService(pool),profiles=new AvatarProfileService(accounts);
+beforeAll(async()=>{await admin.query('CREATE SCHEMA '+schema);await accounts.migrate();await profiles.migrate();});
+afterAll(async()=>{await pool.end();await admin.query('DROP SCHEMA '+schema+' CASCADE');await admin.end();});
+test('block avatar persists for authenticated seat across sessions and rejects foreign rooms and forged actors',async()=>{
+ const teacher=await accounts.registerTeacher({username:'avatar-'+randomUUID(),password:'test-password-1234'}),c=await accounts.createClass(teacher.token,{name:'avatars',roomCount:2}),students=await accounts.issueStudents(teacher.token,c.id,6);
+ const s=students[0],other=students[1],login=()=>accounts.joinStudent({roomCode:s.roomCode,issuedId:s.issuedId}),owner=await login(),peer=await accounts.joinStudent({roomCode:other.roomCode,issuedId:other.issuedId});
+ const profile={kind:'block',skin:'#dba67b',hair:'#38291f',shirt:'#4488cc',pants:'#24395b'};
+ expect(await profiles.read(owner.token,s.roomKey)).toBeNull();
+ await profiles.save(owner.token,s.roomKey,profile);
+ expect(await new AvatarProfileService(accounts).read((await login()).token,s.roomKey)).toEqual(profile);
+ expect(await profiles.read(peer.token,s.roomKey)).toBeNull();
+ expect(await profiles.forActor(owner.actor,s.roomKey)).toEqual(profile);
+ await expect(profiles.save(owner.token,students[5].roomKey,profile)).rejects.toThrow('FORBIDDEN');
+ await expect(profiles.save(owner.token,s.roomKey,{...profile,actor:peer.actor})).rejects.toThrow();
+ await expect(profiles.save(owner.token,s.roomKey,{...profile,shirt:'url(https://bad)'})).rejects.toThrow();
+ expect(await profiles.read(owner.token,s.roomKey)).toEqual(profile);
+ await profiles.save(owner.token,s.roomKey,null);expect(await profiles.read(owner.token,s.roomKey)).toBeNull();
+});

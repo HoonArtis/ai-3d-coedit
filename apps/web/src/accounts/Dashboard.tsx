@@ -4,7 +4,6 @@ import {useEffect,useRef,useState} from 'react';
 import {accountApi,saveLogin,logout,type IssuedStudent,type LoginIdentity} from './api';
 import {dashboardSchema,type DashboardClassroom} from '@coedit/contracts';
 import './accounts.css';
-import {ApprovalPanel} from './ApprovalPanel';
 import {RoomThumbnail} from './RoomThumbnail';
 import {GenerationSettings} from './GenerationSettings';
 import {TeacherLogs} from './TeacherLogs';
@@ -13,7 +12,6 @@ export function Dashboard(){
   const [roomCount,setRoomCount]=useState(6);
   const [managedRoom,setManagedRoom]=useState<{id:string;name:string}|null>(null);
   const [logClass,setLogClass]=useState<string|null>(null);
-  const [reviewClass,setReviewClass]=useState<string|null>(null);
   const loadSequence=useRef(0);
   const load=async()=>{const seq=++loadSequence.current,next=dashboardSchema.parse(await accountApi('/dashboard'));if(seq===loadSequence.current)setClasses(next);};
   useEffect(()=>{const refresh=()=>void load().catch(e=>setNotice(e.message));refresh();const timer=setInterval(refresh,5000);return()=>{clearInterval(timer);loadSequence.current++;};},[]);
@@ -29,8 +27,7 @@ export function Dashboard(){
     {notice&&<p role="alert" className="account-error">{notice}</p>}
     {managedRoom&&<StudentManagement key={managedRoom.id} roomId={managedRoom.id} roomName={managedRoom.name} onClose={()=>setManagedRoom(null)} onChanged={load}/>}
     {logClass&&<TeacherLogs key={logClass} classId={logClass} onClose={()=>setLogClass(null)}/>}
-    {reviewClass&&<ApprovalPanel key={reviewClass} classId={reviewClass} onClose={()=>setReviewClass(null)}/>}
-    {classes.map(c=><section className="class-card" key={c.id}><div className="class-heading"><h2>{c.name}</h2><button onClick={()=>setLogClass(c.id)}>학생 대화 로그 열기</button><button onClick={()=>setReviewClass(c.id)}>생성물 승인함 열기</button><button disabled={busy||c.rooms.every(r=>r.students===5)} onClick={()=>{void run(async()=>{const count=c.rooms.reduce((n,r)=>n+5-r.students,0);setIssued(await accountApi<IssuedStudent[]>('/classes/'+c.id+'/students',{count}));await load();});}}>학생 {c.rooms.reduce((n,r)=>n+5-r.students,0)}명 발급</button></div><ClassInvite classId={c.id} name={c.name}/><GenerationSettings classId={c.id} value={c.generation_limit} onSaved={load}/><div className="room-grid">{c.rooms.map(r=><div key={r.id} className="room-card-container"><button aria-label={r.name+' 편집'} className="room-card" onClick={()=>{void run(()=>enter(r.id));}}><div className="room-art"><RoomThumbnail snapshot={r.snapshot} library={c.library} error={r.thumbnailError}/></div><h3>{r.name}</h3><span>발급 학생 {r.students} / 5</span><span className="approval-badge">승인 대기 {r.pendingApproval}</span><code>{r.code}</code></button><button className="student-manage-button" onClick={()=>setManagedRoom({id:r.id,name:r.name})}>{r.name} 학생 관리</button></div>)}</div></section>)}
+    {classes.map(c=><section className="class-card" key={c.id}><div className="class-heading"><h2>{c.name}</h2><button onClick={()=>setLogClass(c.id)}>학생 대화 로그 열기</button><button disabled={busy||c.rooms.every(r=>r.students===5)} onClick={()=>{void run(async()=>{const count=c.rooms.reduce((n,r)=>n+5-r.students,0);setIssued(await accountApi<IssuedStudent[]>('/classes/'+c.id+'/students',{count}));await load();});}}>학생 {c.rooms.reduce((n,r)=>n+5-r.students,0)}명 발급</button></div><ClassInvite classId={c.id} name={c.name}/><GenerationSettings classId={c.id} value={c.generation_limit} onSaved={load}/><div className="room-grid">{c.rooms.map(r=><div key={r.id} className="room-card-container"><button aria-label={r.name+' 편집'} className="room-card" onClick={()=>{void run(()=>enter(r.id));}}><div className="room-art"><RoomThumbnail snapshot={r.snapshot} library={c.library} error={r.thumbnailError}/></div><h3>{r.name}</h3><span>발급 학생 {r.students} / 5</span><code>{r.code}</code></button><button className="student-manage-button" onClick={()=>setManagedRoom({id:r.id,name:r.name})}>{r.name} 학생 관리</button></div>)}</div></section>)}
     {issued.length>0&&<section className="issued"><div className="class-heading"><div><h2>발급한 학생 ID</h2><p>이 화면을 닫기 전에 내려받아 학생에게 전달해 주세요.</p></div><button onClick={download}>발급 ID 내려받기</button></div><div className="table-scroll"><table aria-label="발급 학생 목록"><thead><tr><th>방 코드</th><th>번호</th><th>발급 ID</th></tr></thead><tbody>{issued.map(s=><tr key={s.actor}><td>{s.roomCode}</td><td>{s.ordinal}</td><td><code>{s.issuedId}</code></td></tr>)}</tbody></table></div></section>}
   </main>;
 }

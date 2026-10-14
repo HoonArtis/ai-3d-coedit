@@ -7,14 +7,14 @@ import type {IssuedSession} from './session-store';
 import {generationLimitSchema} from '@coedit/contracts';
 const credentials=z.object({username:z.string().min(3).max(80).regex(/^[a-zA-Z0-9_-]+$/),password:z.string().min(12).max(256)}).strict();
 const classInput=z.object({name:z.string().trim().min(1).max(80),roomCount:z.number().int().min(1).max(30)}).strict();
-type AccountSession={actor:string;role:'teacher'|'student'};
+type AccountSession={actor:string;role:'teacher'|'student';viewOnly?:boolean;viewerRoom?:string};
 type ClassRoom={id:string;name:string;code:string};
 export class AccountService{
   constructor(readonly pool:Pool,private studentCredential=()=>randomBytes(12).toString('base64url')){}
   async migrate(){
     const client=await this.pool.connect();
     try{await client.query('BEGIN');await client.query("SELECT pg_advisory_xact_lock(hashtext(current_schema() || ':coedit-accounts'))");
-      for(const file of ['002-accounts.sql','009-class-invites.sql','010-student-archive.sql'])await client.query(await readFile(new URL('../../../../infra/migrations/'+file,import.meta.url),'utf8'));
+      for(const file of ['002-accounts.sql','009-class-invites.sql','010-student-archive.sql','014-vr-viewer-sessions.sql'])await client.query(await readFile(new URL('../../../../infra/migrations/'+file,import.meta.url),'utf8'));
       await client.query('COMMIT');
     }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
   }
@@ -35,9 +35,10 @@ export class AccountService{
   }
   async session(token:unknown):Promise<AccountSession>{
     if(typeof token!=='string'||token.length>256)throw Error('UNAUTHENTICATED');
-    const {rows}=await this.pool.query(`SELECT actor,role FROM coedit_account_sessions s WHERE token_hash=$1 AND expires_at>now() AND
-      ((role='teacher' AND EXISTS(SELECT 1 FROM coedit_teachers WHERE id=s.actor)) OR (role='student' AND EXISTS(SELECT 1 FROM coedit_students WHERE id=s.actor AND NOT archived)))`,[credentialDigest(token)]);
-    if(!rows.length)throw Error('UNAUTHENTICATED');return rows[0];
+    const {rows}=await this.pool.query(`SELECT actor,role,view_only,viewer_room_id FROM coedit_account_sessions s WHERE token_hash=$1 AND expires_at>now() AND
+      ((view_only AND role='student' AND EXISTS(SELECT 1 FROM coedit_class_rooms WHERE id=s.viewer_room_id) AND NOT EXISTS(SELECT 1 FROM coedit_students WHERE id=s.actor AND archived)) OR
+       (NOT view_only AND ((role='teacher' AND EXISTS(SELECT 1 FROM coedit_teachers WHERE id=s.actor)) OR (role='student' AND EXISTS(SELECT 1 FROM coedit_students WHERE id=s.actor AND NOT archived)))))`,[credentialDigest(token)]);
+    if(!rows.length)throw Error('UNAUTHENTICATED');const row=rows[0];return {actor:row.actor,role:row.role,...(row.view_only?{viewOnly:true,viewerRoom:row.viewer_room_id}:{})};
   }
   async logout(token:string){await this.pool.query('DELETE FROM coedit_account_sessions WHERE token_hash=$1',[credentialDigest(token)]);}
   private async teacher(token:string){const session=await this.session(token);if(session.role!=='teacher')throw Error('FORBIDDEN');return session.actor;}
@@ -90,8 +91,9 @@ export class AccountService{
     const {rows}=await this.pool.query('SELECT s.id,s.room_id FROM coedit_students s JOIN coedit_class_rooms r ON r.id=s.room_id WHERE r.code=$1 AND s.credential_hash=$2 AND NOT s.archived',[input.roomCode.toUpperCase(),credentialDigest(input.issuedId)]);
     if(!rows.length)throw Error('UNAUTHENTICATED');return {...await this.issue(rows[0].id,'student'),roomKey:rows[0].room_id};
   }
-  async resolveRoomToken(token:unknown,roomKey:unknown):Promise<IssuedSession>{
-    const session=await this.session(token);if(typeof roomKey!=='string')throw Error('FORBIDDEN');
+  async resolveRoomToken(token:unknown,roomKey:unknown,allowViewer=false):Promise<IssuedSession>{
+    const session=await this.session(token);if(typeof roomKey!=='string'||session.viewOnly&&!allowViewer)throw Error('FORBIDDEN');
+    if(session.viewOnly){if(session.viewerRoom!==roomKey)throw Error('FORBIDDEN');return {...session,roomKey};}
     const allowed=session.role==='teacher'
       ?await this.pool.query('SELECT r.id FROM coedit_class_rooms r JOIN coedit_classes c ON r.class_id=c.id WHERE r.id=$1 AND c.teacher_id=$2',[roomKey,session.actor])
       :await this.pool.query('SELECT id FROM coedit_students WHERE room_id=$1 AND id=$2 AND NOT archived',[roomKey,session.actor]);

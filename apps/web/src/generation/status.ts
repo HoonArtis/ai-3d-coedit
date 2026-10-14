@@ -1,6 +1,6 @@
 import type {generationProgressSchema} from '@coedit/contracts';
 type Progress=ReturnType<typeof generationProgressSchema.parse>;
-const finishLabels={texture_queued:'텍스처 작업 대기·처리 중…',material_choice:'텍스처 생성 실패 · 재질을 직접 골라 주세요',optimize_queued:'감량·텍스처 압축 중…',pending_approval:'강사 승인 대기',approved:'공유 라이브러리에 등록됐어요',rejected:'강사가 사용을 승인하지 않았어요',failed:'후처리 실패 · 횟수가 반환됐어요'};
+const finishLabels={texture_queued:'텍스처 작업 대기·처리 중…',material_choice:'텍스처 생성 실패 · 재질을 직접 골라 주세요',optimize_queued:'감량·텍스처 압축 중…',pending_approval:'라이브러리 등록 중…',approved:'완성됐어요 · History에서 배치하거나 공유하세요',rejected:'이 결과는 사용할 수 없어요',failed:'후처리 실패 · 횟수가 반환됐어요'};
 const failures:Record<string,string>={IMAGE_FAILED:'이미지를 그리는 단계에서 실패했어요.',SHAPE_FAILED:'3D 형상을 만드는 단계에서 실패했어요.',TEXTURE_FAILED:'텍스처를 만드는 단계에서 실패했어요.',OPTIMIZE_FAILED:'감량·텍스처 압축 단계에서 실패했어요.',INVALID_WORKER_RESULT:'생성 결과 파일을 확인하지 못했어요.',INVALID_ARTIFACT_RESULT:'배포용 결과 파일을 확인하지 못했어요.'};
 export function generationStatus(job:Progress){
   const label=job.state==='cancelled'?'요청 취소 · 횟수가 반환됐어요':job.source.kind==='character'&&job.state==='shape_ready'&&(!job.finishing||job.finishing.phase==='optimize_queued')?'캐릭터 변환·뼈대 검증 중…':job.finishing?finishLabels[job.finishing.phase]:job.state==='image_queued'?(job.running?'프롬프트 정리·이미지 생성 중…':`이미지 대기 ${job.position}번째`):job.state==='awaiting_confirmation'?'이미지를 확인해 주세요':job.state==='shape_queued'?(job.running?'3D 모양을 만드는 중…':`3D 대기 ${job.position}번째`):job.state==='shape_ready'?'형상 생성 완료 · 후처리 준비 중':'생성 실패 · 횟수가 반환됐어요';

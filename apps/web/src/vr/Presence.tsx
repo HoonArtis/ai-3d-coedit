@@ -13,6 +13,7 @@ export function useViewingRoom(roomKey:string,snapshotId:string|null,token:strin
   void new Client(apiEndpoint).joinOrCreate('viewing',{token,roomKey,snapshotId}).then(joined=>{
    connection=joined;if(disposed){void joined.leave();return;}
    joined.onMessage('poses',raw=>{const parsed=vrAvatarsSchema.safeParse(raw);if(parsed.success&&!disposed)setAvatars(parsed.data.avatars.filter(a=>a.connectionId!==joined.sessionId));});
+   joined.onMessage('avatar-error',()=>{if(!disposed)setError('캐릭터 반영을 확인하지 못했어요. 제출본을 다시 선택해 주세요.');});
    joined.onLeave(()=>{if(!disposed){setRoom(null);setAvatars([]);setError('감상 방 연결이 끊겼어요. 제출본을 다시 선택해 주세요.');}});
    setRoom(joined);
   }).catch(e=>{if(!disposed)setError(String(e).includes('ROOM_FULL')?'편집자와 감상자를 합쳐 5명까지 입장할 수 있어요.':'감상 방에 연결하지 못했어요. 다시 선택해 주세요.');});

@@ -22,6 +22,17 @@ def load_image(path: Path) -> Image.Image:
     except (OSError, UnidentifiedImageError, Image.DecompressionBombWarning, Image.DecompressionBombError) as error:
         raise ValueError('INVALID_IMAGE') from error
 
+def reconstruction_prompt(subject: str) -> tuple[str, str]:
+    """One view for image-to-3D: show depth without inventing subject details."""
+    positive = (subject + ', three-quarter view, viewed diagonally from the side, '
+                'slightly elevated camera, single subject, entire subject in frame with margin, '
+                'centered, plain white background, soft even studio lighting, sharp detail')
+    negative = ('front view, straight-on view, close-up, cropped, cut off, multiple objects, '
+                'multiple views, collage, split screen, text, watermark, blurry, '
+                'strong shadows, fisheye, gore, nudity')
+    return positive, negative
+
+
 def generate_image(prompt: str, output: Path, seed: int = 42, steps: int = 25):
     if not prompt.strip(): raise ValueError('EMPTY_PROMPT')
     if len(prompt)>2000: raise ValueError('PROMPT_TOO_LONG')
@@ -31,8 +42,9 @@ def generate_image(prompt: str, output: Path, seed: int = 42, steps: int = 25):
     if not (model/'model_index.json').is_file(): raise ValueError('MODEL_MISSING')
     pipeline = StableDiffusionXLPipeline.from_pretrained(str(model), torch_dtype=torch.float16, variant='fp16', use_safetensors=True, local_files_only=True, add_watermarker=False)
     pipeline.enable_model_cpu_offload()
+    positive, negative = reconstruction_prompt(prompt)
     with torch.inference_mode():
-        image = pipeline(prompt=prompt+', full subject centered, isolated on a white background, studio lighting', negative_prompt='cropped, text, watermark, multiple objects, gore, nudity', height=768,width=768,num_inference_steps=steps,generator=torch.Generator('cpu').manual_seed(seed)).images[0]
+        image = pipeline(prompt=positive, negative_prompt=negative, height=768,width=768,num_inference_steps=steps,generator=torch.Generator('cpu').manual_seed(seed)).images[0]
     output=Path(output);output.parent.mkdir(parents=True,exist_ok=True)
     image.save(output,format='PNG')
-    return {'model':'sdxl-base-1.0','revision':'462165984030d82259a11f4367a4eed129e94a7b','seed':seed,'steps':steps,'width':image.width,'height':image.height}
+    return {'model':'sdxl-base-1.0','revision':'462165984030d82259a11f4367a4eed129e94a7b','seed':seed,'steps':steps,'width':image.width,'height':image.height,'compositionVersion':2,'positivePrompt':positive,'negativePrompt':negative}

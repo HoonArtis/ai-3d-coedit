@@ -8,6 +8,20 @@ const resumeSchema=z.object({code:codeSchema,resumeKey:z.string().min(43).max(80
 const claimSchema=resumeSchema.extend({roomKey:z.string().uuid(),ordinal:z.number().int().min(1).max(5)}).strict();
 export class ClassInvites{
  constructor(private accounts:AccountService){}
+ async view(raw:unknown){
+  const {code,roomKey,ordinal}=z.object({code:codeSchema,roomKey:z.string().uuid(),ordinal:z.number().int().min(1).max(5)}).strict().parse(raw);
+  const client=await this.accounts.pool.connect();
+  try{
+   await client.query('BEGIN');
+   const invite=await client.query('SELECT class_id,enabled FROM coedit_class_invites WHERE code=$1 FOR SHARE',[code]);
+   if(!invite.rows.length||!invite.rows[0].enabled)throw Error('INVITE_CLOSED');
+   const room=await client.query('SELECT id FROM coedit_class_rooms WHERE id=$1 AND class_id=$2',[roomKey,invite.rows[0].class_id]);if(!room.rows.length)throw Error('FORBIDDEN');
+   const student=await client.query('SELECT id FROM coedit_students WHERE room_id=$1 AND ordinal=$2 AND NOT archived FOR SHARE',[roomKey,ordinal]);
+   const token=randomBytes(32).toString('base64url'),actor=student.rows[0]?.id as string|undefined??randomUUID();
+   await client.query("INSERT INTO coedit_account_sessions(token_hash,actor,role,expires_at,view_only,viewer_room_id) VALUES($1,$2,'student',now()+interval '8 hours',true,$3)",[credentialDigest(token),actor,roomKey]);
+   await client.query('COMMIT');return {token,actor,roomKey,role:'student' as const,viewOnly:true};
+  }catch(error){await client.query('ROLLBACK');throw error;}finally{client.release();}
+ }
  async get(token:string,classId:string){
   await this.accounts.requireTeacherClass(token,classId);
   await this.accounts.pool.query('INSERT INTO coedit_class_invites(class_id,code) VALUES($1,$2) ON CONFLICT(class_id) DO NOTHING',[classId,randomBytes(6).toString('hex').toUpperCase()]);

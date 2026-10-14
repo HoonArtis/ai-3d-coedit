@@ -5,10 +5,10 @@ test('failed stages explain the stopping point and retry without claiming comple
  const finish={jobId:'job',version:1,phase:'material_choice' as const,preset:null,textureKey:null,artifactId:null,error:'TEXTURE_FAILED',staleScene:false};const texture=generationStatus({...job,state:'shape_ready',error:null,finishing:finish});expect(texture.failure).toContain('텍스처');expect(texture.hint).toContain('재질');expect(texture.hint).toContain('추가 횟수');
  const optimized=generationStatus({...job,finishing:{...finish,phase:'failed',error:'OPTIMIZE_FAILED'}});expect(optimized.failure).toContain('감량');
 });
-test('image and shape queue show stage and running state; approval is distinct from completed placement',()=>{
+test('image and shape queue show stage and running state; registration is distinct from completed placement',()=>{
  expect(generationStatus({...job,state:'image_queued',running:true}).label).toBe('프롬프트 정리·이미지 생성 중…');
  expect(generationStatus({...job,state:'image_queued',error:null,position:3}).label).toBe('이미지 대기 3번째');expect(generationStatus({...job,state:'shape_queued',error:null,running:true}).label).toContain('3D 모양');
- expect(generationStatus({...job,state:'shape_ready',error:null,finishing:{jobId:'job',version:1,phase:'pending_approval',preset:null,textureKey:null,artifactId:'a'.repeat(64),error:null,staleScene:false}}).label).toBe('강사 승인 대기');
+ expect(generationStatus({...job,state:'shape_ready',error:null,finishing:{jobId:'job',version:1,phase:'pending_approval',preset:null,textureKey:null,artifactId:'a'.repeat(64),error:null,staleScene:false}}).label).toBe('라이브러리 등록 중…');
 });
 test('cancelled requests show cancellation without failure or retry instructions',()=>{
  const status=generationStatus({...job,state:'cancelled',error:null});expect(status.label).toContain('요청 취소');expect(status.failure).toBeNull();expect(status.hint).toBeNull();

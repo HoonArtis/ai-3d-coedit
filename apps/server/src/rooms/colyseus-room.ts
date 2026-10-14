@@ -19,9 +19,10 @@ export function createStudioRoom(sessions:SessionResolver,repository?:RoomReposi
     async onCreate(options:{roomKey:string}){
       this.service=new RoomService(options.roomKey,BUILTIN_LIBRARY);
       let libraryFingerprint='';
+      const sendLibraries=()=>{for(const client of this.clients)client.send('event',{type:'library',library:this.service.getLibraryFor(client.sessionId)});};
       const refreshLibrary=async()=>{
         const library={...BUILTIN_LIBRARY,...await assets?.catalogForRoom(options.roomKey)},fingerprint=JSON.stringify(library);
-        if(fingerprint!==libraryFingerprint){this.service.setLibrary(library);libraryFingerprint=fingerprint;this.broadcast('event',{type:'library',library});}
+        if(fingerprint!==libraryFingerprint){this.service.setLibrary(library);libraryFingerprint=fingerprint;sendLibraries();}
       };
       await refreshLibrary();
       const durable=repository&&!(localPreview&&options.roomKey==='local-room')?await DurableRoom.open(this.service,repository,history):undefined;
@@ -31,6 +32,7 @@ export function createStudioRoom(sessions:SessionResolver,repository?:RoomReposi
           await refreshLibrary();const beforeSeq=this.service.snapshot.seq;
           const result=await generationCommand(this.service,clientId,payload,images,retexture)??(durable?await durable.submit(clientId,payload):this.service.submit(clientId,payload));
           if(result.ok){
+            if(result.changedIds.length)sendLibraries();
             this.broadcast('event',{type:'snapshot',snapshot:this.service.snapshot});this.broadcast('event',{type:'locks',locks:this.service.locks});
             const command=payload as {requestId:string;ops:{op:string}[]};
             if(result.snapshot.seq>beforeSeq&&result.snapshot.seq>lastRestorationSeq&&command.ops.some(op=>op.op==='restore_object'||op.op==='restore_snapshot')){
@@ -65,7 +67,7 @@ export function createStudioRoom(sessions:SessionResolver,repository?:RoomReposi
         const requestId=typeof payload==='object'&&payload!==null&&'requestId' in payload?payload.requestId:null;
         client.send('result',{requestId,result});
       });
-      this.onMessage('sync',client=>{client.send('event',{type:'library',library:this.service.getLibrary()});client.send('event',{type:'snapshot',snapshot:this.service.snapshot});client.send('event',{type:'locks',locks:this.service.locks});});
+      this.onMessage('sync',client=>{client.send('event',{type:'library',library:this.service.getLibraryFor(client.sessionId)});client.send('event',{type:'snapshot',snapshot:this.service.snapshot});client.send('event',{type:'locks',locks:this.service.locks});});
       this.clock.setInterval(()=>void refreshLibrary().catch(()=>{}),5000);
       this.onMessage('heartbeat',client=>this.service.heartbeat(client.sessionId));
       this.onMessage('preview',(client,event:unknown)=>{
@@ -88,7 +90,7 @@ export function createStudioRoom(sessions:SessionResolver,repository?:RoomReposi
       this.broadcast('event',{type:'locks',locks:this.service.locks});
       try{await this.allowReconnection(client,15);}catch{/* onLeave releases the reserved membership */}
     }
-    onReconnect(client:Client){if(!connections.current(client.auth.actor,client.auth.authRevision)){void client.leave(4003);return;}connections.add(client.auth.actor,client.sessionId,client.auth.authRevision,()=>{this.onLeave(client);void client.leave(4003);});client.send('event',{type:'snapshot',snapshot:this.service.snapshot});}
+    onReconnect(client:Client){if(!connections.current(client.auth.actor,client.auth.authRevision)){void client.leave(4003);return;}connections.add(client.auth.actor,client.sessionId,client.auth.authRevision,()=>{this.onLeave(client);void client.leave(4003);});client.send('event',{type:'library',library:this.service.getLibraryFor(client.sessionId)});client.send('event',{type:'snapshot',snapshot:this.service.snapshot});}
     onLeave(client:Client){connections.remove(client.auth.actor,client.sessionId);capacity.leave(this.service.snapshot.roomId,client.sessionId);this.service.leave(client.sessionId);this.broadcast('event',{type:'locks',locks:this.service.locks});}
   };
 }

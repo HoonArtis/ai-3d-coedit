@@ -2,7 +2,7 @@ import {emptyScene,parseCommand,parseSnapshot,previewSchema,type AssetDefinition
 import {applyExpandedCommand,mutationTargets} from './expand-command';
 import {LockService} from './locks';
 import {HistoryService} from './history';
-import {restoreScene,canWrite,type ResolvedRestoration} from '@coedit/domain';
+import {restoreScene,canWrite,canUseAsset,type ResolvedRestoration} from '@coedit/domain';
 export class RoomService {
   snapshot:SceneSnapshot;
   private members=new Map<string,Session>();private lockService:LockService;private history=new HistoryService();
@@ -14,6 +14,10 @@ export class RoomService {
   get locks():Record<string,Lease>{return this.lockService.public;}
   setLibrary(library:Record<string,AssetDefinition>){this.library=structuredClone(library);}
   getLibrary(){return structuredClone(this.library);}
+  getLibraryFor(clientId:string){
+    const session=this.getSession(clientId),placed=new Set(Object.values(this.snapshot.objects).map(object=>object.assetId));
+    return structuredClone(Object.fromEntries(Object.entries(this.library).filter(([id,asset])=>canUseAsset(asset,session)||placed.has(id))));
+  }
   get count(){return this.members.size;}
   getSession(clientId:string){const session=this.members.get(clientId);if(!session)throw Error('UNAUTHENTICATED');return session;}
   inspectMutation(clientId:string,raw:unknown,id:string){

@@ -1,4 +1,5 @@
 import type {Command,CommandContext,SceneObject} from '../../contracts/src/index';
+export {canUseAsset} from '../../contracts/src/index';
 export class CommandFailure extends Error {
   code:string;
   constructor(code:string,message:string){super(message);this.code=code;}

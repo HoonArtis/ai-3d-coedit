@@ -37,6 +37,12 @@ def prepare_texture():
     if patched not in source:
         if source.count(original)!=1:raise RuntimeError('Unexpected PyMeshLab import')
         path.write_text(source.replace(original,patched),encoding="utf-8")
+    source=path.read_text(encoding='utf-8')
+    original='    v_tex_np = (\n        uv_parameterize_uvatlas(v_pos, t_pos_idx)'
+    patched='    from workers.gpu.uv_mesh import clean_uv_faces\n    t_pos_idx = clean_uv_faces(v_pos, t_pos_idx)\n\n'+original
+    if '    t_pos_idx = clean_uv_faces(v_pos, t_pos_idx)' not in source:
+        if source.count(original)!=1:raise RuntimeError('Unexpected UVAtlas preparation')
+        path.write_text(source.replace(original,patched),encoding='utf-8')
     path=vendor/'mvadapter/pipelines/pipeline_mvadapter_i2mv_sdxl.py';source=path.read_text(encoding='utf-8')
     original='            ref_hidden_states = {}'
     patched='            from workers.gpu.reference_cache import ReferenceCache\n            ref_hidden_states = ReferenceCache()'
@@ -49,7 +55,7 @@ def prepare_texture():
     if patched not in source:
         if source.count(original)!=1:raise RuntimeError('Unexpected UV padding import')
         path.write_text(source.replace(original,patched),encoding='utf-8')
-    print(str(vendor),revision,'PercentageValue, offload reference cache, CPU UV padding compatibility patches')
+    print(str(vendor),revision,'PercentageValue, offload reference cache, CPU UV padding, collapsed UV triangle patches')
 
 if __name__=='__main__':
     import argparse

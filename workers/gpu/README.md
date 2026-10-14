@@ -9,3 +9,5 @@ TripoSG's original NumPy 1.22.3 pin is incompatible with this Python 3.11 enviro
 RMBG-1.4 is research only. Do not use this path for a sales build without an appropriate license or the approved replacement. The adapter uses the locally audited Python model definition from TripoSG instead of fetching arbitrary remote code.
 
 Each queue execution writes a content-addressed output and an atomic receipt after successful completion. Retry reuses a completed receipt, while a crash before publication may recompute. Partial stage files are never published. GPU processes run serially, are bounded to ten minutes per stage, and are terminated on cancellation/shutdown. The server's durable outbox keeps queue delivery retryable after Redis/server restart.
+
+Run `-m workers.gpu.prepare_vendor --texture` after updating the code: its repeatable UVAtlas compatibility patch removes float32-degenerate triangles after mesh preprocessing. See `docs/evidence/texture-uv-repair.md`. Changes to shared contracts also require restarting idle CPU/LLM workers, not just the web server.

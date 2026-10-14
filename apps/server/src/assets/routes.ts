@@ -9,6 +9,10 @@ export function assetRoutes(service:AssetService){
   res.json(await service.decide(bearer(req),idSchema.parse(req.params.classId),idSchema.parse(req.params.jobId),input.version,input.decision));
  });
  router.get('/rooms/:roomId/library',async(req,res)=>res.json(await service.library(bearer(req),idSchema.parse(req.params.roomId))));
+ router.get('/rooms/:roomId/asset-history',async(req,res)=>res.json(await service.history(bearer(req),idSchema.parse(req.params.roomId))));
+ router.post('/rooms/:roomId/assets/:artifactId/share',json({limit:'1kb'}),async(req,res)=>{
+  z.object({}).strict().parse(req.body);res.json(await service.share(bearer(req),idSchema.parse(req.params.roomId),objectKeySchema.parse(req.params.artifactId)));
+ });
  router.get('/assets/:artifactId/:kind',async(req,res)=>{
   const kind=z.enum(['glb','preview','avatar']).parse(req.params.kind),bytes=await service.file(bearer(req),objectKeySchema.parse(req.params.artifactId),kind==='preview',kind==='avatar');
   res.setHeader('Cache-Control','private, no-store');res.type('model/gltf-binary').send(Buffer.from(bytes));
