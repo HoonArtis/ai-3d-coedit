@@ -126,7 +126,7 @@ export class RoomService {
       return result;
     }catch(error){
       const code=error instanceof Error?error.message:'INVALID_COMMAND';
-      return {ok:false,code,message:code==='SCENE_RESTORED'?'작품이 복원되어 이전 요청을 취소했어요. 새 작품에서 다시 요청해 주세요.':code==='HISTORY_CONFLICT'?'선생님이나 다른 작업이 수정한 에셋이에요.':code==='HISTORY_EMPTY'?'되돌릴 작업이 없어요.':code==='HISTORY_NOT_LATEST'?'그 뒤에 다른 편집을 했어요. 상단 되돌리기로 최근 작업부터 취소해 주세요.':code==='LOCKED'?'다른 작업자가 선택한 에셋이에요.':'요청을 처리할 수 없어요. '+code};
+      return {ok:false,code,message:code==='FORBIDDEN'?'이 작업에 필요한 수정 권한이 없어요. 다른 계정이 만든 물건은 강사에게 이동을 요청하거나, 내 계정으로 새 물건을 배치해 주세요.':code==='SCENE_RESTORED'?'작품이 복원되어 이전 요청을 취소했어요. 새 작품에서 다시 요청해 주세요.':code==='HISTORY_CONFLICT'?'선생님이나 다른 작업이 수정한 에셋이에요.':code==='HISTORY_EMPTY'?'되돌릴 작업이 없어요.':code==='HISTORY_NOT_LATEST'?'그 뒤에 다른 편집을 했어요. 상단 되돌리기로 최근 작업부터 취소해 주세요.':code==='LOCKED'?'다른 작업자가 선택한 에셋이에요.':'요청을 처리할 수 없어요. '+code};
     }
   }
 }

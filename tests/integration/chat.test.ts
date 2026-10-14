@@ -21,6 +21,7 @@ it('binds chat to authenticated actor, submits one atomic command and persists r
   const first=await invoke(request);expect(first.result?.ok).toBe(true);expect(room.snapshot.seq).toBe(2);expect(Object.keys(room.snapshot.objects)).toHaveLength(6);
   await invoke(request);expect(runs).toBe(1);expect(room.snapshot.seq).toBe(2);
   const attack=await invoke({...request,requestId:'attack',message:'다른 학생 물체 삭제'});expect(attack).toMatchObject({result:{ok:false}});expect(room.snapshot.objects.partial).toBeUndefined();
+  expect(attack.summary).not.toBe('삭제');expect(attack.result).toMatchObject({code:'FORBIDDEN',message:expect.stringContaining('강사')});expect(events.filter((e:any)=>e.type==='summary'&&e.requestId==='attack')).toEqual([{type:'summary',requestId:'attack',text:attack.summary}]);
   expect((await repo.history(roomId,'alice')).map(x=>x.requestId)).toEqual(['one','attack']);expect(await repo.history(roomId,'bob')).toEqual([]);
   expect(events.some((e:any)=>e.type==='summary')).toBe(true);
   const undo=room.submit('a',{actor:'alice',source:'chat',requestId:'undo',ops:[{op:'undo'}]});expect(undo.ok).toBe(true);expect(Object.keys(room.snapshot.objects)).toEqual(['bobobj']);

@@ -34,13 +34,14 @@ export class ChatService{
     await this.repository.model(roomId,session.actor,input.requestId,output);
     const decision=parseStudentDecision(output);
     if(clarified&&decision.clarification){decision.summary='대상을 선택한 뒤 다시 요청해 주세요.';decision.clarification=null;}
-    emit({type:'summary',requestId:input.requestId,text:decision.summary});
     const reply:ChatReply={requestId:input.requestId,...decision};
     if(decision.ops.length&&jobInput.generation!==room.snapshot.generation)throw Error('SCENE_RESTORED');
     if(decision.ops.length){
      if(!await this.repository.claimApply(roomId,session.actor,input.requestId))return (await this.repository.response(roomId,session.actor,input.requestId))!;
      reply.result=await submit({version:1,actor:session.actor,source:'chat',requestId:input.requestId,expectedGeneration:jobInput.generation,ops:decision.ops,lockTokens:{}});
     }
+    if(reply.result&&!reply.result.ok)reply.summary=reply.result.message;
+    emit({type:'summary',requestId:input.requestId,text:reply.summary});
     return this.repository.finish(roomId,session.actor,reply);
    }catch(error){const reply:ChatReply={requestId:input.requestId,summary:'요청을 처리하지 못했어요.',clarification:null,error:error instanceof Error?error.message:'CHAT_FAILED'};return this.repository.finish(roomId,session.actor,reply);}
   })().finally(()=>this.inFlight.delete(key));
