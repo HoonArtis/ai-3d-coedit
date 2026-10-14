@@ -55,6 +55,12 @@ export async function connectRoom():Promise<RoomTransport>{
   const key='coedit-local-identity';
   const account=localStorage.getItem('coedit-account-identity');
   let saved:Identity|null=null;try{saved=JSON.parse(account??localStorage.getItem(key)??'null');}catch{/* replace invalid local identity */}
+  // Older class-code sessions omitted storage. Recover metadata from authenticated server.
+  if(account&&saved&&saved.storage===undefined){
+    const response=await fetch(endpoint+'/api/room-session',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+saved.token},body:JSON.stringify({roomKey:saved.roomKey})});
+    if(!response.ok)throw Error('수업 로그인이 만료되었어요. 다시 입장해 주세요.');
+    saved=await response.json() as Identity;localStorage.setItem('coedit-account-identity',JSON.stringify(saved));
+  }
   for(let attempt=0;attempt<2;attempt++){
     if(!saved){
       const response=await fetch(endpoint+'/api/local-session',{method:'POST'});

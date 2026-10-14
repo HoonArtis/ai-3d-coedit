@@ -13,8 +13,10 @@ test('teacher creates a classroom and student chooses a seat using the common cl
   const code=await page.getByLabel('공통 코드 수업 초대 코드').inputValue();expect(code.length).toBeGreaterThanOrEqual(10);
   studentContext=await browser.newContext();const student=await studentContext.newPage();await student.goto('/?login=1');await student.getByLabel('수업 초대 코드').fill(code);await student.getByRole('button',{name:'자리 선택하기',exact:true}).click();
   await expect(student.getByRole('heading',{name:'공통 코드 수업',exact:true})).toBeVisible();await student.getByRole('button',{name:'1조 학생 3 자리 선택',exact:true}).click();await expect(student.getByText('서버 연결됨',{exact:true})).toBeVisible();
+  await expect(student.getByText('새 에셋 만들기',{exact:true})).toBeVisible();
+  await student.evaluate(()=>{const key='coedit-account-identity',identity=JSON.parse(localStorage.getItem(key)!);delete identity.storage;localStorage.setItem(key,JSON.stringify(identity));});await student.reload();await expect(student.getByText('새 에셋 만들기',{exact:true})).toBeVisible();
   await student.getByRole('button',{name:'라운지 의자 배치'}).dblclick();await expect(student.getByLabel('에셋 수')).toHaveText('1 / 200');
-  await student.goto('/?login=1');await student.getByLabel('수업 초대 코드').fill(code);await student.getByRole('button',{name:'자리 선택하기',exact:true}).click();await student.getByRole('button',{name:'내 자리로 돌아가기',exact:true}).click();await expect(student.getByLabel('에셋 수')).toHaveText('1 / 200');
+  await student.goto('/?login=1');await student.getByLabel('수업 초대 코드').fill(code);await student.getByRole('button',{name:'자리 선택하기',exact:true}).click();await student.getByRole('button',{name:'내 자리로 돌아가기',exact:true}).click();await expect(student.getByLabel('에셋 수')).toHaveText('1 / 200');await expect(student.getByText('새 에셋 만들기',{exact:true})).toBeVisible();
  }finally{
   await studentContext?.close();await page.goto('about:blank');const pool=new Pool({connectionString:'postgres://coedit:coedit_local_only@127.0.0.1:54329/coedit'});await pool.query('DELETE FROM coedit_teachers WHERE username=$1',[username]);await pool.end();
  }
