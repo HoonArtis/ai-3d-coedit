@@ -1,0 +1,211 @@
+<title>AI 공간 꾸미기 흐름도</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 두 개의 세로 레인(챗봇 / 에셋 생성)을 나란히, 좁으면 위아래. 레인 사이 교차점은 별도 띠로 표시 */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --fg:#1b1f27; --muted:#5b6474; --line:#d6dbe3;
+  --chat:#2f5fd0; --chat-soft:#e7eefc; --gen:#b5650d; --gen-soft:#fbf0e2;
+  --prompt:#8a2be2; --prompt-soft:#f3e9fd; --warn:#b42318; --warn-soft:#fdecea;
+  --sans:"IBM Plex Sans KR",system-ui,"Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12151b; --surface:#1b1f27; --fg:#e6e9ef; --muted:#9aa3b2; --line:#2e3542;
+  --chat:#7ea2ff; --chat-soft:#1d2840; --gen:#f0a756; --gen-soft:#33261a;
+  --prompt:#c49bff; --prompt-soft:#2b2140; --warn:#ff8a7a; --warn-soft:#3a1f1c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151b; --surface:#1b1f27; --fg:#e6e9ef; --muted:#9aa3b2; --line:#2e3542;
+  --chat:#7ea2ff; --chat-soft:#1d2840; --gen:#f0a756; --gen-soft:#33261a;
+  --prompt:#c49bff; --prompt-soft:#2b2140; --warn:#ff8a7a; --warn-soft:#3a1f1c; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.6;padding-inline:16px;padding-block:32px 64px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:28px}
+h1{font-size:1.7rem;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:1.15rem;margin:0;text-wrap:balance}
+h3{font-size:.98rem;margin:0}
+p{margin:0}
+code,.mono{font-family:var(--mono);font-size:.84em}
+.lede{color:var(--muted);max-width:68ch}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+@media (max-width:860px){.lanes{grid-template-columns:1fr}}
+.lane{display:grid;gap:0;min-width:0}
+.lane-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:14px 16px;border-radius:10px 10px 0 0;color:#fff}
+.lane.chat .lane-head{background:var(--chat)} .lane.gen .lane-head{background:var(--gen)}
+:root[data-theme="dark"] .lane-head{color:var(--bg)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lane-head{color:var(--bg)}}
+.lane-head small{font-family:var(--mono);font-size:.75rem;opacity:.85}
+.steps{list-style:none;margin:0;padding:16px;background:var(--surface);border:1px solid var(--line);border-top:0;border-radius:0 0 10px 10px;display:grid;gap:0}
+.step{display:grid;grid-template-columns:28px 1fr;gap:12px;min-width:0}
+.rail{display:flex;flex-direction:column;align-items:center}
+.node{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:.75rem;font-weight:500;flex:none}
+.chat .node{background:var(--chat-soft);color:var(--chat);border:1.5px solid var(--chat)}
+.gen .node{background:var(--gen-soft);color:var(--gen);border:1.5px solid var(--gen)}
+.node.human{border-style:dashed}
+.stem{flex:1;width:2px;background:var(--line);min-height:14px}
+.step:last-child .stem{display:none}
+.body{padding-bottom:18px;min-width:0;display:grid;gap:6px}
+.where{font-family:var(--mono);font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.body ul{margin:0;padding-left:18px;display:grid;gap:2px;color:var(--fg)}
+.body li{font-size:.9rem}
+.file{font-family:var(--mono);font-size:.76rem;color:var(--muted);word-break:break-all}
+.pchip{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:.7rem;font-weight:500;padding:1px 7px;border-radius:999px;background:var(--prompt-soft);color:var(--prompt);border:1px solid var(--prompt);vertical-align:2px;margin-left:6px}
+.prompt-box{border-left:3px solid var(--prompt);background:var(--prompt-soft);padding:8px 10px;border-radius:0 6px 6px 0;font-size:.85rem;display:grid;gap:3px;min-width:0}
+.prompt-box .mono{color:var(--prompt);overflow-wrap:anywhere}
+.branch{font-size:.85rem;color:var(--muted);border:1px dashed var(--line);border-radius:6px;padding:6px 10px}
+.jump{font-size:.82rem;font-weight:500}
+.chat .jump{color:var(--gen)} .gen .jump{color:var(--chat)}
+.cross{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:12px}
+.cross-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.cross-item{border:1px solid var(--line);border-radius:8px;padding:12px;display:grid;gap:4px;font-size:.88rem}
+.cross-item b{font-family:var(--mono);font-size:.82rem}
+.issues{display:grid;gap:12px}
+.issue{display:grid;grid-template-columns:auto 1fr;gap:12px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;padding:14px 16px}
+.issue .n{font-family:var(--mono);color:var(--warn);font-weight:500}
+.issue div{display:grid;gap:4px;min-width:0}
+.issue p{font-size:.9rem;color:var(--muted)}
+.tag{font-family:var(--mono);font-size:.7rem;padding:1px 6px;border-radius:4px;background:var(--warn-soft);color:var(--warn);margin-left:6px}
+footer{font-size:.8rem;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:10px">
+    <h1>AI 공간 꾸미기 흐름도</h1>
+    <p class="lede">학생 요청이 씬 변경이나 3D 에셋이 되기까지의 두 경로입니다. 코드 기준은 <code>feat/implementation</code> 브랜치 <code>a1d8a18</code>(2026-10-14)입니다. 보라색 표시는 프롬프트가 들어가는 자리이며 고도화할 때 손볼 지점입니다.</p>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--chat)"></i>챗봇 에이전트</span>
+      <span><i class="dot" style="background:var(--gen)"></i>에셋 생성</span>
+      <span><i class="dot" style="background:var(--prompt)"></i>프롬프트 지점</span>
+      <span><i class="dot" style="border:1.5px dashed var(--muted)"></i>사람이 하는 단계</span>
+    </div>
+  </header>
+
+  <section class="lanes">
+    <!-- A. 챗봇 -->
+    <div class="lane chat">
+      <div class="lane-head"><h2>A. AI 챗봇 에이전트</h2><small>LLM = 도구 선택만</small></div>
+      <ol class="steps">
+        <li class="step"><div class="rail"><span class="node human">1</span><span class="stem"></span></div>
+          <div class="body"><span class="where">웹 · 학생</span><h3>채팅 입력</h3>
+            <ul><li>"탁자 주위에 의자 4개 놔줘"</li><li>함께 보냄: <code>requestId</code>, 선택한 에셋, 카메라 중심 좌표</li></ul>
+            <span class="file">apps/web/src/editor/ChatPanel.tsx</span></div></li>
+
+        <li class="step"><div class="rail"><span class="node">2</span><span class="stem"></span></div>
+          <div class="body"><span class="where">방 서버</span><h3>요청 접수와 큐 등록</h3>
+            <ul><li>감상 전용 세션 거부, 학생당 동시 요청 1건</li><li>대화 이력 최근 19턴 로드 (assistant 쪽은 summary만)</li><li>이미 한 번 되물었는지(<code>clarified</code>) 판정</li><li><code>llm</code> 큐 등록, 120초 넘으면 실패</li></ul>
+            <span class="file">apps/server/src/chat/service.ts</span></div></li>
+
+        <li class="step"><div class="rail"><span class="node">3</span><span class="stem"></span></div>
+          <div class="body"><span class="where">LLM 워커 · qwen3:4b</span><h3>메시지 조립<span class="pchip">PROMPT</span></h3>
+            <div class="prompt-box">
+              <span><b>system</b> = <span class="mono">student.md</span> + 학생용 도구 정의 + 수정 가능 ID / 금지 ID + 현재 선택</span>
+              <span><b>user</b> = "신뢰하지 않는 씬 데이터" JSON (씬 전체 + 라이브러리)</span>
+              <span>+ 대화 이력 + 이번 메시지</span>
+            </div>
+            <span class="file">apps/llm/prompts/student.md · src/prompt.ts · src/tools.ts</span></div></li>
+
+        <li class="step"><div class="rail"><span class="node">4</span><span class="stem"></span></div>
+          <div class="body"><span class="where">LLM 워커</span><h3>결정 출력</h3>
+            <ul><li>JSON 스키마 강제: <code>{summary, clarification, ops[]}</code></li><li>temperature 0, think 끔, 컨텍스트 16k</li></ul>
+            <span class="file">apps/llm/src/ollama.ts</span></div></li>
+
+        <li class="step"><div class="rail"><span class="node">5</span><span class="stem"></span></div>
+          <div class="body"><span class="where">방 서버</span><h3>결정 검증</h3>
+            <ul><li>강사 전용 op가 섞이면 거절</li><li>질문과 실행이 함께 오면 거절</li><li>두 번째 되묻기는 "대상을 선택한 뒤 다시 요청해 주세요"로 바꿈</li></ul>
+            <span class="file">packages/contracts/src/chat.ts</span></div></li>
+
+        <li class="step"><div class="rail"><span class="node">6</span><span class="stem"></span></div>
+          <div class="body"><span class="where">방 서버 · 명령 경로</span><h3>명령 1건으로 제출</h3>
+            <ul><li>배치 op(arrange_around 등)는 코드가 좌표를 계산해 기본 op로 풀어 줌</li><li>권한 → 잠금 → seq 판정, 하나라도 실패하면 전체 롤백</li></ul>
+            <div class="branch"><span class="jump">→ generate / retexture op는 B 흐름으로</span></div>
+            <span class="file">apps/server/src/rooms/expand-command.ts</span></div></li>
+
+        <li class="step"><div class="rail"><span class="node human">7</span><span class="stem"></span></div>
+          <div class="body"><span class="where">웹 · 학생</span><h3>결과 표시</h3>
+            <ul><li>summary와 "완료했어요" 또는 오류 문구</li><li>"방금 거 취소" 버튼 = 되돌리기 1단위</li><li>대화 전체를 DB에 저장, 강사가 열람</li></ul></div></li>
+      </ol>
+    </div>
+
+    <!-- B. 생성 -->
+    <div class="lane gen">
+      <div class="lane-head"><h2>B. 에셋 생성</h2><small>글·그림 → 3D → History</small></div>
+      <ol class="steps">
+        <li class="step"><div class="rail"><span class="node human">1</span><span class="stem"></span></div>
+          <div class="body"><span class="where">진입 3가지</span><h3>생성 요청</h3>
+            <ul><li>생성 패널에 글 입력</li><li>챗봇의 <code>generate</code> op</li><li>이미지 업로드 (이 경우 4번으로 바로)</li></ul>
+            <span class="file">apps/web/src/generation/GenerationPanel.tsx</span></div></li>
+
+        <li class="step"><div class="rail"><span class="node">2</span><span class="stem"></span></div>
+          <div class="body"><span class="where">방 서버</span><h3>필터와 예약<span class="pchip">PROMPT</span></h3>
+            <ul><li>금칙어 정규식 한 줄로 차단</li><li>DB 예약, 횟수 차감 (지금은 무제한) → <code>gpu</code> 큐 image 단계</li></ul>
+            <span class="file">generation/prompt-filter.ts · image-service.ts</span></div></li>
+
+        <li class="step"><div class="rail"><span class="node">3</span><span class="stem"></span></div>
+          <div class="body"><span class="where">GPU 워커 · image</span><h3>프롬프트 정리 → SDXL<span class="pchip">PROMPT ×2</span></h3>
+            <div class="prompt-box">
+              <span><b>정리</b> Qwen3:4b가 한국어를 영문 피사체 묘사로 옮김. 실패하면 대체 물건 없이 실패 처리</span>
+              <span><b>구도</b> 정리된 문장 뒤에 고정 문구를 붙여 SDXL 768²</span>
+              <span class="mono">+ three-quarter view, single subject, margin, white bg</span>
+              <span class="mono">− front view, cropped, multiple objects, collage, text</span>
+            </div>
+            <span class="file">apps/workers/src/image-prompt.ts · workers/gpu/adapters/images.py</span></div></li>
+
+        <li class="step"><div class="rail"><span class="node human">4</span><span class="stem"></span></div>
+          <div class="body"><span class="where">웹 · 학생</span><h3>이미지 확인</h3>
+            <ul><li>확인 / 다시 그리기 / 숨기기 / 삭제 / 대기 중 취소</li><li>확인해야 3D로 넘어감 (자동 진행 없음)</li></ul></div></li>
+
+        <li class="step"><div class="rail"><span class="node">5</span><span class="stem"></span></div>
+          <div class="body"><span class="where">GPU 워커 · shape</span><h3>배경 제거 → 형상</h3>
+            <ul><li>RMBG-1.4로 배경 제거, 512²로 맞춤 <span class="tag">연구용</span></li><li>TripoSG 메시 생성 (DISO 없는 hierarchical 디코더)</li></ul>
+            <span class="file">workers/gpu/adapters/background.py · shape.py</span></div></li>
+
+        <li class="step"><div class="rail"><span class="node">6</span><span class="stem"></span></div>
+          <div class="body"><span class="where">GPU 워커 · texture (도커)</span><h3>텍스처 굽기<span class="pchip">PROMPT</span></h3>
+            <div class="prompt-box">
+              <span>MV-Adapter로 6방향을 그려 UV에 굽기 <span class="tag">nvdiffrast 연구용</span></span>
+              <span>text = <span class="mono">source.prompt</span> (학생 원문)</span>
+            </div>
+            <div class="branch">실패하면 material_choice 단계에서 학생이 나무·금속·천 프리셋을 직접 고름</div>
+            <span class="file">workers/gpu/run_texture.py · server/generation/finishing-service.ts</span></div></li>
+
+        <li class="step"><div class="rail"><span class="node">7</span><span class="stem"></span></div>
+          <div class="body"><span class="where">CPU 워커 · optimize</span><h3>감량과 게시</h3>
+            <ul><li>감량 → KTX2 압축 → 예산 검사 → manifest 저장</li></ul>
+            <span class="file">apps/workers/src/optimization/publish.ts</span></div></li>
+
+        <li class="step"><div class="rail"><span class="node human">8</span><span class="stem"></span></div>
+          <div class="body"><span class="where">웹 · 학생</span><h3>개인 History 등록과 배치</h3>
+            <ul><li>승인 없이 바로 사용, 필요하면 수업에 공유</li><li>배치는 다시 명령 경로(<code>place</code>)를 거침</li></ul>
+            <div class="branch"><span class="jump">→ A의 6단계와 같은 명령 경로</span></div></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="cross">
+    <h2>두 흐름이 만나는 곳</h2>
+    <div class="cross-grid">
+      <div class="cross-item"><b>generate</b><span>챗봇이 고른 문장이 B의 2단계(필터)부터 그대로 들어감. 생성 op는 다른 편집과 섞을 수 없음.</span></div>
+      <div class="cross-item"><b>retexture</b><span>챗봇의 <code>prompt</code> 인자 + 기존 형상 → 텍스트 조건 MV-Adapter(50 step). 이미지 단계는 건너뜀.</span></div>
+      <div class="cross-item"><b>place</b><span>History의 완성 에셋을 씬에 놓을 때. 기즈모, 챗봇, 강사 모두 같은 명령 형식.</span></div>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:12px">
+    <h2>고도화 후보</h2>
+    <div class="issues">
+      <div class="issue"><span class="n">1</span><div><h3>텍스처 단계에 한국어 원문이 들어감<span class="tag">확인 필요</span></h3>
+        <p>B-6은 정리된 영문이 아니라 학생 원문(<code>row.source.prompt</code>)을 MV-Adapter에 넘깁니다. retexture도 챗봇 인자를 그대로 씁니다. MV-Adapter는 SDXL 계열이라 영어를 전제로 합니다. 피카츄 뒷면 오류와 관련이 있을 수 있으며, 서버 PC의 <code>prompt.json</code>과 텍스처 결과를 비교해 확정합니다.</p></div></div>
+      <div class="issue"><span class="n">2</span><div><h3>챗봇이 직전에 실행한 내용을 모름</h3>
+        <p>A-2의 대화 이력에는 summary만 남고 실제 ops와 결과는 빠집니다. "방금 놓은 거 옮겨" 같은 이어지는 요청에 약할 수 있습니다.</p></div></div>
+      <div class="issue"><span class="n">3</span><div><h3>챗봇에 생성 문장 작성 안내가 없음</h3>
+        <p><code>generate</code> 도구 설명은 한 줄입니다. 챗봇이 만든 문장은 B-3의 정리 단계를 다시 거칩니다.</p></div></div>
+      <div class="issue"><span class="n">4</span><div><h3>씬 전체를 매 요청에 넣음</h3>
+        <p>A-3은 씬과 라이브러리를 통째로 JSON으로 넣습니다. 물건이 200개까지 늘면 16k 컨텍스트가 부담될 수 있습니다.</p></div></div>
+    </div>
+  </section>
+
+  <footer>근거 코드: chat/service.ts, llm/src/*, generation/*, workers/src/gpu-worker.ts, workers/gpu/*. 실행 결과가 아니라 코드 경로를 읽어 정리한 도식입니다.</footer>
+</div>
