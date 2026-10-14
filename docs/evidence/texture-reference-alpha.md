@@ -39,3 +39,13 @@ SDXL로 새로 만든 피카츄(seed 31337, 단일 전신)로 같은 비교를 �
 - 텍스처 텍스트에 "등까지 노란 털" 설명을 넣어도 거의 변화가 없었다. 이미지 조건 모드에서 텍스트는 뒷면을 좌우하지 못한다.
 - SDXL에 뒷모습을 요청해도 4개 seed 모두 정면이나 콜라주였다: [시도](texture-reference-alpha/sdxl-back-view-attempts.png). 현재 이미지 모델로 뒷모습 자동 생성은 안 된다.
 - 6방향 중 뒷면(180°) 칸만 몸 색으로 바꿔 다시 구우면(`workers/gpu/bake_views.py`) 정뒷면은 노랗게 붙고 큰 이음새는 없었다. 하지만 좌우(90°/270°) 칸이 지어낸 엉덩이의 검정·빨강이 남는다: [비교](texture-reference-alpha/pikachu-back-shown.png). 뒷면을 보여주려면 뒷면 한 칸이 아니라 좌우 칸의 뒤쪽 절반까지 함께 다뤄야 한다.
+
+## TRELLIS-image-large 비교 (같은 날, 실험만)
+
+같은 RGBA 참고 이미지를 TRELLIS-image-large(MIT, seed1)에 넣어 형상·텍스처를 한 번에 만들었다. 실험 환경은 `.cache/trellis-image`(Git 제외)이며 제품 코드에는 넣지 않았다.
+
+- 시간: 물체당 약 45~52초(3080 Ti). 현재 경로는 이 PC에서 형상 64초 + 텍스처 약 265초다.
+- 메모리: 최고 예약 약 13.6~13.9GB. 12GB에서는 생성 모델을 CPU로 내린 뒤 굽기를 해야 한다(그러지 않으면 굽기가 1 it/s로 떨어진다). 서버 16GB에는 맞을 것으로 보이나 미실측.
+- 결과: [피카츄](texture-reference-alpha/trellis-pikachu.png), [고양이](texture-reference-alpha/trellis-cat.png). 뒷면이 앞과 같은 계열 색으로 이어져 검은 띠는 없다. 피카츄 엉덩이의 검정·빨강 무늬와 꼬리가 몸에서 떨어진 판으로 나오는 형상 문제는 있다. 고양이는 자세가 원본과 다르게(웅크린 형태) 해석됐다.
+- 출력 GLB는 `metallicFactor`가 없어 glTF 기본값 1(금속)로 읽힌다. 통합하면 0으로 고쳐야 한다.
+- 라이선스: 모델·코드 MIT. 굽기에 nvdiffrast(연구용, 현재 경로와 같음)와 Inria `diff-gaussian-rasterization`(비상업)을 쓴다. 판매 경로라면 후자를 gsplat(Apache-2.0) 등으로 바꿔야 한다.

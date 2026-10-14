@@ -12,6 +12,8 @@ const renderer=new T.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
 const loader=new GLTFLoader();
 for(const [row,name] of names.entries()){
  const gltf=await loader.loadAsync('/v/'+name+'.glb'),scene=new T.Scene();scene.add(new T.AmbientLight(0xffffff,2.2));const light=new T.DirectionalLight(0xffffff,1.2);light.position.set(1,2,2);scene.add(light);scene.add(gltf.scene);
+ // TRELLIS GLBs omit metallicFactor, which glTF reads as fully metallic and renders black without an environment map.
+ gltf.scene.traverse(o=>{if(o.material&&!o.material.metalnessMap)o.material.metalness=0;});
  const box=new T.Box3().setFromObject(gltf.scene),center=box.getCenter(new T.Vector3()),radius=box.getSize(new T.Vector3()).length()/2;
  for(const [col,deg] of angles.entries()){const a=deg*Math.PI/180,camera=new T.PerspectiveCamera(30,1,.01,100);camera.position.set(center.x+Math.sin(a)*radius*3.4,center.y+radius*.6,center.z+Math.cos(a)*radius*3.4);camera.lookAt(center);
   const y=(names.length-1-row)*cell;renderer.setViewport(col*cell,y,cell,cell);renderer.setScissor(col*cell,y,cell,cell);renderer.render(scene,camera);}
