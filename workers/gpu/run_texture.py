@@ -1,5 +1,5 @@
 """Research-only MV-Adapter runner for the pinned Linux container. Offline weights."""
-import argparse,json,sys,time,gc
+import argparse,json,os,sys,time,gc
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/'.cache/MV-Adapter'))
@@ -24,7 +24,8 @@ def run(mesh:Path,image:Path|None,output:Path,prompt:str,steps:int=30,resolution
     pipe.init_custom_adapter(num_views=6,self_attn_processor=DecoupledMVRowColSelfAttnProcessor2_0)
     pipe.load_custom_adapter(str(ROOT/'.cache/models/mvadapter'),weight_name='mvadapter_tg2mv_sdxl.safetensors' if image is None else 'mvadapter_ig2mv_sdxl.safetensors')
     pipe.to(dtype=torch.float16);pipe.cond_encoder.to(device='cuda',dtype=torch.float16)
-    pipe.enable_vae_slicing();pipe.enable_model_cpu_offload()
+    # 512 peaks ~11.6GB reserved on a 16GB card. TEXTURE_SEQUENTIAL_OFFLOAD=1 trades speed for fitting smaller cards.
+    pipe.enable_vae_slicing();pipe.enable_sequential_cpu_offload() if os.environ.get('TEXTURE_SEQUENTIAL_OFFLOAD')=='1' else pipe.enable_model_cpu_offload()
     output.parent.mkdir(parents=True,exist_ok=True)
     condition={'negative_prompt':'watermark, ugly, deformed, noisy, blurry, low contrast'} if image is None else {'image':str(image)}
     images=run_pipeline(pipe,mesh_path=str(mesh),num_views=6,text=prompt,height=resolution,width=resolution,num_inference_steps=steps,guidance_scale=7.0 if image is None else 3.0,seed=42,device='cuda',**condition)[0]

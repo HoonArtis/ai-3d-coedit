@@ -3,7 +3,8 @@ from PIL import Image
 import numpy as np
 from .images import load_image, ROOT
 
-def prepare_foreground(source: Path, output: Path):
+def prepare_foreground(source: Path, output: Path, keep_alpha: bool = False):
+    """keep_alpha: transparent RGBA for MV-Adapter, which crops by alpha and fills its own grey background."""
     image=load_image(source)
     alpha=np.asarray(image.getchannel('A'))
     if alpha.max()==0: raise ValueError('EMPTY_FOREGROUND')
@@ -28,7 +29,9 @@ def prepare_foreground(source: Path, output: Path):
     box=mask.getbbox()
     if not box or np.count_nonzero(np.array(mask))<image.width*image.height*0.005: raise ValueError('EMPTY_FOREGROUND')
     image.putalpha(Image.fromarray(alpha));cropped=image.crop(box)
-    side=max(cropped.size);canvas=Image.new('RGBA',(int(side*1.2),int(side*1.2)),(255,255,255,255))
+    side=max(cropped.size);canvas=Image.new('RGBA',(int(side*1.2),int(side*1.2)),(0,0,0,0) if keep_alpha else (255,255,255,255))
     canvas.alpha_composite(cropped,((canvas.width-cropped.width)//2,(canvas.height-cropped.height)//2))
-    output=Path(output);output.parent.mkdir(parents=True,exist_ok=True);canvas.convert('RGB').resize((512,512),Image.Resampling.LANCZOS).save(output,format='PNG')
-    return {'model':model,'sourceSize':list(image.size),'preparedSize':[512,512]}
+    output=Path(output);output.parent.mkdir(parents=True,exist_ok=True)
+    size=768 if keep_alpha else 512
+    (canvas if keep_alpha else canvas.convert('RGB')).resize((size,size),Image.Resampling.LANCZOS).save(output,format='PNG')
+    return {'model':model,'sourceSize':list(image.size),'preparedSize':[size,size],'alpha':keep_alpha}

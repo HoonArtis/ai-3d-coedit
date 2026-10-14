@@ -26,6 +26,16 @@ def test_alpha_input_skips_restricted_model_and_rejects_empty_foreground(tmp_pat
     Image.new('RGBA',(32,32),(0,0,0,0)).save(source)
     with pytest.raises(ValueError,match='EMPTY_FOREGROUND'):prepare_foreground(source,output)
 
+def test_keep_alpha_returns_transparent_texture_reference(tmp_path):
+    image = Image.new('RGBA',(32,32),(0,0,0,0))
+    image.paste((230,20,30,255),(8,8,24,24))
+    source=tmp_path/'alpha.png'; image.save(source)
+    output=tmp_path/'reference.png'
+    result=prepare_foreground(source,output,keep_alpha=True)
+    prepared=Image.open(output)
+    assert result['alpha'] and prepared.mode=='RGBA' and prepared.size==(768,768)
+    assert prepared.getpixel((0,0))[3]==0 and prepared.getpixel((384,384))[3]==255
+
 def test_invalid_shape_never_publishes_glb(tmp_path):
     import trimesh,numpy as np
     output=tmp_path/'bad.glb'

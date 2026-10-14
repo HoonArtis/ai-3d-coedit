@@ -35,7 +35,7 @@ const worker=queues.worker('gpu',async(input,executionId)=>{
   if(input.payload.textureMode!==undefined&&!['text-geometry','image-geometry'].includes(String(input.payload.textureMode)))throw Error('INVALID_TEXTURE_MODE');
   if(typeof input.payload.prompt!=='string'||input.payload.prompt.length>2000)throw Error('INVALID_PROMPT');
   const source=join(directory,'source.png'),foreground=join(directory,'foreground.png'),mesh=join(directory,'texture-input.glb');
-  if(!textGeometry){const imageKey=objectKeySchema.parse(input.payload.imageKey);await writeFile(source,await store.get(imageKey));await run('background',['--input',source,'--output',foreground]);}
+  if(!textGeometry){const imageKey=objectKeySchema.parse(input.payload.imageKey);await writeFile(source,await store.get(imageKey));await run('background',['--input',source,'--output',foreground,'--rgba']);}
   await writeFile(mesh,(await optimizeStaticGlb(await store.get(shapeKey),'desktop')).bytes);
   const container='coedit-texture-'+key.slice(0,20),local=(path:string)=>relative(root,path).replaceAll('\\','/');
   try{

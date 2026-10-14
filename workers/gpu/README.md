@@ -11,3 +11,5 @@ RMBG-1.4 is research only. Do not use this path for a sales build without an app
 Each queue execution writes a content-addressed output and an atomic receipt after successful completion. Retry reuses a completed receipt, while a crash before publication may recompute. Partial stage files are never published. GPU processes run serially, are bounded to ten minutes per stage, and are terminated on cancellation/shutdown. The server's durable outbox keeps queue delivery retryable after Redis/server restart.
 
 Run `-m workers.gpu.prepare_vendor --texture` after updating the code: its repeatable UVAtlas compatibility patch removes float32-degenerate triangles after mesh preprocessing. See `docs/evidence/texture-uv-repair.md`. Changes to shared contracts also require restarting idle CPU/LLM workers, not just the web server.
+
+The texture image targets the server's RTX 50 series (`TORCH_CUDA_ARCH_LIST=12.0`). On RTX 30 series build it with `--build-arg TORCH_CUDA_ARCH_LIST=8.6`. On cards under 16GB set `TEXTURE_SEQUENTIAL_OFFLOAD=1` (slower, peak ~8.3GB). Texture A/B: `npx tsx tools/texture-ab.ts <dir>`; see `docs/evidence/texture-reference-alpha.md`.
