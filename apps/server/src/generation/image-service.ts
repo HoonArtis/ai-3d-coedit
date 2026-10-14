@@ -35,14 +35,15 @@ export class ImageService{
  private input(job:GenerationRecord):JobInput{
   return {jobId:job.id,inputVersion:job.version,actor:job.actor,roomId:job.roomId,generation:job.generation,stage:job.state==='image_queued'?'image':'shape',payload:job.state==='image_queued'?{prompt:job.source.kind==='text'?job.source.prompt:''}:{imageKey:job.imageKey}};
  }
- private async dispatch(job:GenerationRecord){if(job.state==='image_queued'||job.state==='shape_queued')return this.queues.enqueue(this.input(job));}
+ private async dispatch(job:GenerationRecord){return this.repository.withCurrent(job.id,async current=>{if(current.version===job.version&&(current.state==='image_queued'||current.state==='shape_queued'))return this.queues.enqueue(this.input(current));});}
+ async cancel(scope:Scope,id:string,version:number){return this.repository.cancel(scope,id,version,async job=>{const queueId=await this.queues.enqueue(this.input(job));await this.queues.cancelQueued(queueId);});}
  reconcile(){
   if(this.running)return this.running;
   this.running=(async()=>{
    for(const job of await this.repository.pending()){
     const id=await this.dispatch(job);if(!id)continue;
     const state=await this.queues.status(id);
-    if(state?.status==='failed'){await this.repository.fail(job.id,job.version,job.state==='image_queued'?'IMAGE_FAILED':'SHAPE_FAILED');continue;}
+    if(state?.status==='failed'){await this.repository.fail(job.id,job.version,state.error?.startsWith('IMAGE_PROMPT_')?state.error:job.state==='image_queued'?'IMAGE_FAILED':'SHAPE_FAILED');continue;}
     if(state?.status==='completed'){
      try{
       const key=objectKeySchema.parse((state.result as {key?:unknown}|null)?.key);await this.store.get(key);

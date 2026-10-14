@@ -5,6 +5,7 @@ import {JobQueues,runWorkerProcess} from '@coedit/jobs';
 import {LocalObjectStore} from '@coedit/artifacts';
 import {objectKeySchema} from '@coedit/contracts';
 import {generationSeed} from './generation-seed';
+import {prepareImagePrompt} from './image-prompt';
 import {optimizeStaticGlb} from './optimization/mesh';
 const root=resolve(process.cwd()),queues=new JobQueues();
 const store=new LocalObjectStore(process.env.OBJECT_STORE_DIR??join(root,'.data/objects'));
@@ -18,9 +19,12 @@ const worker=queues.worker('gpu',async(input,executionId)=>{
  try{const result=JSON.parse(await readFile(receipt,'utf8'));objectKeySchema.parse(result.key);await store.get(result.key);return result;}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}
  const run=(stage:string,args:string[])=>runWorkerProcess(python,['-m','workers.gpu.run_stage',stage,...args],{cwd:root,timeoutMs:600000,signal:abort.signal});
  const output=join(directory,input.stage==='image'?'image.png':'shape.glb');
+ let imagePrompt:Awaited<ReturnType<typeof prepareImagePrompt>>|undefined;
  if(input.stage==='image'){
   if(typeof input.payload.prompt!=='string'||input.payload.prompt.length>2000)throw Error('INVALID_PROMPT');
-  await run('image',['--prompt',input.payload.prompt,'--output',output,'--seed',String(generationSeed(input.jobId,input.inputVersion))]);
+  imagePrompt=await prepareImagePrompt(input.payload.prompt,{url:process.env.OLLAMA_URL,model:process.env.OLLAMA_MODEL,signal:abort.signal});
+  await writeFile(join(directory,'prompt.json'),JSON.stringify(imagePrompt));
+  await run('image',['--prompt',imagePrompt.prepared,'--output',output,'--seed',String(generationSeed(input.jobId,input.inputVersion))]);
  }else if(input.stage==='shape'){
   const imageKey=objectKeySchema.parse(input.payload.imageKey),source=join(directory,'source.png'),foreground=join(directory,'foreground.png');
   await writeFile(source,await store.get(imageKey));
@@ -42,6 +46,7 @@ const worker=queues.worker('gpu',async(input,executionId)=>{
   }
  }
  const result={key:await store.put(await readFile(output)),metadata:JSON.parse(await readFile(output+'.json','utf8'))};
+ if(imagePrompt)result.metadata.imagePrompt=imagePrompt;
  await writeFile(receipt+'.tmp',JSON.stringify(result));await rename(receipt+'.tmp',receipt);return result;
 });
 console.log('GPU worker ready (one active GPU job, local model cache)');

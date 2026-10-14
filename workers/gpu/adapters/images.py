@@ -32,7 +32,7 @@ def generate_image(prompt: str, output: Path, seed: int = 42, steps: int = 25):
     pipeline = StableDiffusionXLPipeline.from_pretrained(str(model), torch_dtype=torch.float16, variant='fp16', use_safetensors=True, local_files_only=True, add_watermarker=False)
     pipeline.enable_model_cpu_offload()
     with torch.inference_mode():
-        image = pipeline(prompt='A single isolated game prop, '+prompt+', full object centered, white background, studio lighting, no text, no people', negative_prompt='cropped, text, watermark, multiple objects, gore, nudity', height=768,width=768,num_inference_steps=steps,generator=torch.Generator('cpu').manual_seed(seed)).images[0]
+        image = pipeline(prompt=prompt+', full subject centered, isolated on a white background, studio lighting', negative_prompt='cropped, text, watermark, multiple objects, gore, nudity', height=768,width=768,num_inference_steps=steps,generator=torch.Generator('cpu').manual_seed(seed)).images[0]
     output=Path(output);output.parent.mkdir(parents=True,exist_ok=True)
     image.save(output,format='PNG')
     return {'model':'sdxl-base-1.0','revision':'462165984030d82259a11f4367a4eed129e94a7b','seed':seed,'steps':steps,'width':image.width,'height':image.height}

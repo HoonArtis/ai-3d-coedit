@@ -20,7 +20,7 @@ export async function startRuntime(preview=false){
   const connectionString=process.env.DATABASE_URL??(preview?'postgres://coedit:coedit_local_only@127.0.0.1:54329/coedit':undefined);
   if(!connectionString)throw Error('DATABASE_URL is required');
   const pool=new Pool({connectionString});const repository=new PostgresRoomRepository(pool),accounts=new AccountService(pool);
-  const queues=new JobQueues(),chatRepository=new ChatRepository(pool),generation=new GenerationRepository(pool);
+  const queues=new JobQueues(),chatRepository=new ChatRepository(pool),generation=new GenerationRepository(pool,process.env.DISABLE_GENERATION_LIMIT==='1');
   try{
     await repository.migrate();await accounts.migrate();await chatRepository.migrate();await generation.migrate();await queues.ready();
     const store=new LocalObjectStore(process.env.OBJECT_STORE_DIR??'.data/objects'),finishingRepository=new FinishingRepository(pool);await finishingRepository.migrate();

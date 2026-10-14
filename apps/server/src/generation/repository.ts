@@ -4,23 +4,23 @@ import type {Pool,PoolClient} from 'pg';
 import {generationRequestSchema,objectKeySchema,retexturePreparedSchema,type RetexturePrepared,type GenerationRecord,type Session} from '@coedit/contracts';
 import {validateGenerationPrompt} from './prompt-filter';
 type Scope=Session&{roomKey:string};
-const select=`SELECT j.id,j.actor,j.room_id AS "roomId",j.generation,v.version,v.state,v.source,v.image_key AS "imageKey",v.shape_key AS "shapeKey",v.error,v.target FROM coedit_generation_jobs j JOIN coedit_generation_versions v ON v.job_id=j.id AND v.version=j.current_version`;
+const select=`SELECT j.id,j.actor,j.room_id AS "roomId",j.generation,v.version,v.state,v.source,v.image_key AS "imageKey",v.shape_key AS "shapeKey",v.error,v.target,j.visibility FROM coedit_generation_jobs j JOIN coedit_generation_versions v ON v.job_id=j.id AND v.version=j.current_version`;
 export class GenerationRepository{
- constructor(private pool:Pool){}
- async migrate(){for(const name of ['003-generation.sql','008-retexture.sql'])await this.pool.query(await readFile(new URL('../../../../infra/migrations/'+name,import.meta.url),'utf8'));}
+ constructor(private pool:Pool,private unlimited=false){}
+ async migrate(){const db=await this.pool.connect();try{await db.query('BEGIN');await db.query("SELECT pg_advisory_xact_lock(hashtext(current_schema() || ':coedit-generation'))");for(const name of ['003-generation.sql','008-retexture.sql'])await db.query(await readFile(new URL('../../../../infra/migrations/'+name,import.meta.url),'utf8'));const upgraded=await db.query("SELECT 1 FROM information_schema.columns WHERE table_schema=current_schema() AND table_name='coedit_generation_jobs' AND column_name='visibility'");if(!upgraded.rowCount)await db.query(await readFile(new URL('../../../../infra/migrations/011-generation-management.sql',import.meta.url),'utf8'));await db.query('COMMIT');}catch(e){await db.query('ROLLBACK');throw e;}finally{db.release();}}
  private async membership(db:Pool|PoolClient,scope:Scope,lock=false){
   if(scope.role!=='student')throw Error('FORBIDDEN');
   const row=(await db.query(`SELECT c.id,c.generation_limit FROM coedit_students s JOIN coedit_class_rooms r ON r.id=s.room_id JOIN coedit_classes c ON c.id=r.class_id WHERE s.id=$1 AND r.id=$2${lock?' FOR UPDATE OF c':''}`,[scope.actor,scope.roomKey])).rows[0];
   if(!row)throw Error('FORBIDDEN');return row as {id:string;generation_limit:number};
  }
- async usage(scope:Scope){const c=await this.membership(this.pool,scope);return {used:await this.used(this.pool,scope.actor,c.id),limit:c.generation_limit};}
+ async usage(scope:Scope){const c=await this.membership(this.pool,scope);return {used:await this.used(this.pool,scope.actor,c.id),limit:this.unlimited?null:c.generation_limit};}
  private async used(db:Pool|PoolClient,actor:string,classId:string):Promise<number>{return (await db.query('SELECT count(*)::int AS n FROM coedit_generation_versions v JOIN coedit_generation_jobs j ON j.id=v.job_id WHERE j.actor=$1 AND j.class_id=$2 AND v.charged',[actor,classId])).rows[0].n;}
  async get(scope:Scope,id:string):Promise<GenerationRecord>{
   await this.membership(this.pool,scope);
   const row=(await this.pool.query(select+' WHERE j.id=$1 AND j.actor=$2 AND j.room_id=$3',[id,scope.actor,scope.roomKey])).rows[0];
-  if(!row)throw Error('FORBIDDEN');return row;
+  if(!row||row.visibility==='deleted')throw Error('FORBIDDEN');return row;
  }
- async list(scope:Scope):Promise<GenerationRecord[]>{await this.membership(this.pool,scope);return (await this.pool.query(select+' WHERE j.actor=$1 AND j.room_id=$2 ORDER BY v.created_at DESC LIMIT 100',[scope.actor,scope.roomKey])).rows;}
+ async list(scope:Scope):Promise<GenerationRecord[]>{await this.membership(this.pool,scope);return (await this.pool.query(select+" WHERE j.actor=$1 AND j.room_id=$2 AND j.visibility!='deleted' ORDER BY v.created_at DESC LIMIT 100",[scope.actor,scope.roomKey])).rows;}
  async reserve(scope:Scope,generation:number,raw:unknown,publish?:()=>Promise<void>):Promise<GenerationRecord>{return this.reserveInput(scope,generation,raw,undefined,publish);}
  async reserveRetexture(scope:Scope,generation:number,raw:unknown,prepared:RetexturePrepared):Promise<GenerationRecord>{return this.reserveInput(scope,generation,raw,retexturePreparedSchema.parse(prepared));}
  private async reserveInput(scope:Scope,generation:number,raw:unknown,prepared?:RetexturePrepared,publish?:()=>Promise<void>):Promise<GenerationRecord>{
@@ -40,13 +40,13 @@ export class GenerationRepository{
    let id=input.jobId??randomUUID(),version=1;
    if(input.jobId){
     const old=(await db.query(select+' WHERE j.id=$1 AND j.actor=$2 AND j.room_id=$3 FOR UPDATE OF j',[id,scope.actor,scope.roomKey])).rows[0];
-    if(!old)throw Error('FORBIDDEN');
+    if(!old||old.visibility==='deleted')throw Error('FORBIDDEN');
     if(old.version!==input.expectedVersion)throw Error('STALE_IMAGE');
     if(old.state!=='awaiting_confirmation'&&old.state!=='failed')throw Error('ALREADY_CONFIRMED');
     if(old.target)prepared=retexturePreparedSchema.parse({shapeKey:old.shapeKey,target:old.target});
     version=old.version+1;
    }
-   if(await this.used(db,scope.actor,c.id)>=c.generation_limit)throw Error('GENERATION_LIMIT');
+   if(!this.unlimited&&await this.used(db,scope.actor,c.id)>=c.generation_limit)throw Error('GENERATION_LIMIT');
    if(input.jobId)await db.query('UPDATE coedit_generation_jobs SET current_version=$2,generation=$3 WHERE id=$1',[id,version,generation]);
    else await db.query('INSERT INTO coedit_generation_jobs(id,actor,room_id,class_id,generation,current_version) VALUES($1,$2,$3,$4,$5,1)',[id,scope.actor,scope.roomKey,c.id,generation]);
    const uploaded=input.source.kind==='upload';
@@ -54,12 +54,37 @@ export class GenerationRepository{
    const row=(await db.query(select+' WHERE j.id=$1',[id])).rows[0];await publish?.();await db.query('COMMIT');return row;
   }catch(e){await db.query('ROLLBACK');throw e;}finally{db.release();}
  }
+
+ /** Lock current job across queue dispatch/removal to prevent stale reconciliation resurrecting cancellation. */
+ async withCurrent<T>(id:string,work:(job:GenerationRecord,db:PoolClient)=>Promise<T>):Promise<T>{
+  const db=await this.pool.connect();try{await db.query('BEGIN');await db.query('SELECT id FROM coedit_generation_jobs WHERE id=$1 FOR UPDATE',[id]);const job=(await db.query(select+' WHERE j.id=$1',[id])).rows[0];if(!job)throw Error('FORBIDDEN');const result=await work(job,db);await db.query('COMMIT');return result;}catch(e){await db.query('ROLLBACK');throw e;}finally{db.release();}
+ }
+ async cancel(scope:Scope,id:string,version:number,remove:(job:GenerationRecord)=>Promise<void>){
+  await this.get(scope,id);
+  return this.withCurrent(id,async(job,db)=>{
+   if(job.actor!==scope.actor||job.roomId!==scope.roomKey||job.visibility==='deleted')throw Error('FORBIDDEN');
+   if(job.version!==version)throw Error('STALE_IMAGE');if(job.state==='cancelled')return job;
+   if(!['image_queued','shape_queued'].includes(job.state))throw Error('CANNOT_CANCEL');
+   await remove(job);
+   await db.query("UPDATE coedit_generation_versions SET state='cancelled',charged=false,error=NULL WHERE job_id=$1 AND version=$2",[id,version]);
+   return {...job,state:'cancelled' as const};
+  });
+ }
+ async visibility(scope:Scope,id:string,version:number,visibility:'visible'|'hidden'|'deleted'){
+  await this.get(scope,id);
+  return this.withCurrent(id,async(job,db)=>{
+   if(job.actor!==scope.actor||job.roomId!==scope.roomKey||job.visibility==='deleted')throw Error('FORBIDDEN');if(job.version!==version)throw Error('STALE_IMAGE');
+   if(['image_queued','shape_queued'].includes(job.state))throw Error('JOB_PROCESSING');
+   if(visibility==='deleted'&&!['awaiting_confirmation','failed','cancelled'].includes(job.state))throw Error('IMAGE_IN_USE');
+   await db.query('UPDATE coedit_generation_jobs SET visibility=$2 WHERE id=$1',[id,visibility]);return {...job,visibility};
+  });
+ }
  async imageReady(id:string,version:number,key:string){objectKeySchema.parse(key);await this.pool.query("UPDATE coedit_generation_versions v SET state='awaiting_confirmation',image_key=$3 FROM coedit_generation_jobs j WHERE j.id=v.job_id AND j.current_version=v.version AND v.job_id=$1 AND v.version=$2 AND v.state='image_queued'",[id,version,key]);}
  async confirm(scope:Scope,id:string,version:number):Promise<GenerationRecord>{
   const db=await this.pool.connect();try{
    await db.query('BEGIN');await this.membership(db,scope,true);
    const row=(await db.query(select+' WHERE j.id=$1 AND j.actor=$2 AND j.room_id=$3 FOR UPDATE OF j',[id,scope.actor,scope.roomKey])).rows[0];
-   if(!row)throw Error('FORBIDDEN');if(row.version!==version)throw Error('STALE_IMAGE');
+   if(!row||row.visibility==='deleted')throw Error('FORBIDDEN');if(row.version!==version)throw Error('STALE_IMAGE');
    if(!['awaiting_confirmation','shape_queued','shape_ready'].includes(row.state))throw Error('IMAGE_NOT_READY');
    if(row.state==='awaiting_confirmation')await db.query("UPDATE coedit_generation_versions SET state=$3 WHERE job_id=$1 AND version=$2",[id,version,row.target&&row.shapeKey?'shape_ready':'shape_queued']);
    const result=(await db.query(select+' WHERE j.id=$1',[id])).rows[0];await db.query('COMMIT');return result;

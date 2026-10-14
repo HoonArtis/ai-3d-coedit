@@ -1,3 +1,4 @@
+import {cancelQueuedJob} from './cancel-queued';
 import {createHash} from 'node:crypto';
 import {Queue,Worker,type ConnectionOptions} from 'bullmq';
 import {jobInputSchema,type JobInput,type JobState} from '../../contracts/src/index';
@@ -23,6 +24,10 @@ export class JobQueues{
   const persisted=await q.getJob(id);
   if(!persisted||hash(persisted.data)!==hash(input))throw Error('JOB_INPUT_CONFLICT');
   return id;
+ }
+ async cancelQueued(id:string){
+  const target=id.split('-')[0] as Lane;if(!Object.hasOwn(this.queues,target))throw Error('JOB_MISSING');
+  await cancelQueuedJob(this.queues[target],id);
  }
  async status(id:string):Promise<JobState|undefined>{
   const target=id.split('-')[0] as Lane;if(!Object.hasOwn(this.queues,target))return;

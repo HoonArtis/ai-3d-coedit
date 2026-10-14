@@ -53,3 +53,30 @@ test('quota and duplicate/conflicting uploads admit before storing; storage fail
  const different=await sharp({create:{width:32,height:32,channels:4,background:'red'}}).png().toBuffer();await expect(images.upload(s,0,'same',different)).rejects.toThrow('REQUEST_CONFLICT');expect(writes).toBe(1);
  const other=await scope(),broken=new ImageService(repo,queues,{get:store.get.bind(store),put:async()=>{throw Error('DISK_FULL');}});await expect(broken.upload(other,0,'disk',bytes)).rejects.toThrow('DISK_FULL');expect(await repo.list(other)).toHaveLength(0);expect((await repo.usage(other)).used).toBe(0);
 });
+
+test('queued cancellation refunds once, resists stale dispatch and ignores late results',async()=>{
+ const s=await scope(),other=await scope(),job=await service.text(s,0,randomUUID(),'a blue whale');
+ await expect(service.cancel(other,job.id,job.version)).rejects.toThrow('FORBIDDEN');
+ await Promise.all([service.cancel(s,job.id,job.version),service.progress(s),service.reconcile()]);
+ await service.cancel(s,job.id,job.version);await service.reconcile();
+ expect((await repo.get(s,job.id)).state).toBe('cancelled');expect((await repo.usage(s)).used).toBe(0);
+ await repo.imageReady(job.id,job.version,'a'.repeat(64));expect((await repo.get(s,job.id)).state).toBe('cancelled');
+ let calls=0;const worker=queues.worker('gpu',async input=>{if(input.jobId===job.id)calls++;return {key:await store.put(await png())};});
+ try{await service.progress(s);await service.reconcile();await new Promise(r=>setTimeout(r,100));expect(calls).toBe(0);}finally{await worker.close();}
+});
+
+test('running work cannot be cancelled; completed image hide/delete keeps quota and shared image data',async()=>{
+ const s=await scope(),other=await scope();let release!:()=>void;const gate=new Promise<void>(r=>release=r);
+ const worker=queues.worker('gpu',async()=>{await gate;return {key:await store.put(await png())};});
+ try{
+  const job=await service.text(s,0,randomUUID(),'a whale');await until(async()=>(await service.progress(s))[0].running);
+  await expect(service.cancel(s,job.id,job.version)).rejects.toThrow('JOB_PROCESSING');expect((await repo.usage(s)).used).toBe(1);
+  release();await until(async()=>(await repo.get(s,job.id)).state==='awaiting_confirmation');
+  await expect(repo.visibility(other,job.id,1,'hidden')).rejects.toThrow('FORBIDDEN');
+  await repo.visibility(s,job.id,1,'hidden');expect((await service.progress(s))[0].visibility).toBe('hidden');await repo.visibility(s,job.id,1,'visible');
+  const shared=await service.upload(other,0,randomUUID(),await png());
+  await repo.visibility(s,job.id,1,'deleted');expect(await repo.list(s)).toHaveLength(0);expect((await repo.usage(s)).used).toBe(1);
+  await expect(service.image(s,job.id)).rejects.toThrow('FORBIDDEN');await expect(service.confirm(s,job.id,1)).rejects.toThrow('FORBIDDEN');
+  expect((await service.image(other,shared.id)).byteLength).toBeGreaterThan(0);
+ }finally{release();await worker.close();}
+});

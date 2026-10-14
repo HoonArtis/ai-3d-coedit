@@ -16,7 +16,7 @@ test('external surface serves only built files, denies registration and anonymou
   expect((await fetch(server.url+'/api/local-session',{method:'POST'})).status).toBe(404);
   expect((await fetch(server.url+'/api/teachers/register',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).status).toBe(403);
   expect(registered).toBe(false);
-  expect(await (await fetch(server.url+'/api/runtime-config')).json()).toEqual({localPreview:false,registrationEnabled:false});
+  expect(await (await fetch(server.url+'/api/runtime-config')).json()).toEqual({localPreview:false,registrationEnabled:false,generationLimitEnabled:true});
   expect((await fetch(server.url+'/.env')).status).toBe(404);
   expect((await fetch(server.url+'/api/missing')).status).toBe(404);
   expect((await fetch(server.url+'/health')).status).toBe(200);

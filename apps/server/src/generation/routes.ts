@@ -23,6 +23,13 @@ export function generationRoutes(accounts:AccountService,images:ImageService,roo
   const generation=(await rooms.load(s.roomKey))?.snapshot.generation??0;
   res.status(201).json(await images.uploadCharacter(s,generation,requestId,req.body,format,'업로드한 캐릭터'));
  });
+ router.post('/:roomId/:jobId/cancel',json({limit:'4kb'}),async(req,res)=>{
+  const s=await scope(req),{version}=confirmImageSchema.parse(req.body);res.json(await images.cancel(s,idSchema.parse(req.params.jobId),version));
+ });
+ router.post('/:roomId/:jobId/visibility',json({limit:'4kb'}),async(req,res)=>{
+  const s=await scope(req),input=z.object({version:z.number().int().positive(),visibility:z.enum(['visible','hidden','deleted'])}).strict().parse(req.body);
+  res.json(await images.repository.visibility(s,idSchema.parse(req.params.jobId),input.version,input.visibility));
+ });
  router.post('/:roomId/:jobId/confirm',json({limit:'4kb'}),async(req,res)=>{
   const s=await scope(req),{version}=confirmImageSchema.parse(req.body);
   res.json(await images.confirm(s,idSchema.parse(req.params.jobId),version));

@@ -42,7 +42,7 @@ export async function startServer(port=2567,localPreview=false,options:{reposito
     }
     if(req.method==='OPTIONS'){res.status(204).end();return;}next();
   });
-  app.get('/api/runtime-config',(_req,res)=>res.json({localPreview,registrationEnabled:options.registrationEnabled??true}));
+  app.get('/api/runtime-config',(_req,res)=>res.json({localPreview,generationLimitEnabled:process.env.DISABLE_GENERATION_LIMIT!=='1',registrationEnabled:options.registrationEnabled??true}));
   app.get('/health',(_req,res)=>res.json({ok:true,mode:localPreview?'local-preview':'authenticated',storage:options.repository?'postgres':'memory'}));
   if(localPreview)app.post('/api/local-session',(req,res)=>{
     const origin=req.headers.origin;

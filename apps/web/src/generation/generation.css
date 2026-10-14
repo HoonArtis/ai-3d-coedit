@@ -1,0 +1,10 @@
+.generation-panel summary{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.generation-badge{display:inline-flex;align-items:center;gap:5px;background:#d9f3e5;color:#165f3c;border-radius:12px;padding:4px 8px;font-size:11px}
+.generation-progress{margin:12px 0;padding:14px;border:2px solid #329a67;border-radius:8px;background:#e9f8ef;color:#155537;font-size:12px;line-height:1.5}
+.generation-progress strong{margin-left:8px}.generation-progress p{margin-bottom:0}
+.generation-spinner{display:inline-block;width:13px;height:13px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:generation-spin 1s linear infinite;vertical-align:middle}
+.generation-prompt{font-size:12px;line-height:1.5;overflow-wrap:anywhere;white-space:pre-wrap;color:#304939}
+.generation-delete{padding:10px;border:1px solid #b85645;border-radius:6px;background:#fff4ed;line-height:1.6}
+.generation-panel [aria-label="생성 안내"]{padding:10px;border-radius:6px;background:#eef4fa;line-height:1.5}
+@keyframes generation-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.generation-spinner{animation:none}}

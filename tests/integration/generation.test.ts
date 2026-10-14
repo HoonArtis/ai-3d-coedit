@@ -55,3 +55,9 @@ test('educational prompt filter normalizes obfuscated blocked terms and permits 
  for(const prompt of ['n\u200bu\u200bd\u200be girl','ＮＵＤＥ girl','아동 성착취','graphic gore'])expect(()=>validateGenerationPrompt(prompt)).toThrow('PROMPT_BLOCKED');
  expect(()=>validateGenerationPrompt('   ')).toThrow();
 });
+
+test('test-mode unlimited generation keeps usage accounting without enforcing the class cap',async()=>{
+ const {scope}=await fixture(0),unlimited=new GenerationRepository(pool,true);
+ for(let i=0;i<4;i++)await unlimited.reserve(scope,0,request());
+ expect(await unlimited.usage(scope)).toEqual({used:4,limit:null});
+});
