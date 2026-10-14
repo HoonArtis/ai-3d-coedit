@@ -53,7 +53,7 @@ code,.mono{font-family:var(--mono);font-size:.84em}
 .body li{font-size:.9rem}
 .file{font-family:var(--mono);font-size:.76rem;color:var(--muted);word-break:break-all}
 .pchip{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:.7rem;font-weight:500;padding:1px 7px;border-radius:999px;background:var(--prompt-soft);color:var(--prompt);border:1px solid var(--prompt);vertical-align:2px;margin-left:6px}
-.prompt-box{border-left:3px solid var(--prompt);background:var(--prompt-soft);padding:8px 10px;border-radius:0 6px 6px 0;font-size:.85rem;display:grid;gap:3px;min-width:0}
+.prompt-box{border:1px dashed var(--prompt);background:var(--prompt-soft);padding:8px 10px;border-radius:6px;font-size:.85rem;display:grid;gap:3px;min-width:0}
 .prompt-box .mono{color:var(--prompt);overflow-wrap:anywhere}
 .branch{font-size:.85rem;color:var(--muted);border:1px dashed var(--line);border-radius:6px;padding:6px 10px}
 .jump{font-size:.82rem;font-weight:500}
@@ -63,8 +63,8 @@ code,.mono{font-family:var(--mono);font-size:.84em}
 .cross-item{border:1px solid var(--line);border-radius:8px;padding:12px;display:grid;gap:4px;font-size:.88rem}
 .cross-item b{font-family:var(--mono);font-size:.82rem}
 .issues{display:grid;gap:12px}
-.issue{display:grid;grid-template-columns:auto 1fr;gap:12px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;padding:14px 16px}
-.issue .n{font-family:var(--mono);color:var(--warn);font-weight:500}
+.issue{display:grid;grid-template-columns:auto 1fr;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.issue .n{font-family:var(--mono);color:var(--warn);background:var(--warn-soft);font-weight:500;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.8rem}
 .issue div{display:grid;gap:4px;min-width:0}
 .issue p{font-size:.9rem;color:var(--muted)}
 .tag{font-family:var(--mono);font-size:.7rem;padding:1px 6px;border-radius:4px;background:var(--warn-soft);color:var(--warn);margin-left:6px}
