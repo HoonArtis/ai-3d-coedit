@@ -53,6 +53,7 @@ code,.mono{font-family:var(--mono);font-size:.84em}
 .body li{font-size:.9rem}
 .file{font-family:var(--mono);font-size:.76rem;color:var(--muted);word-break:break-all}
 .pchip{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:.7rem;font-weight:500;padding:1px 7px;border-radius:999px;background:var(--prompt-soft);color:var(--prompt);border:1px solid var(--prompt);vertical-align:2px;margin-left:6px}
+.rchip{display:inline-flex;align-items:center;font-family:var(--mono);font-size:.7rem;font-weight:500;padding:1px 7px;border-radius:999px;color:var(--muted);border:1px solid var(--line);vertical-align:2px;margin-left:6px}
 .prompt-box{border:1px dashed var(--prompt);background:var(--prompt-soft);padding:8px 10px;border-radius:6px;font-size:.85rem;display:grid;gap:3px;min-width:0}
 .prompt-box .mono{color:var(--prompt);overflow-wrap:anywhere}
 .branch{font-size:.85rem;color:var(--muted);border:1px dashed var(--line);border-radius:6px;padding:6px 10px}
@@ -74,11 +75,12 @@ footer{font-size:.8rem;color:var(--muted)}
 <div class="wrap">
   <header style="display:grid;gap:10px">
     <h1>AI 공간 꾸미기 흐름도</h1>
-    <p class="lede">학생 요청이 씬 변경이나 3D 에셋이 되기까지의 두 경로입니다. 코드 기준은 <code>feat/implementation</code> 브랜치 <code>a1d8a18</code>(2026-10-14)입니다. 보라색 표시는 프롬프트가 들어가는 자리이며 고도화할 때 손볼 지점입니다.</p>
+    <p class="lede">학생 요청이 씬 변경이나 3D 에셋이 되기까지의 두 경로입니다. 코드 기준은 <code>feat/implementation</code> 브랜치 <code>a1d8a18</code>(2026-10-14)입니다. 보라색 PROMPT는 모델(Qwen·SDXL·MV-Adapter)에 문장이 들어가는 자리이며 고도화할 때 손볼 지점입니다. 회색 "규칙"은 모델 없이 코드로 판정하는 자리입니다.</p>
     <div class="legend">
       <span><i class="dot" style="background:var(--chat)"></i>챗봇 에이전트</span>
       <span><i class="dot" style="background:var(--gen)"></i>에셋 생성</span>
-      <span><i class="dot" style="background:var(--prompt)"></i>프롬프트 지점</span>
+      <span><i class="dot" style="background:var(--prompt)"></i>프롬프트 지점 (모델 입력)</span>
+      <span><i class="dot" style="border:1.5px solid var(--muted)"></i>규칙 (코드 판정)</span>
       <span><i class="dot" style="border:1.5px dashed var(--muted)"></i>사람이 하는 단계</span>
     </div>
   </header>
@@ -139,8 +141,8 @@ footer{font-size:.8rem;color:var(--muted)}
             <span class="file">apps/web/src/generation/GenerationPanel.tsx</span></div></li>
 
         <li class="step"><div class="rail"><span class="node">2</span><span class="stem"></span></div>
-          <div class="body"><span class="where">방 서버</span><h3>필터와 예약<span class="pchip">PROMPT</span></h3>
-            <ul><li>금칙어 정규식 한 줄로 차단</li><li>DB 예약, 횟수 차감 (지금은 무제한) → <code>gpu</code> 큐 image 단계</li></ul>
+          <div class="body"><span class="where">방 서버</span><h3>필터와 예약<span class="rchip">규칙</span></h3>
+            <ul><li>금칙어 정규식 한 줄로 차단 (모델 판단 아님, 단어 대조)</li><li>DB 예약, 횟수 차감 (지금은 무제한) → <code>gpu</code> 큐 image 단계</li></ul>
             <span class="file">generation/prompt-filter.ts · image-service.ts</span></div></li>
 
         <li class="step"><div class="rail"><span class="node">3</span><span class="stem"></span></div>
