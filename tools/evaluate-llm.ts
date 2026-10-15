@@ -2,9 +2,10 @@ import {writeFileSync,mkdirSync} from 'node:fs';
 import {dirname} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {OllamaModel} from '../apps/llm/src/ollama';
+import {ChatAgent} from '../apps/llm/src/agent';
 import type {ModelDecision} from '../apps/llm/src/tools';
 import {suites,caseContext,type EvalSuite} from './llm-eval/index';
-// 사용: npx tsx tools/evaluate-llm.ts [--suite focus|basic|student|real|all] [--routing routed|single] [--out 경로] [--model qwen3:4b] [--force]
+// 사용: npx tsx tools/evaluate-llm.ts [--suite focus|basic|student|real|all] [--routing routed|single] [--no-guards] [--out 경로] [--model qwen3:4b] [--force]
 // 기본 결과 경로는 docs/evidence/llm-eval-runs/<suite>-<시각>.json. 기존 증거 파일을 덮어쓰지 않는다.
 const arg=(name:string)=>{const i=process.argv.indexOf('--'+name);return i>0?process.argv[i+1]:undefined;};
 const suiteName=arg('suite')??'all',modelName=arg('model')??process.env.OLLAMA_MODEL??'qwen3:4b',routing=arg('routing')??'routed';
@@ -24,13 +25,14 @@ if(!process.argv.includes('--force')){
 const stamp=new Date().toISOString().replace(/[:.]/g,'-');
 const out=arg('out')??`docs/evidence/llm-eval-runs/${suiteName}-${routing}-${stamp}.json`;mkdirSync(dirname(out),{recursive:true});
 let workflow:string|null=null;
-const model=new OllamaModel({url:ollamaUrl,model:modelName,routing:routing==='routed',onRoute:w=>{workflow=w;}});
+const guards=!process.argv.includes('--no-guards');
+const model=new ChatAgent(new OllamaModel({url:ollamaUrl,model:modelName}),{routing:routing==='routed',guards,onRoute:w=>{workflow=w;}});
 const total=chosen.reduce((n,s)=>n+s.cases.length,0);
 const results:{suite:string;id:string;kind:string;request:string;workflow:string|null;pass:boolean;ms:number;decision?:ModelDecision;error?:string}[]=[];
 const save=()=>{
  const bySuite=Object.fromEntries(chosen.map(s=>{const r=results.filter(x=>x.suite===s.name);return [s.name,{passed:r.filter(x=>x.pass).length,run:r.length,total:s.cases.length}];}));
  const byKind:Record<string,{passed:number;run:number}>={};for(const r of results){const k=byKind[r.kind]??={passed:0,run:0};k.run++;if(r.pass)k.passed++;}
- writeFileSync(out,JSON.stringify({model:modelName,routing,date:new Date().toISOString(),complete:results.length===total,passed:results.filter(r=>r.pass).length,total,bySuite,byKind,results},null,2));
+ writeFileSync(out,JSON.stringify({model:modelName,routing,guards,date:new Date().toISOString(),complete:results.length===total,passed:results.filter(r=>r.pass).length,total,bySuite,byKind,results},null,2));
 };
 for(const suite of chosen)for(const c of suite.cases){
  workflow=null;const start=performance.now();let decision:ModelDecision|undefined,error:string|undefined,pass=false;

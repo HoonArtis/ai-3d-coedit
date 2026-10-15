@@ -21,14 +21,18 @@ export class OllamaModel implements ModelPort{
  async route(messages:ChatMessage[],context:ModelContext,signal:AbortSignal):Promise<Workflow|null>{
   return parseRoute(await this.call(routerMessages(messages,context),routeJSONSchema,signal,32));
  }
+ /** 2단계: 워크플로우의 규칙·도구만 보고 결정한다. workflow가 null이면 도구 전체. */
+ async decide(messages:ChatMessage[],context:ModelContext,workflow:Workflow|null,signal:AbortSignal){
+  const format=workflow?decisionJSONSchemaFor(WORKFLOWS[workflow]):decisionJSONSchema;
+  const output=await this.call(buildMessages(messages,context,workflow??undefined),format,signal,2048);
+  try{return parseDecision(output);}catch{throw Error('MODEL_INVALID_OUTPUT');}
+ }
  async chooseTools(messages:ChatMessage[],context:ModelContext){
   const signal=AbortSignal.timeout(this.options.timeoutMs??60000);
   try{
    const workflow=this.options.routing===false?null:await this.route(messages,context,signal);
    this.options.onRoute?.(workflow);
-   const format=workflow?decisionJSONSchemaFor(WORKFLOWS[workflow]):decisionJSONSchema;
-   const output=await this.call(buildMessages(messages,context,workflow??undefined),format,signal,2048);
-   try{return parseDecision(output);}catch{throw Error('MODEL_INVALID_OUTPUT');}
+   return await this.decide(messages,context,workflow,signal);
   }catch(error){if(signal.aborted)throw Error('MODEL_TIMEOUT');throw error;}
  }
 }
