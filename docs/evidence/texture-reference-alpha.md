@@ -49,3 +49,7 @@ SDXL로 새로 만든 피카츄(seed 31337, 단일 전신)로 같은 비교를 �
 - 결과: [피카츄](texture-reference-alpha/trellis-pikachu.png), [고양이](texture-reference-alpha/trellis-cat.png). 뒷면이 앞과 같은 계열 색으로 이어져 검은 띠는 없다. 피카츄 엉덩이의 검정·빨강 무늬와 꼬리가 몸에서 떨어진 판으로 나오는 형상 문제는 있다. 고양이는 자세가 원본과 다르게(웅크린 형태) 해석됐다.
 - 출력 GLB는 `metallicFactor`가 없어 glTF 기본값 1(금속)로 읽힌다. 통합하면 0으로 고쳐야 한다.
 - 라이선스: 모델·코드 MIT. 굽기에 nvdiffrast(연구용, 현재 경로와 같음)와 Inria `diff-gaussian-rasterization`(비상업)을 쓴다. 판매 경로라면 후자를 gsplat(Apache-2.0) 등으로 바꿔야 한다.
+
+## 뒷면 검정·빨강의 출처 (2026-10-15)
+
+SDXL 원본 이미지에서 볼 뒤 옆구리(몸이 뒤로 넘어가는 윤곽)에 검정·빨강 띠가 이미 그려져 있었다: [확대](texture-reference-alpha/pikachu-source-edge-patch.png). 실제 피카츄에 없는 무늬다. MV-Adapter와 TRELLIS가 서로 다른 모델인데도 같은 자리에 같은 색을 칠한 것은 이 윤곽 단서를 안 보이는 등 전체로 늘렸기 때문이다. 윤곽 근처의 작은 이상 색이 3D에서는 뒷면 전체로 커진다. 근본 원인은 텍스처 모델보다 이미지 단계의 지어낸 세부다. 대응 후보: 이미지 모델 교체·후보 선택, 확인 단계 안내, 윤곽 근처 이상 색 자동 경고(귀 끝처럼 원래 있는 무늬의 오탐 조정 필요).
