@@ -7,7 +7,7 @@ Qwen3-4B를 우선 평가한다. 공식 가중치 Apache-2.0, upstream revision 
 - [공식 가중치와 라이선스](https://huggingface.co/Qwen/Qwen3-4B)
 - [실행 배포](https://ollama.com/library/qwen3:4b)
 - [구조화 출력](https://docs.ollama.com/capabilities/structured-outputs)
-- 클라우드 차선 `claude-haiku-5-5`는 [공식 모델 목록](https://platform.claude.com/docs/en/models/overview)에서 존재를 확인했다. API 계정 접근/유료 호출 성능은 확인하지 않았다. 자동 클라우드 전송은 기본 비활성이다. 로컬 실패를 클라우드 성공으로 기록하지 않는다.
+- 클라우드 차선(Claude Haiku adapter)은 2026-10-15 사용자 지시로 코드에서 제거했다. 챗봇 모델은 로컬 Ollama 하나다.
 
 ## 이미지
 

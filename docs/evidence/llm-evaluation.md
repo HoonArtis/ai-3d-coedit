@@ -4,7 +4,7 @@
 
 오답은 다른 학생 b1 삭제 요청이다. 모델은 delete를 출력했다. 모델의 권한 설명을 보안 판정으로 사용하지 않는다. `tests/integration/chat.test.ts`에서 실제 RoomService 경로로 같은 타인 삭제를 제출해 거부·부분 배치 롤백·로그 보존을 확인했다. 이 오답을 성공률에서 제외하지 않았다.
 
-로컬을 기본으로 선정한다. 클라우드 Claude Haiku5.5 adapter는 명시적 apiKey 설정이 있을 때만 사용할 수 있다. 이번 측정에서는 유료 API를 호출하지 않았고 클라우드 정확도·지연은 미검증이다. 로컬 95%와 클라우드 미검증을 비교 우위 주장으로 바꾸지 않는다.
+로컬을 기본으로 선정한다. 클라우드 Claude Haiku adapter는 2026-10-15 사용자 지시로 제거했다(유료 API 호출 측정은 한 적 없음).
 
 ## 수정 과정과 공개 계약
 
@@ -12,5 +12,5 @@
 - JSON 예시 부재 시 clarification 오용/잘못된 출력. [기존 평가](llm-evaluation-draft7.json), 예시 보완 후 [18/20 평가](llm-evaluation-examples.json). 선택 없음 규칙과 인증된 ID 목록을 system에 명시해 현재19/20. 두 번 연속 실패한 같은 수정은 없으며, 최초 HTTP400에서 상류를 선제 조사했다.
 - `ModelPort.chooseTools` 반환은 ops[]에 실행 전 요약과 clarification을 붙인 ModelDecision이다. 계획의 ToolCall[]만으로는 이 두 필드를 표현하지 못해 계약을 확장했다. 공통 타입/스키마는 contracts/chat.ts, provider I/O는 apps/llm, 서버 적용·로그는 apps/server/chat이다.
 - opSchema에서 학생 도구24개를 파생, 강사5개 제외. 각 도구 설명/예시2개. MD 다섯 영역과 출력 예시. 서버가 clarification 반복을 한 번으로 제한한다.
-- 테스트 `tests/llm/model.test.ts`, `tests/llm/cloud.test.ts`: 총6개 통과. 잘못된JSON/없는op/강사도구/타임아웃/모델404/클라우드미설정 거부.
+- 테스트 `tests/llm/model.test.ts`, `tests/llm/cloud.test.ts`: (작성 당시 총6개 통과, cloud.test.ts는 adapter와 함께 제거). 잘못된JSON/없는op/강사도구/타임아웃/모델404/클라우드미설정 거부.
 - typecheck/modules PASS. CPU/DB/LLM 구현 사이 공유 DTO 중복을 제거했다.

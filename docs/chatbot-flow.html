@@ -1,0 +1,266 @@
+<title>AI 도우미 사용자 흐름</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 레이아웃: 위는 학생 한 번의 요청이 갈라지는 나무(줄기 4단 → 결과 6갈래), 아래는 챗봇이 고를 수 있는 도구 24개 카탈로그. docs/flows.html과 같은 토큰 계열 */
+:root{
+  --bg:#f5f6f8; --surface:#ffffff; --fg:#1b1f27; --muted:#5b6474; --line:#d6dbe3;
+  --chat:#2f5fd0; --chat-soft:#e7eefc;
+  --ok:#1f7a4d; --ok-soft:#e3f3ea; --ask:#a15c00; --ask-soft:#fcf0dc;
+  --no:#5b6474; --no-soft:#eceff3; --gen:#b5650d; --gen-soft:#fbf0e2;
+  --err:#b42318; --err-soft:#fdecea; --q:#6d3fc0; --q-soft:#f0eafb;
+  --sans:"IBM Plex Sans KR",system-ui,"Malgun Gothic",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12151b; --surface:#1b1f27; --fg:#e6e9ef; --muted:#9aa3b2; --line:#2e3542;
+  --chat:#7ea2ff; --chat-soft:#1d2840; --ok:#5fd39a; --ok-soft:#173326; --ask:#f2b45a; --ask-soft:#352717;
+  --no:#a7b0bf; --no-soft:#262c37; --gen:#f0a756; --gen-soft:#33261a; --err:#ff8a7a; --err-soft:#3a1f1c;
+  --q:#b99cff; --q-soft:#271f3d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151b; --surface:#1b1f27; --fg:#e6e9ef; --muted:#9aa3b2; --line:#2e3542;
+  --chat:#7ea2ff; --chat-soft:#1d2840; --ok:#5fd39a; --ok-soft:#173326; --ask:#f2b45a; --ask-soft:#352717;
+  --no:#a7b0bf; --no-soft:#262c37; --gen:#f0a756; --gen-soft:#33261a; --err:#ff8a7a; --err-soft:#3a1f1c;
+  --q:#b99cff; --q-soft:#271f3d; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:40px}
+h1{font-size:1.7rem;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font-size:1.2rem;margin:0;text-wrap:balance}
+h3{font-size:.98rem;margin:0}
+p{margin:0}
+code,.mono{font-family:var(--mono);font-size:.84em}
+.lede{color:var(--muted);max-width:70ch}
+section{display:grid;gap:16px;min-width:0}
+.sec-head{display:grid;gap:4px}
+.sec-head p{color:var(--muted);font-size:.9rem;max-width:72ch}
+.file{font-family:var(--mono);font-size:.74rem;color:var(--muted);word-break:break-all}
+.where{font-family:var(--mono);font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+
+/* 줄기 */
+.trunk{display:grid;grid-template-columns:repeat(4,1fr);gap:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+@media (max-width:900px){.trunk{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.trunk{grid-template-columns:1fr}}
+.tstep{padding:16px 18px;display:grid;gap:6px;align-content:start;border-right:1px solid var(--line);position:relative;min-width:0}
+.tstep:last-child{border-right:0}
+@media (max-width:900px){.tstep:nth-child(2){border-right:0}.tstep:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+@media (max-width:520px){.tstep{border-right:0;border-bottom:1px solid var(--line)}.tstep:last-child{border-bottom:0}}
+.tnum{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:.75rem;font-weight:500;background:var(--chat-soft);color:var(--chat);border:1.5px solid var(--chat)}
+.tnum.human{border-style:dashed}
+.tstep ul{margin:0;padding-left:18px;display:grid;gap:2px;font-size:.88rem}
+.say{font-size:.86rem;background:var(--chat-soft);color:var(--fg);border-radius:8px 8px 8px 2px;padding:6px 10px;justify-self:start}
+.fork{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:.85rem}
+.fork::before,.fork::after{content:"";flex:1;height:1px;background:var(--line)}
+
+/* 갈래 */
+.branches{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:900px){.branches{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.branches{grid-template-columns:1fr}}
+.br{background:var(--surface);border:1px solid var(--line);border-radius:10px;display:grid;grid-template-rows:auto 1fr;min-width:0;overflow:hidden}
+.br-head{padding:12px 16px;display:grid;gap:2px;background:var(--tint);border-bottom:1px solid var(--line)}
+.br-head h3{color:var(--tone)}
+.br-head .cond{font-family:var(--mono);font-size:.74rem;color:var(--muted)}
+.br-body{padding:12px 16px 16px;display:grid;gap:8px;align-content:start}
+.br-body ol{margin:0;padding-left:20px;display:grid;gap:4px;font-size:.88rem}
+.br-body .screen{font-size:.84rem;border:1px dashed var(--tone);border-radius:6px;padding:6px 10px;display:grid;gap:2px}
+.br-body .screen b{font-family:var(--mono);font-size:.7rem;font-weight:500;color:var(--tone);text-transform:uppercase;letter-spacing:.06em}
+.br-body .note{font-size:.82rem;color:var(--muted)}
+.br.ok{--tone:var(--ok);--tint:var(--ok-soft)} .br.q{--tone:var(--q);--tint:var(--q-soft)}
+.br.ask{--tone:var(--ask);--tint:var(--ask-soft)} .br.no{--tone:var(--no);--tint:var(--no-soft)}
+.br.gen{--tone:var(--gen);--tint:var(--gen-soft)} .br.err{--tone:var(--err);--tint:var(--err-soft)}
+
+/* 도구 카탈로그 */
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.filters button{font:inherit;font-size:.84rem;padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.filters button:focus-visible,.tool:focus-visible{outline:2px solid var(--chat);outline-offset:2px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:10px;height:10px;border-radius:3px;display:inline-block;background:var(--c)}
+.group{display:grid;gap:10px}
+.group-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.group-head p{font-size:.86rem;color:var(--muted)}
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.tool{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:8px;padding:12px 14px;display:grid;gap:6px;align-content:start;min-width:0}
+.tool .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.tool .name{font-family:var(--mono);font-size:.9rem;font-weight:500}
+.tool .ko{font-size:.88rem}
+.args{display:flex;flex-wrap:wrap;gap:4px}
+.args code{background:var(--no-soft);border-radius:4px;padding:0 6px;font-size:.74rem}
+.ex{font-size:.8rem;color:var(--muted)}
+.badges{display:flex;flex-wrap:wrap;gap:4px}
+.badge{font-family:var(--mono);font-size:.68rem;padding:0 6px;border-radius:4px;border:1px solid currentColor;white-space:nowrap}
+.badge.eval{color:var(--ok)} .badge.noeval{color:var(--muted);border-style:dashed}
+.badge.solo{color:var(--ask)} .badge.warn{color:var(--err)}
+.tool.teacher{opacity:.6;border-left-color:var(--muted)}
+.c-edit{--c:var(--ok)} .c-auto{--c:var(--chat)} .c-q{--c:var(--q)} .c-ctl{--c:var(--ask)} .c-gen{--c:var(--gen)} .c-t{--c:var(--muted)}
+
+/* 관찰 */
+.issues{display:grid;gap:10px}
+.issue{display:grid;grid-template-columns:auto 1fr;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px 16px}
+.issue .n{font-family:var(--mono);color:var(--err);background:var(--err-soft);font-weight:500;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.8rem}
+.issue div{display:grid;gap:4px;min-width:0}
+.issue p{font-size:.9rem;color:var(--muted)}
+.stats{display:flex;flex-wrap:wrap;gap:8px 24px;font-size:.88rem;color:var(--muted)}
+.stats b{font-family:var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
+footer{font-size:.8rem;color:var(--muted)}
+@media (prefers-reduced-motion:no-preference){.tool{transition:opacity .15s}}
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:10px">
+    <span class="where">ai-3d-coedit · feat/implementation · 2026-10-15</span>
+    <h1>AI 도우미 사용자 흐름</h1>
+    <p class="lede">학생이 오른쪽 패널에 한 줄을 보내면 무슨 일이 생기는지, 그리고 챗봇이 그 한 줄을 무엇으로 바꿀 수 있는지(도구 25개)를 정리했습니다. 모델은 로컬 <code>qwen3:4b</code> 하나입니다. 챗봇은 도구와 인자만 고르고, 실제 변경은 기즈모와 같은 명령 경로를 거칩니다.</p>
+    <div class="stats"><span>학생 도구 <b>25</b></span><span>강사 전용(제외) <b>5</b></span><span>평가 문항이 있는 도구 <b>17</b>/25</span><span>마지막 평가 <b>19/20</b> (10/13)</span></div>
+  </header>
+
+  <!-- 1. 사용자 흐름 -->
+  <section>
+    <div class="sec-head"><h2>요청 한 번의 흐름</h2>
+      <p>네 단계는 모든 요청이 같고, 모델의 결정에 따라 아래 여섯 갈래 중 하나로 끝납니다. 점선 원은 학생이 직접 하는 단계입니다.</p></div>
+
+    <div class="trunk">
+      <div class="tstep"><span class="tnum human">1</span><span class="where">웹 · 학생</span><h3>요청 입력</h3>
+        <p class="say">탁자 주위에 의자 4개 놔줘</p>
+        <ul><li>선택한 에셋, 카메라 중심을 같이 보냄</li><li>Enter 전송, 4,000자까지</li></ul>
+        <span class="file">web/editor/ChatPanel.tsx</span></div>
+      <div class="tstep"><span class="tnum">2</span><span class="where">방 서버</span><h3>대기열</h3>
+        <ul><li>학생당 한 번에 1건</li><li>대기 순번 표시, <b>적용 취소</b> 버튼</li><li>최근 19턴 대화를 붙임 (답은 summary만)</li></ul>
+        <span class="file">server/chat/service.ts</span></div>
+      <div class="tstep"><span class="tnum">3</span><span class="where">LLM 워커 · qwen3:4b</span><h3>결정 하나 고르기</h3>
+        <ul><li>출력 <code>{summary, clarification, ops[]}</code></li><li>JSON 스키마 강제, temperature 0</li><li>내 ID / 남의 ID 목록, 현재 선택이 프롬프트에 들어감</li></ul>
+        <span class="file">llm/prompts/student.md · src/prompt.ts</span></div>
+      <div class="tstep"><span class="tnum">4</span><span class="where">방 서버</span><h3>결정 검사</h3>
+        <ul><li>강사 도구가 섞이면 거절</li><li>질문과 실행이 같이 오면 거절</li><li>되묻기는 한 번까지</li></ul>
+        <span class="file">contracts/chat.ts</span></div>
+    </div>
+
+    <div class="fork">모델이 낸 결정에 따라 갈라짐</div>
+
+    <div class="branches">
+      <div class="br ok"><div class="br-head"><h3>A. 바로 실행</h3><span class="cond">ops = 편집·배치 도구</span></div>
+        <div class="br-body"><ol><li>ops 전체를 명령 1건으로 제출</li><li>배치 도구는 서버 코드가 좌표를 계산해 풀어 씀</li><li>권한 → 잠금 → 순번 판정, 하나라도 실패하면 전부 롤백</li></ol>
+          <div class="screen"><b>화면</b><span>summary + "완료했어요." + <b>방금 거 취소</b></span><span>실패하면 summary 대신 서버 오류 문구</span></div></div></div>
+
+      <div class="br q"><div class="br-head"><h3>B. 조회</h3><span class="cond">ops = list · find · describe_scene</span></div>
+        <div class="br-body"><ol><li>씬은 바뀌지 않음</li><li>서버가 물체 목록을 돌려줌 (find는 이름 포함 검색)</li></ol>
+          <div class="screen"><b>화면</b><span>"의자 · 위치 1, 0, 3" 형식 목록</span><span>없으면 "조건에 맞는 에셋이 없어요."</span></div></div></div>
+
+      <div class="br ask"><div class="br-head"><h3>C. 되묻기</h3><span class="cond">clarification 있음, ops = []</span></div>
+        <div class="br-body"><ol><li>"저거 지워"인데 선택이 없을 때 등</li><li>학생이 에셋을 고르고 다시 보냄</li><li>두 번째에도 모호하면 질문 대신 "대상을 선택한 뒤 다시 요청해 주세요."</li></ol>
+          <div class="screen"><b>화면</b><span>"어떤 에셋을 삭제할까요?"</span></div></div></div>
+
+      <div class="br no"><div class="br-head"><h3>D. 거절</h3><span class="cond">clarification 없음, ops = []</span></div>
+        <div class="br-body"><ol><li>남의 에셋 수정, 강사 권한, 부적절한 생성 요청</li><li>summary로 이유만 알려 줌</li></ol>
+          <div class="screen"><b>화면</b><span>"다른 학생의 에셋은 삭제할 수 없어요."</span></div>
+          <p class="note">모델이 놓쳐도 A의 서버 권한 검사가 막습니다. 평가의 유일한 오답이 이 경우였습니다.</p></div></div>
+
+      <div class="br gen"><div class="br-head"><h3>E. 생성으로 넘김</h3><span class="cond">ops = generate · retexture (단독)</span></div>
+        <div class="br-body"><ol><li>금칙어 필터 → GPU 큐에 이미지 작업 등록</li><li>학생은 <b>생성 패널</b>에서 이미지 확인</li><li>3D·텍스처 → History → place로 배치</li></ol>
+          <div class="screen"><b>화면</b><span>채팅에는 바로 "완료했어요."</span></div>
+          <p class="note">다른 편집과 섞으면 "생성 요청은 다른 편집과 나눠서 보내 주세요."</p></div></div>
+
+      <div class="br err"><div class="br-head"><h3>F. 처리 실패</h3><span class="cond">모델·큐·서버 오류</span></div>
+        <div class="br-body"><ol><li>120초 초과, 모델 응답 깨짐, Ollama 꺼짐</li><li>대기 중에 강사가 작품을 복원함 (<code>SCENE_RESTORED</code>)</li></ol>
+          <div class="screen"><b>화면</b><span>"처리하지 못했어요. MODEL_TIMEOUT"</span></div>
+          <p class="note">오류 코드가 그대로 학생에게 보입니다.</p></div></div>
+    </div>
+  </section>
+
+  <!-- 2. 도구 -->
+  <section>
+    <div class="sec-head"><h2>챗봇이 고를 수 있는 도구</h2>
+      <p>명령 계약의 op 30개 중 강사 전용 5개를 뺀 25개를 도구 정의로 넘깁니다. 기존 평가 문서에는 24개로 적혀 있지만 실제 <code>studentTools.length</code>는 25입니다. 인자 이름은 실제 스키마 그대로입니다. 예시 문장은 <code>tools.ts</code>의 도구 설명에 들어가는 것입니다.</p></div>
+    <div class="filters" role="group" aria-label="도구 묶음 거르기">
+      <button type="button" id="f-all" data-f="all" aria-pressed="true">전체</button>
+      <button type="button" id="f-edit" data-f="edit" aria-pressed="false">기본 편집 8</button>
+      <button type="button" id="f-auto" data-f="auto" aria-pressed="false">자동 배치 6</button>
+      <button type="button" id="f-q" data-f="q" aria-pressed="false">조회 3</button>
+      <button type="button" id="f-ctl" data-f="ctl" aria-pressed="false">기록·잠금 4</button>
+      <button type="button" id="f-gen" data-f="gen" aria-pressed="false">생성·에셋 4</button>
+      <button type="button" id="f-t" data-f="t" aria-pressed="false">강사 전용 5</button>
+      <button type="button" id="f-noeval" data-f="noeval" aria-pressed="false">평가 없는 도구</button>
+    </div>
+    <div class="legend"><span><i class="badge eval">평가</i>20문항 평가에 포함</span><span><i class="badge noeval">평가 없음</i>측정한 적 없음</span><span><i class="badge solo">단독</i>다른 op와 섞을 수 없음</span><span><i class="badge warn">주의</i>아래 관찰 참고</span></div>
+    <div id="catalog" style="display:grid;gap:22px"></div>
+  </section>
+
+  <!-- 3. 관찰 -->
+  <section>
+    <div class="sec-head"><h2>흐름을 그리며 보인 것</h2><p>코드를 읽고 확인한 것이며, 실제 화면으로 재현하지는 않았습니다.</p></div>
+    <div class="issues">
+      <div class="issue"><span class="n">1</span><div><h3>생성 요청도 "완료했어요"로 끝남</h3>
+        <p>E 갈래는 큐 등록만 하고 <code>ok:true, changedIds:[]</code>를 돌려줍니다. ChatPanel은 ok면 무조건 "완료했어요."를 띄우므로, 학생은 아직 그림도 나오지 않았는데 끝났다고 읽게 됩니다. "생성 패널에서 확인해 주세요"로 바꿀 자리입니다.</p></div></div>
+      <div class="issue"><span class="n">2</span><div><h3>describe_scene이 list와 똑같음</h3>
+        <p><code>apply-command.ts</code>에서 두 op 모두 전체 물체 목록을 돌려줍니다. "공간에 뭐가 있어"에 문장 설명이 나오지 않습니다. 또 list 예시가 "내가 놓은 거 뭐 있어"인데 결과는 남의 것까지 포함됩니다.</p></div></div>
+      <div class="issue"><span class="n">3</span><div><h3>챗봇이 방금 한 일을 모름</h3>
+        <p>대화 이력에는 학생 문장과 summary만 들어가고 실제 ops·생성된 ID·결과는 빠집니다. "방금 놓은 의자 돌려줘"처럼 이어지는 요청은 선택에 기대야 합니다.</p></div></div>
+      <div class="issue"><span class="n">4</span><div><h3>평가가 없는 도구 8개</h3>
+        <p>scatter, list, lock, unlock, generate, retexture, upload_character, replace_asset은 20문항에 없습니다. list는 describe_scene과 같은 경로라 사실상 확인된 셈이고, 나머지 7개는 측정한 적이 없습니다. 특히 학생이 자주 쓸 generate는 문장을 어떻게 옮기는지 측정한 적이 없습니다.</p></div></div>
+      <div class="issue"><span class="n">5</span><div><h3>오류 코드가 학생 화면에 그대로 나옴</h3>
+        <p>F 갈래는 <code>MODEL_TIMEOUT</code> 같은 내부 코드를 붙여 보여 줍니다. 생성 쪽은 <code>generationMessage</code>로 한국어 문구를 쓰는 것과 다릅니다.</p></div></div>
+    </div>
+  </section>
+
+  <footer>근거 코드: apps/llm/src/{prompt,tools,ollama}.ts, apps/llm/prompts/student.md, apps/server/src/chat/service.ts, apps/server/src/generation/command.ts, apps/server/src/rooms/room-service.ts, packages/contracts/src/{ops,chat}.ts, packages/domain/src/apply-command.ts, apps/web/src/editor/ChatPanel.tsx, tools/evaluate-llm.ts. 생성 단계 세부는 flows.html.</footer>
+</div>
+
+<script>
+const groups=[
+ {key:'edit',title:'기본 편집',desc:'자기 에셋 하나를 직접 바꿈. 값은 모두 절대값 (m, rad, 배율).',tools:[
+  ['place','라이브러리 에셋 하나 배치',['id','assetId','position','rotation?','scale?'],'책상 하나 놔줘 · 원점에 화분 놓아줘',1],
+  ['move','절대 위치 지정. 상대 이동은 현재 위치에 더함',['id','value'],'왼쪽으로 2m · 위치를 1,0,3으로',1],
+  ['rotate','절대 Euler XYZ 회전, 도→라디안',['id','value'],'Y축 90도 회전 · 회전을 초기화해',1],
+  ['scale','절대 XYZ 배율 0.01~100',['id','value'],'두 배로 키워 · 높이만 반으로',1],
+  ['duplicate','자기 에셋 복제',['id','newId'],'하나 복사해 · 이거 세 개 복제해',1],
+  ['delete','자기 에셋 삭제',['id'],'선택한 것 삭제 · 내 나무 지워',1],
+  ['rename','표시 이름 변경 (80자)',['id','name'],'이름을 작은 숲으로',1],
+  ['snap_to_ground','바닥에 붙이기, 높이는 서버가 계산',['id'],'바닥에 붙여 · 땅으로 내려',1]]},
+ {key:'auto',title:'자동 배치',desc:'모델은 대상과 개수만 고르고 좌표는 배치 알고리즘이 계산.',tools:[
+  ['arrange_around','대상 주위에 새 에셋 여러 개를 원형 배치',['targetId','assetId','ids[]','radius'],'탁자 주위에 의자 4개',1],
+  ['align_row','기존 에셋을 축 방향 일렬로, 첫 물체가 기준',['ids[]','axis','spacing'],'의자를 X축 2m 간격으로',1],
+  ['distribute','기존 에셋을 양끝 사이 등간격으로',['ids[]','axis'],'의자 간격 균등하게',1],
+  ['scatter','사각 범위 안에 새 에셋을 seed로 흩뿌림',['assetId','ids[]','min','max','seed'],'이 구역에 화분 5개 흩뿌려',0],
+  ['place_on','대상 위에 올려놓기, 높이는 서버 계산',['id','targetId'],'책상 위에 화분',1],
+  ['face_toward','대상 쪽을 보도록 회전',['id','targetId'],'의자가 책상을 보게',1]]},
+ {key:'q',title:'조회',desc:'씬을 바꾸지 않고 목록을 돌려줌. 흐름의 B 갈래.',tools:[
+  ['list','씬 목록 조회',[],'내가 놓은 거 뭐 있어 · 목록 보여줘',0,'남의 것도 포함'],
+  ['find','이름에 글자가 들어간 것 찾기',['query'],'나무 찾아 · 의자 검색해',1],
+  ['describe_scene','씬 설명 조회',[],'현재 씬 설명해 · 공간에 뭐가 있어',1,'list와 결과 같음']]},
+ {key:'ctl',title:'기록·잠금',desc:'반드시 혼자 와야 하는 제어 명령.',tools:[
+  ['undo','직전 내 명령 한 건 되돌리기',['expectedSeq?'],'방금 거 취소 · 되돌려',1,null,1],
+  ['redo','되돌린 명령 다시 실행',[],'다시 해 · 취소한 거 복구',1,null,1],
+  ['lock','자기 에셋 명시적 잠금 (일반 수정은 자동 잠금)',['ids[]'],'내 의자 잠가',0,null,1],
+  ['unlock','자기 잠금 해제',['ids[]'],'선택 잠금 해제',0,null,1]]},
+ {key:'gen',title:'생성·에셋',desc:'씬을 바로 바꾸지 않고 생성 큐나 업로드 결과로 이어짐. 흐름의 E 갈래.',tools:[
+  ['generate','새 모양 이미지 생성 요청',['prompt'],'고래 모양 벤치 만들어',0,'"완료했어요" 표시',1],
+  ['retexture','자기 에셋 재질 다시 만들기',['id','prompt'],'빨갛게 칠해 · 나무 재질로 바꿔',0,'"완료했어요" 표시',1],
+  ['upload_character','업로드 완료된 캐릭터 등록',['uploadId'],'올린 캐릭터 등록해',0],
+  ['replace_asset','완성된 결과로 자기 물체의 모델 교체',['id','assetId','expectedRevision','expectedGeneration'],'이 승인 모델로 교체해',0]]},
+ {key:'t',title:'강사 전용 (챗봇에 넘기지 않음)',desc:'도구 정의에서 빠지고, 모델이 내더라도 결정 검사에서 거절.',tools:[
+  ['force_unlock','남의 잠금 강제 해제',['ids[]']],['approve_asset','에셋 승인',['artifactId']],
+  ['restore_object','물체를 이전 revision으로',['id','revision']],['restore_snapshot','스냅샷으로 복원',['snapshotId']],
+  ['read_logs','학생 대화 로그 열람',['studentId']]]}
+];
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const root=document.getElementById('catalog');
+root.innerHTML=groups.map(g=>`<div class="group c-${g.key}" data-group="${g.key}"><div class="group-head"><h3>${g.title}</h3><p>${g.desc}</p></div><div class="tools">${g.tools.map(([n,ko,args,ex,ev,warn,solo])=>{
+ const teacher=g.key==='t';
+ const badges=teacher?'':[ev?'<span class="badge eval">평가</span>':'<span class="badge noeval">평가 없음</span>',solo?'<span class="badge solo">단독</span>':'',warn?`<span class="badge warn">${esc(warn)}</span>`:''].join('');
+ return `<article class="tool${teacher?' teacher':''}" data-eval="${teacher?'':ev?1:0}"><div class="top"><span class="name">${n}</span></div><span class="ko">${esc(ko)}</span>${args.length?`<div class="args">${args.map(a=>`<code>${a}</code>`).join('')}</div>`:'<div class="args"><code>인자 없음</code></div>'}${ex?`<span class="ex">“${esc(ex)}”</span>`:''}${badges?`<div class="badges">${badges}</div>`:''}</article>`;}).join('')}</div></div>`).join('');
+const buttons=[...document.querySelectorAll('.filters button')];
+function apply(f){
+ buttons.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.f===f)));
+ root.querySelectorAll('.group').forEach(g=>{
+  const tools=[...g.querySelectorAll('.tool')];
+  if(f==='noeval'){tools.forEach(t=>t.hidden=t.dataset.eval!=='0');g.hidden=tools.every(t=>t.hidden);}
+  else{tools.forEach(t=>t.hidden=false);g.hidden=!(f==='all'||g.dataset.group===f);}
+ });
+ try{localStorage.setItem('chatflow-filter',f);}catch{}
+}
+buttons.forEach(b=>b.addEventListener('click',()=>apply(b.dataset.f)));
+let saved='all';try{saved=localStorage.getItem('chatflow-filter')||'all';}catch{}
+apply(buttons.some(b=>b.dataset.f===saved)?saved:'all');
+</script>
