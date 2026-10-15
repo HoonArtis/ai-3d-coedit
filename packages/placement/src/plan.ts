@@ -1,6 +1,7 @@
 import {BUDGETS,opSchema,type Op,type SceneObject,type SceneSnapshot,type AssetDefinition,type Vec3} from '@coedit/contracts';
 import {boundsOf,overlaps,groundPosition,EPSILON} from './geometry';
-export const placementOps=new Set(['arrange_around','align_row','distribute','scatter','place_on','face_toward','snap_to_ground']);
+import {arrangeNicely} from './arrange';
+export const placementOps=new Set(['arrange_around','align_row','distribute','scatter','place_on','face_toward','snap_to_ground','arrange_nicely']);
 type Result={ok:true;ops:Op[]}|{ok:false;code:string};
 export function planPlacement(raw:unknown,scene:SceneSnapshot,library:Record<string,AssetDefinition>):Result{
   try{
@@ -56,6 +57,12 @@ export function planPlacement(raw:unknown,scene:SceneSnapshot,library:Record<str
       if(Math.hypot(dx,dz)<EPSILON)return {ok:true,ops:[]};
       const rotation:Vec3=[object.rotation[0],Math.atan2(dx,dz),object.rotation[2]];
       candidates.push({...object,rotation});ops.push({op:'rotate',id:object.id,value:rotation});
+    }else if(op.op==='arrange_nicely'){
+      for(const object of arrangeNicely(op.ids,scene,library)){
+        const before=get(object.id);candidates.push(object);
+        if(object.position.some((v,i)=>v!==before.position[i]))ops.push({op:'move',id:object.id,value:object.position});
+        if(object.rotation.some((v,i)=>v!==before.rotation[i]))ops.push({op:'rotate',id:object.id,value:object.rotation});
+      }
     }else throw Error('UNSUPPORTED_PLACEMENT');
     const ids=new Set(candidates.map(o=>o.id));
     const existing=Object.values(scene.objects).filter(o=>!ids.has(o.id));

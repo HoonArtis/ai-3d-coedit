@@ -1,5 +1,6 @@
 import {useEffect,useRef,useState} from 'react';
 import {BUILTIN_LIBRARY,emptyScene,type SceneSnapshot,type Op,type Lease,type PreviewEvent,type Vec3} from '@coedit/contracts';
+import {arrangeNicely} from '@coedit/placement';
 import {retainLeasedPreviews,SelectionQueue,TransformEditQueue} from './interaction-state';
 import {connectRoom,type RoomTransport} from './room-transport';
 export function useEditor(){
@@ -68,11 +69,22 @@ export function useEditor(){
     const result=await send([{op:'place',id,assetId,position,rotation:[0,0,0],scale:[1,1,1]}]);
     if(result?.ok)await select(id);
   };
+  /** 추천 [놓기]: 기준 물체 곁(없으면 화면 중심)에 두고, 서버와 같은 어울림 배치로 자리·방향을 미리 정해 place 한 번으로 보낸다. */
+  const placeSuggested=async(assetId:string,nearId?:string)=>{
+    const scene=snapshotRef.current,asset=library[assetId];if(!asset)return;
+    const near=nearId?scene.objects[nearId]:undefined,id=crypto.randomUUID();
+    const start:Vec3=near?[near.position[0]+2,0,near.position[2]]:[...cameraCenter.current];
+    let position=start,rotation:Vec3=[0,0,0];
+    try{const [moved]=arrangeNicely([id],{...scene,objects:{...scene.objects,[id]:{id,assetId,name:asset.name,owner:actor,lastActor:actor,revision:0,position:start,rotation,scale:[1,1,1]}}},library);if(moved){position=moved.position;rotation=moved.rotation;}}catch{/* 빈 곳을 못 찾으면 시작 자리에 두고 서버 판정에 맡긴다 */}
+    const result=await send([{op:'place',id,assetId,position,rotation,scale:[1,1,1]}]);
+    if(result?.ok)await select(id);
+    return result;
+  };
   const duplicate=async()=>{
     if(!selected)return;
     const newId=crypto.randomUUID();const result=await send([{op:'duplicate',id:selected,newId}]);
     if(result?.ok)await select(newId);
   };
   const preview=(event:PreviewEvent)=>transport.current?.preview(event);
-  return {snapshot,library,locks,selected,status,notice,actor,role,storage,previews,send,editTransform,select,place,duplicate,preview,setNotice,chatTransport:transport.current,cameraCenter,restorationSeq};
+  return {snapshot,library,locks,selected,status,notice,actor,role,storage,previews,send,editTransform,select,place,placeSuggested,duplicate,preview,setNotice,chatTransport:transport.current,cameraCenter,restorationSeq};
 }

@@ -9,7 +9,7 @@ describe('LLM public boundary',()=>{
   const schema=JSON.stringify(decisionJSONSchema);expect(schema).not.toContain('prefixItems');expect(schema).not.toContain('"items":false');
  });
  it('derives student tools from contracts with examples and excludes teacher tools',()=>{
-  expect(studentTools.length).toBe(25);
+  expect(studentTools.length).toBe(27);
   expect(studentTools.map(t=>t.function.name)).not.toContain('force_unlock');
   for(const t of studentTools){expect(opSchema.options.some(o=>o.shape.op.value===t.function.name)).toBe(true);expect(t.function.description.match(/예:/g)).toHaveLength(2);expect(t.function.parameters.additionalProperties).toBe(false);}
  });

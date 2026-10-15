@@ -2,7 +2,7 @@ import {z} from 'zod';
 import {idSchema,vec3Schema,type Vec3} from './primitives';
 import {opSchema,type Op} from './ops';
 import type {SceneSnapshot,CommandResult,AssetDefinition} from './scene';
-import {snapshotSchema,objectSchema} from './scene';
+import {snapshotSchema,objectSchema,suggestionSchema} from './scene';
 export const TEACHER_ONLY_OPS=new Set<Op['op']>(['force_unlock','approve_asset','restore_object','restore_snapshot','read_logs']);
 export const modelDecisionSchema=z.object({summary:z.string().trim().min(1).max(500),clarification:z.string().trim().min(1).max(300).nullable(),ops:z.array(opSchema).max(200)}).strict();
 export type ModelDecision=z.infer<typeof modelDecisionSchema>;
@@ -14,7 +14,7 @@ export type ChatRequest=z.infer<typeof chatRequestSchema>;
 export type ChatReply={requestId:string;summary:string;clarification:string|null;ops?:Op[];result?:CommandResult;error?:string};
 export type ChatRecord=ChatReply&{message:string};
 export type ChatUpdate={type:'queued';requestId:string;position:number}|{type:'summary';requestId:string;text:string}|{type:'reply';reply:ChatReply}|{type:'history';records:ChatRecord[]}|{type:'resume';request:ChatRequest};
-export const resultSchema=z.discriminatedUnion('ok',[z.object({ok:z.literal(true),snapshot:snapshotSchema,changedIds:z.array(idSchema),query:z.array(objectSchema).optional()}),z.object({ok:z.literal(false),code:z.string(),message:z.string()})]);
+export const resultSchema=z.discriminatedUnion('ok',[z.object({ok:z.literal(true),snapshot:snapshotSchema,changedIds:z.array(idSchema),query:z.array(objectSchema).optional(),suggestions:z.array(suggestionSchema).max(5).optional()}),z.object({ok:z.literal(false),code:z.string(),message:z.string()})]);
 export const replySchema=z.object({requestId:idSchema,summary:z.string(),clarification:z.string().nullable(),ops:z.array(opSchema).optional(),result:resultSchema.optional(),error:z.string().optional()});
 export const chatUpdateSchema=z.discriminatedUnion('type',[
  z.object({type:z.literal('queued'),requestId:idSchema,position:z.number().int().nonnegative()}),

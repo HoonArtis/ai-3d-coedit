@@ -7,7 +7,7 @@ import {decoratesWell,simulate,overlapPairs,sameObject} from './simulate';
 // 정답 좌표가 없는 요청은 연습장에 시험 적용해 조건으로 채점한다(simulate.ts).
 // 씬: 내 탁자 t1(0,0,0), 의자 c1(1.5,0,0)·c2(-3,0,0.3, 비스듬)·c3(0.5,0,3), 나무 tr1(-4,0,3)·큰 나무 tr2(4,0,3 ×1.4), 화분 p1(1,0,-2)
 //     bob의 벤치 b1(0,0,6), 강사의 표지판 s1(6,0,-6)
-const objects={
+export const objects={
  t1:object('t1','table','탁자'),c1:object('c1','chair','의자',[1.5,0,0]),c2:{...object('c2','chair','의자',[-3,0,0.3]),rotation:[0,0.4,0] as Vec3},c3:object('c3','chair','의자',[0.5,0,3]),
  tr1:object('tr1','tree','나무',[-4,0,3]),tr2:{...object('tr2','tree','큰 나무',[4,0,3]),scale:[1.4,1.4,1.4] as Vec3},p1:object('p1','plant','화분',[1,0,-2]),
  b1:object('b1','bench','다른 학생 벤치',[0,0,6],'bob'),s1:object('s1','cube','선생님 표지판',[6,0,-6],'teacher'),

@@ -15,7 +15,7 @@ export class DurableRoom{
         const command=parseCommand(raw,this.service.getSession(clientId));
         const previous=await this.repository.lookup(this.service.snapshot.roomId,command.actor,command.requestId);
         if(previous)return previous.fingerprint===JSON.stringify(command)?previous.result:{ok:false,code:'REQUEST_CONFLICT',message:'같은 요청 ID의 내용이 달라요.'};
-        const control=command.ops.every(op=>['lock','unlock','force_unlock','list','find','describe_scene'].includes(op.op));
+        const control=command.ops.every(op=>['lock','unlock','force_unlock','list','find','describe_scene','recommend'].includes(op.op));
         if(control)return this.service.submit(clientId,command);
         let restoration;
         if(command.ops.some(op=>op.op==='restore_object'||op.op==='restore_snapshot')){

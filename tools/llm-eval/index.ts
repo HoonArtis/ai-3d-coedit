@@ -1,5 +1,6 @@
 import {basic,student} from './cases';
 import {real} from './real';
+import {focus} from './focus';
 export {caseContext,refDecision,type EvalSuite,type EvalCase} from './cases';
-/** basic: 서버 PC 비교 기준, student: 말투 회귀용, real: 실사용 비중(주 지표). */
-export const suites={basic,student,real};
+/** focus: 지금 만드는 세 기능(주 지표), basic: 서버 PC 비교 기준, student·real: 넓은 회귀용. */
+export const suites={focus,basic,student,real};

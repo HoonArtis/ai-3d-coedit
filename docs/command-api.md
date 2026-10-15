@@ -32,7 +32,9 @@ type Command = {
 | | `scatter` | - | "꽃을 여기저기" | 내 것만 |
 | | `place_on` | - | "책상 위에 컵" | 내 것만 |
 | | `face_toward` | - | "의자들 무대 보게" | 내 것만 |
+| | `arrange_nicely` | - | "어울리게 배치해줘", "알아서 정리해줘" | 내 것만. 의자→탁자 둘레, 벤치→나무 앞, 화분→탁자 위, 겹침 회피. 좌표는 `packages/placement/src/arrange.ts` |
 | 조회 | `list` · `find` · `describe_scene` | 아웃라이너 | "내가 놓은 거 뭐 있어?" | 모두(상태 안 바꿈) |
+| | `recommend` | 채팅 추천 목록의 [놓기]/[만들기] | "뭐 놓으면 어울려?", "이거랑 어울리는 거" | 모두(상태 안 바꿈, 단독). 결과 `suggestions` 최대 3개, 쓸 수 있는 에셋만. 규칙은 `relations.ts` |
 | 카메라 | `focus` · `orbit` · `zoom` | 휠·우클릭 드래그 | "고래 쪽 보여줘" | 개인, 서버 안 거침 |
 | 기록 | `undo` · `redo` | Ctrl+Z / Ctrl+Y | "방금 거 취소" | 개인 기준 |
 | 잠금 | `lock` · `unlock` | 선택·해제 시 자동 | 챗봇 작업도 그 학생의 잠금 | 강사는 강제 해제 |

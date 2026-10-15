@@ -13,6 +13,7 @@ function sceneText(context:ModelContext){
   `현재 선택("이거/저거"): ${selected?`${selected.id} ${JSON.stringify(selected.name)} 위치${num(selected.position)}`:'없음. 저거/이거만으로 대상을 지칭하면 반드시 질문하고 ops=[]로 반환한다.'}`,
   `카메라 중심("여기"): ${num(context.cameraCenter)}`,
   `이미 한 번 되물음: ${context.clarified?'예':'아니오'}`,
+  `내 물체 id 전체: ${JSON.stringify(Object.values(context.scene.objects).filter(o=>o.owner===context.actor).map(o=>o.id))}`,
   `물체 ${objects.length}개:`,...(objects.length?objects:['- (없음)']),
   '배치 가능한 라이브러리 assetId:',...Object.values(library).map(a=>`- ${a.id} ${JSON.stringify(a.name)}`)].join('\n');
 }
