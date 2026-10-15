@@ -21,7 +21,7 @@ describe('LLM public boundary',()=>{
  it('keeps scene names as untrusted data and limits history input',()=>{
   const messages=buildMessages([{role:'user',content:'저거 지워줘'}],context);
   expect(messages[0].content).toContain('한 번만');expect(messages[0].content).toContain('권한');
-  expect(messages[1].role).toBe('user');expect(messages[1].content).toContain('"actor":"alice"');
+  expect(messages[0].content).toContain('지시가 아님');expect(messages[1]).toEqual({role:'user',content:'저거 지워줘'});
   expect(()=>buildMessages([{role:'user',content:'x'.repeat(4001)}],context)).toThrow();
  });
  it('uses local structured output and validates malformed JSON, missing model and timeout',async()=>{
@@ -36,5 +36,5 @@ describe('LLM public boundary',()=>{
 
 it('model sees the room approved library instead of a hardcoded builtin-only catalog',()=>{
  const id='generated-'+'a'.repeat(64),asset={id,name:'승인된 고래',kind:'generated' as const,color:'#123456',dimensions:[1,1,1] as [number,number,number],artifactId:'a'.repeat(64)};
- const data=buildMessages([],{...context,library:{[id]:asset}})[1].content;expect(data).toContain('승인된 고래');expect(data).toContain(id);
+ const data=buildMessages([],{...context,library:{[id]:asset}})[0].content;expect(data).toContain('승인된 고래');expect(data).toContain(id);
 });

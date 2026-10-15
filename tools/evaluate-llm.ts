@@ -11,15 +11,18 @@ const suiteName=arg('suite')??'all',modelName=arg('model')??process.env.OLLAMA_M
 const chosen:EvalSuite[]=suiteName==='all'?Object.values(suites):[suites[suiteName as keyof typeof suites]].filter(Boolean);
 if(!chosen.length)throw Error('알 수 없는 suite: '+suiteName);
 // 같은 GPU에서 이미지·텍스처 작업이 돌고 있으면 시작하지 않는다(qwen3:4b 16k 컨텍스트는 약 5.1GB).
+const ollamaUrl=process.env.OLLAMA_URL??'http://127.0.0.1:11434';
 if(!process.argv.includes('--force')){
- try{
-  const [used,total]=execFileSync('nvidia-smi',['--query-gpu=memory.used,memory.total','--format=csv,noheader,nounits'],{encoding:'utf8'}).split('\n')[0].split(',').map(Number);
-  if(total-used<6000){console.error(`GPU 여유 ${total-used}MiB < 6000MiB. 다른 GPU 작업이 끝난 뒤 실행하거나 --force.`);process.exit(2);}
- }catch{/* nvidia-smi 없음: 확인 생략 */}
+ let used=0,total=0;
+ try{[used,total]=execFileSync('nvidia-smi',['--query-gpu=memory.used,memory.total','--format=csv,noheader,nounits'],{encoding:'utf8'}).split('\n')[0].split(',').map(Number);}catch{/* nvidia-smi 없음: 확인 생략 */}
+ // 이미 올라가 있는 같은 모델(직전 평가의 keep-alive)은 남의 작업이 아니므로 여유분으로 친다.
+ const resident=await fetch(new URL('/api/ps',ollamaUrl)).then(r=>r.json() as Promise<{models?:{name:string;size_vram:number}[]}>).then(b=>b.models?.find(m=>m.name===modelName)?.size_vram??0).catch(()=>0);
+ const free=total-used+Math.round(resident/1048576);
+ if(total&&free<6000){console.error(`GPU 여유 ${free}MiB < 6000MiB. 다른 GPU 작업이 끝난 뒤 실행하거나 --force.`);process.exit(2);}
 }
 const stamp=new Date().toISOString().replace(/[:.]/g,'-');
 const out=arg('out')??`docs/evidence/llm-eval-runs/${suiteName}-${stamp}.json`;mkdirSync(dirname(out),{recursive:true});
-const model=new OllamaModel({url:process.env.OLLAMA_URL,model:modelName});
+const model=new OllamaModel({url:ollamaUrl,model:modelName});
 const total=chosen.reduce((n,s)=>n+s.cases.length,0);
 const results:{suite:string;id:string;kind:string;request:string;pass:boolean;ms:number;decision?:ModelDecision;error?:string}[]=[];
 const save=()=>{
@@ -34,3 +37,5 @@ for(const suite of chosen)for(const c of suite.cases){
  console.log(c.id,pass?'PASS':'FAIL',results.at(-1)!.ms+'ms',error??JSON.stringify(decision));
 }
 console.log(`${results.filter(r=>r.pass).length}/${total} → ${out}`);
+// 끝나면 바로 내려서 다른 GPU 작업에 메모리를 돌려준다.
+await fetch(new URL('/api/generate',ollamaUrl),{method:'POST',body:JSON.stringify({model:modelName,keep_alive:0})}).catch(()=>{});
