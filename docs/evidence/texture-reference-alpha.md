@@ -55,3 +55,17 @@ SDXL로 새로 만든 피카츄(seed 31337, 단일 전신)로 같은 비교를 �
 SDXL 원본 이미지에서 볼 뒤 옆구리(몸이 뒤로 넘어가는 윤곽)에 검정·빨강 띠가 이미 그려져 있었다: [확대](texture-reference-alpha/pikachu-source-edge-patch.png). 실제 피카츄에 없는 무늬다. MV-Adapter와 TRELLIS가 서로 다른 모델인데도 같은 자리에 같은 색을 칠한 것은 이 윤곽 단서를 안 보이는 등 전체로 늘렸기 때문이다. 윤곽 근처의 작은 이상 색이 3D에서는 뒷면 전체로 커진다. 근본 원인은 텍스처 모델보다 이미지 단계의 지어낸 세부다. 대응 후보: 이미지 모델 교체·후보 선택, 확인 단계 안내, 윤곽 근처 이상 색 자동 경고(귀 끝처럼 원래 있는 무늬의 오탐 조정 필요).
 
 검증: 같은 원본에서 옆구리 띠만 OpenCV 인페인트로 지운 이미지([전후](texture-reference-alpha/pikachu-clean-patch.png))를 TRELLIS에 넣자 뒷면·엉덩이의 검정·빨강이 완전히 사라지고 노란색으로 이어졌다: [비교](texture-reference-alpha/pikachu-clean-trellis.png)(위 원본, 아래 수정본). 원인 가설이 확인됐다. 꼬리가 몸에서 떨어진 판으로 나오는 형상 문제는 그대로 남는다.
+
+## 이미지 모델 비교: SDXL / Qwen-Image-2512 / HiDream-O1-Image-Dev (2026-10-15, 평가만)
+
+같은 "Pikachu" + 고정 구도 문구, seed 31337, 이 PC(RTX 3080 Ti 12GB) 각 1장: [비교](texture-reference-alpha/image-models-pikachu.png) (왼쪽부터).
+
+| 모델 | 라이선스 | 이 PC 설정·시간 | 관찰 |
+|---|---|---|---|
+| SDXL base 1.0 | RAIL++-M | 768², 25 step, 약 20초 | 매끈한 피규어 느낌, 3/4 시점. 옆구리 지어낸 검정·빨강 띠(뒷면 검정의 원인) |
+| Qwen-Image-2512 | Apache-2.0 | GGUF Q3_K_M + 4bit 텍스트 인코더, 1024², 30 step, 1,220초 | 설정에 맞는 피카츄(꼬리 끝·등 갈색 줄), 흰 배경 지킴, 지어낸 무늬 없음. 실사 털, 정면에 가까움 |
+| HiDream-O1-Image-Dev | MIT | 8bit + SDPA 대체, 1024², 28 step, 993초 | 3/4 시점 가장 정확, 설정 맞음. "흰 배경"을 무시하고 돌바닥 배경. 실사 털 |
+
+- 둘 다 이 PC에서는 VRAM이 넘쳐 한 장 15~20분으로 수업에 쓸 수 없다. 서버 16GB와 고속 설정(Qwen Lightning 8 step 등)에서 재측정해야 한다.
+- Qwen-Image-2.1은 연구·평가 전용 라이선스라 제외했다. OpenAI는 공개 이미지 가중치가 없고, API(Codex 이미지 도구)는 피카츄 요청을 안전 정책으로 거절했다.
+- 표본이 1장씩이다. 결론이 아니라 후보 선별용이다.
