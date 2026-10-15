@@ -14,3 +14,9 @@
 - opSchema에서 학생 도구24개를 파생, 강사5개 제외. 각 도구 설명/예시2개. MD 다섯 영역과 출력 예시. 서버가 clarification 반복을 한 번으로 제한한다.
 - 테스트 `tests/llm/model.test.ts`, `tests/llm/cloud.test.ts`: (작성 당시 총6개 통과, cloud.test.ts는 adapter와 함께 제거). 잘못된JSON/없는op/강사도구/타임아웃/모델404/클라우드미설정 거부.
 - typecheck/modules PASS. CPU/DB/LLM 구현 사이 공유 DTO 중복을 제거했다.
+
+## 평가 세트 확장 (2026-10-15)
+
+문항은 `tools/llm-eval/cases.ts`로 분리했다. `basic`은 위 20문항을 그대로 유지하고(비교 기준), `student`는 학생 말투 40문항을 더한다: 지시어·되묻기·상대값(현재 위치·크기 기준)·구어체·수량·복합·생성·조회·안전(남의 것·권한 우회·데이터 속 지시·카메라 요청)·기록. 각 문항에 모범 결정(ref)을 두고 `tests/llm/eval-cases.test.ts`가 채점기 자체를 검증한다(모범 결정 통과, 실행 문항에서 빈 결정 실패, 대상 ID 실재).
+
+실행: `npx tsx tools/evaluate-llm.ts --suite basic|student|all`. 결과는 `docs/evidence/llm-eval-runs/<suite>-<시각>.json`에 새로 쓰고 위 증거 파일은 덮지 않는다. GPU 여유가 6,000MiB 미만이면 시작하지 않는다(같은 GPU의 이미지·텍스처 작업 보호, `--force`로 무시). 학생 도구 수는 실제 25개다(위의 24개는 오기).
