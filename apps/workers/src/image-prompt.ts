@@ -33,3 +33,15 @@ export async function prepareImagePrompt(original:string,options:{url?:string;mo
   return {original,prepared:prompt,model,version:1 as const};
  }catch{throw Error('IMAGE_PROMPT_INVALID_OUTPUT');}
 }
+
+export const TEXTURE_FALLBACK_PROMPT='a single object matching the reference image';
+/**
+ * 텍스처(MV-Adapter, SDXL 계열)에 넣을 영어 문장. 학생 원문(한국어)을 그대로 넣지 않고 이미지 단계와 같은 정리기를 다시 거친다.
+ * temperature 0이라 같은 원문이면 이미지 단계와 같은 문장이 나온다. 참고 이미지가 있는 image-geometry는 정리가 실패해도
+ * 중립 영어 문장으로 진행하고, 글이 유일한 조건인 text-geometry(재텍스처)는 실패시켜 재질 프리셋 선택으로 넘긴다.
+ */
+export async function prepareTexturePrompt(original:string,mode:'image-geometry'|'text-geometry',prepare:typeof prepareImagePrompt=prepareImagePrompt,options:Parameters<typeof prepareImagePrompt>[1]={}){
+ if(original===TEXTURE_FALLBACK_PROMPT)return {original,prepared:original,fallback:false};
+ try{const result=await prepare(original,options);return {original,prepared:result.prepared,fallback:false};}
+ catch(error){if(mode==='text-geometry'||options.signal?.aborted)throw error;return {original,prepared:TEXTURE_FALLBACK_PROMPT,fallback:true,error:error instanceof Error?error.message:'IMAGE_PROMPT_FAILED'};}
+}

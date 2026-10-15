@@ -5,7 +5,7 @@ import {JobQueues,runWorkerProcess} from '@coedit/jobs';
 import {LocalObjectStore} from '@coedit/artifacts';
 import {objectKeySchema} from '@coedit/contracts';
 import {generationSeed} from './generation-seed';
-import {prepareImagePrompt} from './image-prompt';
+import {prepareImagePrompt,prepareTexturePrompt} from './image-prompt';
 import {optimizeStaticGlb} from './optimization/mesh';
 const root=resolve(process.cwd()),queues=new JobQueues();
 const store=new LocalObjectStore(process.env.OBJECT_STORE_DIR??join(root,'.data/objects'));
@@ -19,7 +19,7 @@ const worker=queues.worker('gpu',async(input,executionId)=>{
  try{const result=JSON.parse(await readFile(receipt,'utf8'));objectKeySchema.parse(result.key);await store.get(result.key);return result;}catch(error){if((error as NodeJS.ErrnoException).code!=='ENOENT')throw error;}
  const run=(stage:string,args:string[])=>runWorkerProcess(python,['-m','workers.gpu.run_stage',stage,...args],{cwd:root,timeoutMs:600000,signal:abort.signal});
  const output=join(directory,input.stage==='image'?'image.png':'shape.glb');
- let imagePrompt:Awaited<ReturnType<typeof prepareImagePrompt>>|undefined;
+ let imagePrompt:Awaited<ReturnType<typeof prepareImagePrompt>>|undefined,texturePrompt:Awaited<ReturnType<typeof prepareTexturePrompt>>|undefined;
  if(input.stage==='image'){
   if(typeof input.payload.prompt!=='string'||input.payload.prompt.length>2000)throw Error('INVALID_PROMPT');
   imagePrompt=await prepareImagePrompt(input.payload.prompt,{url:process.env.OLLAMA_URL,model:process.env.OLLAMA_MODEL,signal:abort.signal});
@@ -35,11 +35,12 @@ const worker=queues.worker('gpu',async(input,executionId)=>{
   if(input.payload.textureMode!==undefined&&!['text-geometry','image-geometry'].includes(String(input.payload.textureMode)))throw Error('INVALID_TEXTURE_MODE');
   if(typeof input.payload.prompt!=='string'||input.payload.prompt.length>2000)throw Error('INVALID_PROMPT');
   const source=join(directory,'source.png'),foreground=join(directory,'foreground.png'),mesh=join(directory,'texture-input.glb');
+  texturePrompt=await prepareTexturePrompt(input.payload.prompt,textGeometry?'text-geometry':'image-geometry',prepareImagePrompt,{url:process.env.OLLAMA_URL,model:process.env.OLLAMA_MODEL,signal:abort.signal});
   if(!textGeometry){const imageKey=objectKeySchema.parse(input.payload.imageKey);await writeFile(source,await store.get(imageKey));await run('background',['--input',source,'--output',foreground,'--rgba']);}
   await writeFile(mesh,(await optimizeStaticGlb(await store.get(shapeKey),'desktop')).bytes);
   const container='coedit-texture-'+key.slice(0,20),local=(path:string)=>relative(root,path).replaceAll('\\','/');
   try{
-   await runWorkerProcess('docker',['run','--rm','--name',container,'--gpus','all','--network','none','--shm-size=2g','--mount',`type=bind,source=${root},target=/workspace`,'--mount','type=volume,source=coedit-texture-kernel-cache,target=/root/.cache/torch_extensions','coedit-texture:research','python','-X','faulthandler','-m','workers.gpu.run_texture','--mesh',local(mesh),...(textGeometry?['--steps','50']:['--image',local(foreground)]),'--output',local(output),'--prompt',input.payload.prompt],{cwd:root,timeoutMs:600000,signal:abort.signal});
+   await runWorkerProcess('docker',['run','--rm','--name',container,'--gpus','all','--network','none','--shm-size=2g','--mount',`type=bind,source=${root},target=/workspace`,'--mount','type=volume,source=coedit-texture-kernel-cache,target=/root/.cache/torch_extensions','coedit-texture:research','python','-X','faulthandler','-m','workers.gpu.run_texture','--mesh',local(mesh),...(textGeometry?['--steps','50']:['--image',local(foreground)]),'--output',local(output),'--prompt',texturePrompt.prepared],{cwd:root,timeoutMs:600000,signal:abort.signal});
   }finally{
    // Killing the Docker client alone does not terminate its GPU container.
    await runWorkerProcess('docker',['rm','-f',container],{cwd:root,timeoutMs:30000}).catch(()=>{});
@@ -47,6 +48,7 @@ const worker=queues.worker('gpu',async(input,executionId)=>{
  }
  const result={key:await store.put(await readFile(output)),metadata:JSON.parse(await readFile(output+'.json','utf8'))};
  if(imagePrompt)result.metadata.imagePrompt=imagePrompt;
+ if(texturePrompt)result.metadata.texturePrompt=texturePrompt;
  await writeFile(receipt+'.tmp',JSON.stringify(result));await rename(receipt+'.tmp',receipt);return result;
 });
 console.log('GPU worker ready (one active GPU job, local model cache)');
