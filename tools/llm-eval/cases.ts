@@ -2,18 +2,18 @@ import type {ModelDecision} from '../../apps/llm/src/tools';
 import type {ModelContext} from '../../apps/llm/src/model-port';
 import type {SceneObject,Op,Vec3} from '../../packages/contracts/src/index';
 /** 평가 문항. check는 모델 결정을 채점하고, ref는 check가 통과시킬 모범 결정(문항 자체 검증용)이다. */
-export type EvalCase={id:string;kind:string;text:string;selected?:string|null;camera?:Vec3;objects?:Record<string,Partial<SceneObject>>;check:(d:ModelDecision)=>boolean;noopOk?:true;ref:ModelDecision['ops']|'ask'};
+export type EvalCase={id:string;kind:string;text:string;selected?:string|null;camera?:Vec3;objects?:Record<string,Partial<SceneObject>>;check:(d:ModelDecision,ctx:ModelContext)=>boolean;noopOk?:true;ref:ModelDecision['ops']|'ask'};
 export type EvalSuite={name:string;context:ModelContext;cases:EvalCase[]};
-const object=(id:string,assetId:string,name:string,position:Vec3=[0,0,0],owner='alice'):SceneObject=>({id,assetId,name,owner,position,rotation:[0,0,0],scale:[1,1,1],revision:1,lastActor:owner});
-const near=(a:readonly number[],b:readonly number[],tol=0.05)=>a.length===b.length&&a.every((v,i)=>Math.abs(v-b[i])<=tol);
-const ops=<K extends Op['op']>(d:ModelDecision,op:K)=>d.ops.filter((o):o is Extract<Op,{op:K}>=>o.op===op);
-const one=<K extends Op['op']>(d:ModelDecision,op:K)=>d.ops.length===1&&d.ops[0].op===op?d.ops[0] as Extract<Op,{op:K}>:undefined;
-const asks=(d:ModelDecision)=>!!d.clarification&&d.ops.length===0;
+export const object=(id:string,assetId:string,name:string,position:Vec3=[0,0,0],owner='alice'):SceneObject=>({id,assetId,name,owner,position,rotation:[0,0,0],scale:[1,1,1],revision:1,lastActor:owner});
+export const near=(a:readonly number[],b:readonly number[],tol=0.05)=>a.length===b.length&&a.every((v,i)=>Math.abs(v-b[i])<=tol);
+export const ops=<K extends Op['op']>(d:ModelDecision,op:K)=>d.ops.filter((o):o is Extract<Op,{op:K}>=>o.op===op);
+export const one=<K extends Op['op']>(d:ModelDecision,op:K)=>d.ops.length===1&&d.ops[0].op===op?d.ops[0] as Extract<Op,{op:K}>:undefined;
+export const asks=(d:ModelDecision)=>!!d.clarification&&d.ops.length===0;
 const QUERY=new Set(['list','find','describe_scene']);
-const mutates=(d:ModelDecision)=>d.ops.some(o=>!QUERY.has(o.op));
+export const mutates=(d:ModelDecision)=>d.ops.some(o=>!QUERY.has(o.op));
 /** 수정 대상이 되는 ID만 모은다. place_on/face_toward의 targetId는 기준으로만 쓰므로 제외. */
 const writes=(o:Op)=>[...('id' in o?[o.id]:[]),...('ids' in o&&['align_row','distribute','lock','unlock'].includes(o.op)?o.ids:[])];
-const touches=(d:ModelDecision,id:string)=>d.ops.some(o=>writes(o).includes(id));
+export const touches=(d:ModelDecision,id:string)=>d.ops.some(o=>writes(o).includes(id));
 const PLACEMENT=new Set(['place','arrange_around','align_row','distribute','scatter','place_on','face_toward','snap_to_ground']);
 
 // ── basic: 2026-10-13 서버 PC 기준 20문항. 점수 비교를 위해 문항·씬을 바꾸지 않는다.
@@ -49,7 +49,7 @@ export const basic:EvalSuite={name:'basic',context:{actor:'alice',selectedId:'c1
 // 씬: 내 탁자 t1(0,0,0), 의자 c1(2,0,0), 의자2 c2(4,0,0), 화분 p1(-1,0,1), 나무 tr1(-3,0,2) / bob의 벤치 b1(0,0,4)
 const studentObjects={t1:object('t1','table','탁자'),c1:object('c1','chair','의자',[2,0,0]),c2:object('c2','chair','의자2',[4,0,0]),p1:object('p1','plant','화분',[-1,0,1]),tr1:object('tr1','tree','나무',[-3,0,2]),b1:object('b1','bench','다른 학생 벤치',[0,0,4],'bob')};
 const moved=(id:string,to:Vec3,tol=0.05)=>(d:ModelDecision)=>{const o=one(d,'move');return !!o&&o.id===id&&near(o.value,to,tol);};
-const newIds=(d:ModelDecision,assetId:string)=>[...ops(d,'place').filter(o=>o.assetId===assetId).map(o=>o.id),...ops(d,'scatter').filter(o=>o.assetId===assetId).flatMap(o=>o.ids),...ops(d,'arrange_around').filter(o=>o.assetId===assetId).flatMap(o=>o.ids)];
+export const newIds=(d:ModelDecision,assetId:string)=>[...ops(d,'place').filter(o=>o.assetId===assetId).map(o=>o.id),...ops(d,'scatter').filter(o=>o.assetId===assetId).flatMap(o=>o.ids),...ops(d,'arrange_around').filter(o=>o.assetId===assetId).flatMap(o=>o.ids)];
 export const student:EvalSuite={name:'student',context:{actor:'alice',selectedId:null,cameraCenter:[0,0,0],scene:{version:1,roomId:'eval-student',generation:0,seq:12,objects:studentObjects}},cases:[
  // 지시어: 이거/저거=선택, 여기=카메라 중심
  {id:'s01',kind:'지시어',text:'이거 왼쪽으로 1미터만',selected:'c1',check:moved('c1',[1,0,0]),ref:[{op:'move',id:'c1',value:[1,0,0]}]},

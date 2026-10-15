@@ -3,7 +3,7 @@ import {dirname} from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {OllamaModel} from '../apps/llm/src/ollama';
 import type {ModelDecision} from '../apps/llm/src/tools';
-import {suites,caseContext,type EvalSuite} from './llm-eval/cases';
+import {suites,caseContext,type EvalSuite} from './llm-eval/index';
 // 사용: npx tsx tools/evaluate-llm.ts [--suite basic|student|all] [--out 경로] [--model qwen3:4b] [--force]
 // 기본 결과 경로는 docs/evidence/llm-eval-runs/<suite>-<시각>.json. 기존 증거 파일을 덮어쓰지 않는다.
 const arg=(name:string)=>{const i=process.argv.indexOf('--'+name);return i>0?process.argv[i+1]:undefined;};
@@ -32,7 +32,7 @@ const save=()=>{
 };
 for(const suite of chosen)for(const c of suite.cases){
  const start=performance.now();let decision:ModelDecision|undefined,error:string|undefined,pass=false;
- try{decision=await model.chooseTools([{role:'user',content:c.text}],caseContext(suite,c));pass=c.check(decision);}catch(e){error=String(e);}
+ try{decision=await model.chooseTools([{role:'user',content:c.text}],caseContext(suite,c));pass=c.check(decision,caseContext(suite,c));}catch(e){error=String(e);}
  results.push({suite:suite.name,id:c.id,kind:c.kind,request:c.text,pass,ms:Math.round(performance.now()-start),decision,error});save();
  console.log(c.id,pass?'PASS':'FAIL',results.at(-1)!.ms+'ms',error??JSON.stringify(decision));
 }
