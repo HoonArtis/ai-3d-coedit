@@ -1,8 +1,11 @@
 import {readFileSync} from 'node:fs';
 import {BUILTIN_LIBRARY,librarySchema} from '../../../packages/contracts/src/index';
 import type {ChatMessage,ModelContext} from './model-port';
-import {studentTools} from './tools';
-const prompt=readFileSync(new URL('../prompts/student.md',import.meta.url),'utf8');
+import {studentTools,toolsFor} from './tools';
+import {WORKFLOWS,type Workflow} from './router';
+const read=(path:string)=>readFileSync(new URL('../prompts/'+path,import.meta.url),'utf8');
+const prompt=read('student.md'),common=read('common.md');
+const workflowPrompts=Object.fromEntries(Object.keys(WORKFLOWS).map(id=>[id,read(`workflows/${id}.md`)])) as Record<Workflow,string>;
 const num=(v:readonly number[])=>'('+v.map(n=>Math.round(n*1000)/1000).join(', ')+')';
 /** 씬은 시스템 메시지 끝에 한 줄에 물체 하나로 넣는다. 이름은 따옴표로 감싼 데이터로만 쓴다. */
 function sceneText(context:ModelContext){
@@ -17,7 +20,9 @@ function sceneText(context:ModelContext){
   `물체 ${objects.length}개:`,...(objects.length?objects:['- (없음)']),
   '배치 가능한 라이브러리 assetId:',...Object.values(library).map(a=>`- ${a.id} ${JSON.stringify(a.name)}`)].join('\n');
 }
-export function buildMessages(messages:ChatMessage[],context:ModelContext){
+/** workflow가 없으면 도구 전체를 한 번에 보는 단일 프롬프트, 있으면 공통 규칙 + 그 워크플로우 규칙과 도구만. */
+export function buildMessages(messages:ChatMessage[],context:ModelContext,workflow?:Workflow){
  if(messages.length>40||messages.some(m=>!['user','assistant'].includes(m.role)||m.content.length>4000))throw Error('CHAT_INPUT_LIMIT');
- return [{role:'system',content:prompt+'\n도구 정의:\n'+JSON.stringify(studentTools)+'\n\n'+sceneText(context)},...messages];
+ const head=workflow?common+'\n'+workflowPrompts[workflow]:prompt,tools=workflow?toolsFor(WORKFLOWS[workflow]):studentTools;
+ return [{role:'system',content:head+'\n도구 정의:\n'+JSON.stringify(tools)+'\n\n'+sceneText(context)},...messages];
 }

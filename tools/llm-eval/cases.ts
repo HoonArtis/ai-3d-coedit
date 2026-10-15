@@ -9,7 +9,8 @@ export const near=(a:readonly number[],b:readonly number[],tol=0.05)=>a.length==
 export const ops=<K extends Op['op']>(d:ModelDecision,op:K)=>d.ops.filter((o):o is Extract<Op,{op:K}>=>o.op===op);
 export const one=<K extends Op['op']>(d:ModelDecision,op:K)=>d.ops.length===1&&d.ops[0].op===op?d.ops[0] as Extract<Op,{op:K}>:undefined;
 export const asks=(d:ModelDecision)=>!!d.clarification&&d.ops.length===0;
-const QUERY=new Set(['list','find','describe_scene']);
+// recommend도 씬을 바꾸지 않는 조회다.
+const QUERY=new Set(['list','find','describe_scene','recommend']);
 export const mutates=(d:ModelDecision)=>d.ops.some(o=>!QUERY.has(o.op));
 /** 수정 대상이 되는 ID만 모은다. place_on/face_toward의 targetId는 기준으로만 쓰므로 제외. */
 const writes=(o:Op)=>[...('id' in o?[o.id]:[]),...('ids' in o&&['align_row','distribute','lock','unlock'].includes(o.op)?o.ids:[])];

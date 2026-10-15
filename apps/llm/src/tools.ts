@@ -37,7 +37,13 @@ export const studentTools=opSchema.options.filter(s=>!teacherOnly.has(s.shape.op
 });
 export const decisionSchema=modelDecisionSchema;
 export type ModelDecision=z.infer<typeof decisionSchema>;
-export const decisionJSONSchema=z.toJSONSchema(decisionSchema,{target:"draft-7"});
-// Restrict generation as well as validation. The authoritative server still checks permissions.
-(decisionJSONSchema.properties!.ops as {items:unknown}).items={anyOf:opSchema.options.filter(s=>!teacherOnly.has(s.shape.op.value)).map(s=>z.toJSONSchema(s,{target:"draft-7"}))};
+/** 출력 문법을 고른 도구로 좁힌다. 도구가 없으면 ops는 빈 배열만 허용한다. 서버가 권한을 다시 판정한다. */
+export function decisionJSONSchemaFor(names:readonly string[]){
+ const schema=z.toJSONSchema(decisionSchema,{target:"draft-7"}),ops=schema.properties!.ops as Record<string,unknown>;
+ const options=opSchema.options.filter(s=>!teacherOnly.has(s.shape.op.value)&&names.includes(s.shape.op.value));
+ if(options.length)ops.items={anyOf:options.map(s=>z.toJSONSchema(s,{target:"draft-7"}))};else{delete ops.items;ops.maxItems=0;}
+ return schema;
+}
+export const toolsFor=(names:readonly string[])=>studentTools.filter(t=>names.includes(t.function.name));
+export const decisionJSONSchema=decisionJSONSchemaFor(studentTools.map(t=>t.function.name));
 export const parseDecision=parseStudentDecision;

@@ -2,7 +2,8 @@ import {JobQueues} from '@coedit/jobs';
 import {parseSnapshot,type ChatMessage,type ModelContext} from '@coedit/contracts';
 import {OllamaModel} from './ollama';
 const queues=new JobQueues();await queues.ready();
-const model=new OllamaModel({url:process.env.OLLAMA_URL,model:process.env.OLLAMA_MODEL});
+// LLM_ROUTING=single이면 분류 없이 도구 전체를 한 번에 본다(비교·장애 대비용).
+const model=new OllamaModel({url:process.env.OLLAMA_URL,model:process.env.OLLAMA_MODEL,routing:process.env.LLM_ROUTING!=='single'});
 const worker=queues.worker('llm',async input=>{
  const context=input.payload.context as unknown as ModelContext;
  context.scene=parseSnapshot(context.scene);
