@@ -11,6 +11,7 @@
 | 3 | [START_HERE.md](START_HERE.md) | 다른 PC에서 받아 설치·실행하거나 서버에 반영할 때 |
 | 4 | [CLAUDE.md](CLAUDE.md) | 개발 작업 전. 확정된 결정과 작업 규칙의 원본 |
 | 참고 | [docs/flows.html](docs/flows.html) | AI 도우미 흐름과 AI 생성 흐름 도식 |
+| 참고 | [docs/chatbot-improvement.md](docs/chatbot-improvement.md) | 챗봇 고도화 과정. 점수가 어떻게 올랐고 왜 올랐는지(42/60 → 91/109) |
 
 ## 기획 요약
 
