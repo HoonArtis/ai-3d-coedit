@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<!-- 숨바꼭질 기획 예시 화면: ?v=start|prep|seek|ghost|result|gun. 앱 색·글꼴을 따라 그린 목업이며 실제 화면 아님 -->
+<style>
+@font-face{font-family:K;src:local('Noto Sans KR'),local('Malgun Gothic')}
+*{box-sizing:border-box}html,body{margin:0;width:1600px;height:900px;overflow:hidden}
+body{font-family:'Noto Sans KR','Malgun Gothic',system-ui,sans-serif;background:#f2f5f3;color:#253b35;font-size:15px}
+.badge{position:fixed;right:18px;bottom:16px;z-index:50;background:#a8323a;color:#fff;font-weight:700;font-size:15px;padding:6px 14px;border-radius:999px;box-shadow:0 2px 8px #0003}
+button{font:inherit;padding:9px 16px;border:1px solid #547e6f;border-radius:8px;background:#fff;color:#294b3e}
+button.primary{background:#2f6450;color:#fff;border-color:#2f6450}
+.card{background:#fff;border:1px solid #d6dfd9;border-radius:14px}
+canvas{display:block}
+h1,h2,h3{margin:0}
+.eyebrow{font-size:12px;letter-spacing:.2em;color:#5f6f66}
+.chip{display:inline-block;border:1px solid #c9d6ce;border-radius:999px;padding:2px 10px;font-size:13px;color:#4c6158;background:#fff}
+.hud{position:fixed;font-weight:700;color:#fff;text-shadow:0 1px 3px #000a}
+.pill{background:#0008;border-radius:999px;padding:6px 14px;color:#fff;text-shadow:none}
+.hp{display:flex;gap:4px}.hp i{width:22px;height:14px;border-radius:3px;background:#e74c4c;display:block}.hp i.off{background:#fff3;border:1px solid #fff6}
+table{border-collapse:collapse;width:100%}td,th{padding:9px 10px;border-bottom:1px solid #e3e9e5;text-align:left;font-size:14px}th{color:#5f6f66;font-weight:600;background:#f6f8f6}
+</style></head><body>
+<div id="root"></div><div class="badge">기획 예시 화면 · 구현 전</div>
+<script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+const Q=new URLSearchParams(location.search),v=Q.get('v')||'seek',root=document.getElementById('root'),CLEAN=Q.has('clean'),ART=Q.has('art');
+if(CLEAN)document.head.insertAdjacentHTML('beforeend','<style>.chip,.hud,.badge,.card{display:none!important}</style>');
+const html=s=>{root.insertAdjacentHTML('beforeend',s);};
+
+/* ---------- 3D 장면: 조가 꾸민 거실 + 마네킹 ---------- */
+function scene3d(el,{cam,look,ghost=false,first=false,mannequins=[],gun=false,fov=55}){
+ if(ART){const im=new Image();im.src='/docs/manual/work/scenes/'+v+'.png';im.style.cssText='display:block;width:100%;height:100%;object-fit:cover';el.appendChild(im);window.PENDING=(window.PENDING||0)+1;im.onload=im.onerror=()=>{window.PENDING--};return;}
+ const w=el.clientWidth,h=el.clientHeight,r=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});r.setPixelRatio(1);r.setSize(w,h);r.shadowMap.enabled=true;el.appendChild(r.domElement);
+ const s=new THREE.Scene();s.background=new THREE.Color(ghost?'#cfd8de':'#e4ebe5');s.fog=new THREE.Fog(s.background,18,40);
+ s.add(new THREE.HemisphereLight('#ffffff','#8e9e91',2.2));const d=new THREE.DirectionalLight('#fff',2.2);d.position.set(5,9,6);d.castShadow=true;d.shadow.mapSize.set(2048,2048);Object.assign(d.shadow.camera,{left:-12,right:12,top:12,bottom:-12});s.add(d);
+ const mat=c=>new THREE.MeshStandardMaterial({color:c,roughness:.8,transparent:ghost,opacity:ghost?.55:1});
+ const box=(x,y,z,sx,sy,sz,c,ry=0)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat(c));m.position.set(x,y+sy/2,z);m.rotation.y=ry;m.castShadow=m.receiveShadow=true;s.add(m);return m;};
+ const floor=new THREE.Mesh(new THREE.PlaneGeometry(14,12),new THREE.MeshStandardMaterial({color:'#d7e1d4'}));floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;s.add(floor);
+ const rug=new THREE.Mesh(new THREE.CircleGeometry(2.1,48),new THREE.MeshStandardMaterial({color:'#c98f6b'}));rug.rotation.x=-Math.PI/2;rug.position.set(0,.01,.5);s.add(rug);
+ box(0,0,-6,14,3,.2,'#eef1ec');box(-7,0,0,.2,3,12,'#e8ece6');
+ // 소파
+ box(-2.6,0,-3.6,3,.45,1,'#4e7a99');box(-2.6,.45,-4,3,.6,.3,'#4e7a99');box(-4,.45,-3.6,.25,.35,1,'#4e7a99');box(-1.2,.45,-3.6,.25,.35,1,'#4e7a99');
+ // 탁자·의자
+ box(0,.0,.5,1.6,.75,1,'#a8754a');for(const [x,z] of [[-1.1,.5],[1.1,.5]])box(x,0,z,.45,.9,.45,'#8c5f3c');
+ // 책장·화분·스탠드·상자
+ box(3.6,0,-5.5,2.2,2.2,.5,'#7b5a3a');for(let i=0;i<3;i++)box(3.6,.6+i*.6,-5.3,2,.04,.4,'#5b4129');
+ const pot=box(5.4,0,-2,.6,.5,.6,'#b5643c');const leaf=new THREE.Mesh(new THREE.SphereGeometry(.65,20,16),mat('#4f8a4a'));leaf.position.set(5.4,1.2,-2);leaf.castShadow=true;s.add(leaf);
+ box(-5.6,0,2.6,.25,1.7,.25,'#d9c27a');box(-5.6,1.7,2.6,.6,.35,.6,'#f4e3a1');
+ box(4,0,2.5,1.2,.9,1.2,'#c7b08a',.4);box(4.6,0,3.6,.8,.6,.8,'#b39b74',.2);
+ box(-3.8,0,-0.6,1,.5,2,'#4e7a99');
+ // 마네킹
+ const meshes=[];
+ for(const m of mannequins){const g=man(m);g.position.set(...m.pos);g.rotation.y=m.ry||0;s.add(g);meshes.push(g);}
+ function man({paint=null,crouch=false,found=false,team=false,outline=false}){
+  const g=new THREE.Group(),base=found?'#d9534f':'#9a9f9c';
+  const part=(geo,y,c,x=0,z=0)=>{const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:c,roughness:.7,transparent:team||ghost||found,opacity:team?.45:ghost?.8:found?.75:1}));m.position.set(x,y,z);m.castShadow=true;g.add(m);if(outline){const e=new THREE.LineSegments(new THREE.EdgesGeometry(geo),new THREE.LineBasicMaterial({color:'#ffd23a'}));e.position.copy(m.position);g.add(e);}return m;};
+  const k=crouch?.62:1,col=i=>paint?paint[i%paint.length]:base;
+  part(new THREE.SphereGeometry(.13,20,16),1.58*k,col(0));part(new THREE.BoxGeometry(.42,.6,.24),1.15*k,col(1));
+  part(new THREE.BoxGeometry(.11,.55,.11),1.12*k,col(2),-.28);part(new THREE.BoxGeometry(.11,.55,.11),1.12*k,col(2),.28);
+  part(new THREE.BoxGeometry(.15,.82*k,.15),.41*k,col(3),-.11);part(new THREE.BoxGeometry(.15,.82*k,.15),.41*k,col(3),.11);
+  if(found){const ring=new THREE.Mesh(new THREE.RingGeometry(.45,.6,40),new THREE.MeshBasicMaterial({color:'#e74c4c',side:2}));ring.rotation.x=-Math.PI/2;ring.position.y=.02;g.add(ring);}
+  return g;
+ }
+ const c=new THREE.PerspectiveCamera(fov,w/h,.05,100);c.position.set(...cam);c.lookAt(...look);
+ if(gun){const g=new THREE.Group(),gm=new THREE.MeshStandardMaterial({color:'#2e3236',metalness:.6,roughness:.4});
+  const a=new THREE.Mesh(new THREE.BoxGeometry(.06,.07,.32),gm);a.position.set(0,0,-.1);g.add(a);const b=new THREE.Mesh(new THREE.BoxGeometry(.05,.14,.07),gm);b.position.set(0,-.09,.02);b.rotation.x=.25;g.add(b);
+  const flash=new THREE.Mesh(new THREE.SphereGeometry(.05,12,8),new THREE.MeshBasicMaterial({color:'#ffd27a'}));flash.position.set(0,0,-.29);g.add(flash);
+  g.scale.setScalar(.7);g.position.set(.3,-.26,-.55);g.rotation.y=.08;c.add(g);s.add(c);}
+ r.render(s,c);return {s,c,r};
+}
+const room={found:[-3.8,.5,-.6]};
+const people={
+ sofa:{pos:[-2.9,.45,-3.55],crouch:true,paint:['#4e7a99','#4e7a99','#4e7a99','#4e7a99'],ry:0},
+ plant:{pos:[5.4,0,-1.5],paint:['#4f8a4a','#4f8a4a','#b5643c','#b5643c']},
+ box:{pos:[4.3,0,3.1],crouch:true,paint:['#c7b08a','#b39b74','#c7b08a','#b39b74'],ry:.3},
+ shelf:{pos:[3.1,0,-5.15],paint:['#7b5a3a','#5b4129','#7b5a3a','#7b5a3a']},
+ lamp:{pos:[-5.1,0,2.9],paint:['#f4e3a1','#d9c27a','#d9c27a','#d9c27a']},
+};
+
+if(v==='start'){
+ html(`<div style="padding:34px 40px;display:grid;gap:18px">
+ <div style="display:flex;justify-content:space-between;align-items:end"><div><p class="eyebrow">SPACE STUDIO · TEACHER</p><h1 style="font-size:34px">숨바꼭질 경기</h1></div><button>내 수업으로</button></div>
+ <div style="display:grid;grid-template-columns:640px 1fr;gap:18px">
+  <section class="card" style="padding:22px;display:grid;gap:16px;align-content:start"><h2 style="font-size:20px">경기 만들기 · AI 공간 꾸미기 1반</h2>
+   <div><b>참가 조</b><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">${['1조','2조','3조','4조'].map(n=>`<label class="card" style="padding:10px 12px;display:flex;gap:8px;align-items:center;min-width:0"><input type="checkbox" checked> ${n} <span class="chip" style="margin-left:auto">제출본 준비 완료</span></label>`).join('')}</div></div>
+   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">${[['숨기 준비','7분'],['대결','5분'],['재숨기','2분'],['찾기 HP','10']].map(([a,b])=>`<label style="display:grid;gap:4px;font-size:13px;color:#5f6f66;min-width:0">${a}<input value="${b}" style="font:inherit;width:100%;padding:8px;border:1px solid #c9d6ce;border-radius:8px"></label>`).join('')}</div>
+   <button class="primary" style="font-size:16px;padding:12px">경기 시작</button></section>
+  <section class="card" style="padding:22px;display:grid;gap:14px;align-content:start"><div style="display:flex;justify-content:space-between;align-items:center"><h2 style="font-size:20px">진행 중 · 1판 / 3판</h2><span class="chip" style="font-size:15px;border-color:#a8323a;color:#a8323a">대결 03:12 남음</span></div>
+   <table><tr><th>판</th><th>대진</th><th>상태</th></tr><tr><td>1판</td><td>1조 vs 4조 · 2조 vs 3조</td><td><b>대결 중</b></td></tr><tr><td>2판</td><td>1조 vs 3조 · 4조 vs 2조</td><td>대기</td></tr><tr><td>3판</td><td>1조 vs 2조 · 3조 vs 4조</td><td>대기</td></tr></table>
+   <table><tr><th>조</th><th>생존</th><th>승</th></tr><tr><td>1조</td><td>4 / 5</td><td>0</td></tr><tr><td>2조</td><td>2 / 5</td><td>0</td></tr><tr><td>3조</td><td>5 / 5</td><td>0</td></tr><tr><td>4조</td><td>3 / 5</td><td>0</td></tr></table>
+   <div style="display:flex;gap:10px"><button>일시정지</button><button>다음 단계</button><button style="border-color:#a8323a;color:#a8323a">경기 끝내기</button></div></section>
+ </div></div>`);
+}
+if(v==='prep'){
+ html(`<div style="display:grid;grid-template-columns:330px 1fr;height:900px">
+ <aside style="background:#fff;border-right:1px solid #d6dfd9;padding:22px;display:grid;gap:16px;align-content:start">
+  <div><p class="eyebrow">숨바꼭질 · 2조</p><h2 style="font-size:24px">숨기 준비</h2><p style="margin:6px 0 0;color:#a8323a;font-weight:700">남은 시간 04:36</p></div>
+  <div><b>자세</b><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px">${['서기','차렷','웅크리기','엎드리기','눕기','의자 앉기','벽 기대기','팔 벌리기','무릎 꿇기'].map((n,i)=>`<button style="padding:7px 4px;font-size:13px;${i===2?'background:#2f6450;color:#fff':''}">${n}</button>`).join('')}</div></div>
+  <div><b>색칠</b><div style="display:flex;gap:6px;margin-top:8px;align-items:center">${['#4e7a99','#4f8a4a','#c7b08a','#7b5a3a','#f4e3a1','#9a9f9c'].map((c,i)=>`<span style="width:30px;height:30px;border-radius:6px;background:${c};${i===0?'outline:3px solid #253b35;outline-offset:2px':''}"></span>`).join('')}<button style="padding:6px 8px;font-size:13px;white-space:nowrap">스포이트</button></div>
+   <div style="display:flex;gap:6px;margin-top:8px"><button style="padding:6px 10px;font-size:13px">붓 작게</button><button style="padding:6px 10px;font-size:13px;background:#e2ece4">붓 중간</button><button style="padding:6px 10px;font-size:13px">지우개</button><button style="padding:6px 10px;font-size:13px">전체 채우기</button></div></div>
+  <label style="display:grid;gap:4px">방향 <input type="range" value="20"></label><label style="display:grid;gap:4px">크기 0.9배 <input type="range" value="25"></label>
+  <p style="margin:0;font-size:13px;color:#4c6158">조원 마네킹 3개 숨음 · 상대 조에게는 보이지 않아요</p>
+  <button class="primary" style="padding:12px">이 자리에 숨기</button></aside>
+ <div id="v" style="position:relative"></div></div>`);
+ const el=document.getElementById('v');scene3d(el,{cam:[7,7.5,9],look:[0,0,-1],mannequins:[{...people.sofa,outline:true},{...people.plant,team:true},{...people.box,team:true},{...people.lamp,team:true}]});
+ el.insertAdjacentHTML('beforeend',`<div style="position:absolute;left:20px;top:16px" class="chip">우리 조 맵(1판 고정 제출본) · 클릭한 자리에 마네킹 배치 · 노란 테두리 = 내 마네킹(소파에 웅크림)</div>`);
+}
+if(v==='seek'||v==='ghost'){
+ html(`<div id="v" style="position:fixed;inset:0"></div>`);const el=document.getElementById('v');
+ if(v==='seek')scene3d(el,{cam:[1.5,1.6,5.2],look:[-.6,1,-2.5],first:true,gun:true,fov:70,mannequins:[people.sofa,people.plant,people.shelf,{pos:[-3.8,.5,-.6],found:true}]});
+ else scene3d(el,{cam:[6,6.5,8],look:[0,0,-1.2],ghost:true,mannequins:[{...people.sofa,outline:true},{...people.plant,outline:true},{...people.shelf,outline:true},{...people.lamp,outline:true},{pos:[-3.8,.5,-.6],found:true}]});
+ if(v==='seek')html(`<div class="hud" style="left:50%;top:50%;transform:translate(-50%,-50%);font-size:30px;text-shadow:0 0 3px #000">+</div>
+  <div class="hud pill" style="left:24px;top:20px;font-size:18px">상대 1조 맵 · 술래</div>
+  <div class="hud pill" style="left:50%;top:20px;transform:translateX(-50%);font-size:22px">03:12</div>
+  <div class="hud pill" style="right:24px;top:20px;font-size:16px">우리 2조 생존 4/5 · 상대 1조 생존 4/5</div>
+  <div class="hud pill" style="left:24px;bottom:24px;display:grid;gap:6px;border-radius:12px;padding:10px 14px"><span style="font-size:15px">찾기 HP 7 / 10</span><div class="hp">${Array.from({length:10},(_,i)=>`<i class="${i<7?'':'off'}"></i>`).join('')}</div></div>
+  <div class="hud pill" style="left:50%;top:58%;transform:translateX(-50%);font-size:18px;background:#a8323acc">빗나감 · HP −1</div>
+  <div class="hud pill" style="right:24px;bottom:60px;font-size:14px">WASD 이동 · 마우스 조준 · 클릭 발사</div>`);
+ else html(`<div class="hud pill" style="left:24px;top:20px;font-size:18px;background:#6a4c99dd">고스트 관전 · 1조 맵</div>
+  <div class="hud pill" style="left:50%;top:20px;transform:translateX(-50%);font-size:22px">02:40</div>
+  <div class="hud" style="right:24px;top:20px;display:flex;gap:8px;text-shadow:none"><button>1조 맵</button><button style="background:#e2ece4">2조 맵</button></div>
+  <div class="hud pill" style="left:24px;bottom:24px;font-size:15px">발견돼서 탈락했어요 · 벽을 지나 자유롭게 구경할 수 있어요 · 노란 테두리 = 숨은 사람</div>`);
+}
+if(v==='result'){
+ html(`<div id="v" style="position:fixed;inset:0;filter:blur(3px) brightness(.85)"></div>`);scene3d(document.getElementById('v'),{cam:[6,6.5,8],look:[0,0,-1],mannequins:[people.sofa,{pos:[-3.8,.5,-.6],found:true},{...people.plant,found:true}]});
+ html(`<section class="card" style="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:760px;padding:30px;display:grid;gap:16px;box-shadow:0 10px 40px #0004">
+  <p class="eyebrow">1판 결과 · 2조 vs 1조</p><h1 style="font-size:36px">2조 승리!</h1>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="card" style="padding:14px;border-color:#2f6450"><b>2조</b><p style="margin:4px 0 0;font-size:26px;font-weight:800;color:#2f6450">생존 3 / 5</p></div><div class="card" style="padding:14px"><b>1조</b><p style="margin:4px 0 0;font-size:26px;font-weight:800">생존 1 / 5</p></div></div>
+  <table><tr><th>시각</th><th>찾은 사람</th><th>발견된 사람</th></tr><tr><td>01:05</td><td>2조 학생 3</td><td>1조 학생 1</td></tr><tr><td>02:41</td><td>1조 학생 4</td><td>2조 학생 2</td></tr><tr><td>03:30</td><td>2조 학생 1</td><td>1조 학생 5</td></tr></table>
+  <p style="margin:0;color:#4c6158">다음 판 상대: 3조 · 숨은 위치 유지, 재숨기 2분</p></section>`);
+}
+if(v==='gun'){
+ const blk=(t,c,indent=0,extra='')=>`<div style="margin-left:${indent*26}px;background:${c};color:#fff;border-radius:6px;padding:7px 12px;font-size:14px;font-weight:600;width:max-content;box-shadow:inset 0 -3px 0 #0002">${t}${extra}</div>`;
+ const num=n=>`<span style="background:#fff;color:#253b35;border-radius:10px;padding:0 8px;margin:0 4px">${n}</span>`;
+ html(`<div style="display:grid;grid-template-columns:200px 520px 1fr;height:900px">
+ <aside style="background:#fff;border-right:1px solid #d6dfd9;padding:18px;display:grid;gap:8px;align-content:start"><p class="eyebrow">술래 총 만들기</p><b>블록</b>${[['이벤트','#c88a1f'],['조건','#2f6a8a'],['동작','#3c7a5a'],['값','#6a4c99']].map(([n,c])=>`<span style="background:${c};color:#fff;border-radius:6px;padding:6px 10px">${n}</span>`).join('')}
+  <div class="card" style="padding:10px;margin-top:10px;font-size:13px"><b>미션 2 / 4</b><p style="margin:4px 0 0">쿨타임 조건을 넣어 연타를 막아 보세요.</p></div></aside>
+ <main style="padding:22px;display:grid;gap:8px;align-content:start;background:#f7f9f7;border-right:1px solid #d6dfd9"><b>블록 판</b>
+  ${blk('트리거를 당겼을 때','#c88a1f')}${blk('만약 쿨타임이 끝났으면','#2f6a8a',1)}${blk('소리 재생: 총소리','#3c7a5a',2)}${blk('총구 불꽃 크기','#3c7a5a',2,num('0.3'))}${blk('광선 쏘기 사거리','#3c7a5a',2,num('10')+' m')}${blk('만약 맞힌 게 사람이면','#2f6a8a',2)}${blk('맞은 자리 효과','#3c7a5a',3)}${blk('탄피 배출','#3c7a5a',2)}${blk('컨트롤러 진동 세기','#3c7a5a',2,num('0.5'))}${blk('쿨타임','#6a4c99',2,num('0.5')+' 초')}
+  <div style="margin-top:6px;border:2px dashed #2f6a8a;border-radius:8px;padding:10px;color:#2f6a8a;width:max-content">여기에 블록 끌어오기</div></main>
+ <section style="display:grid;grid-template-rows:1fr 380px">
+  <div style="padding:20px;overflow:hidden"><b>코드 보기</b><pre style="margin:10px 0 0;background:#1f2a25;color:#d8e6dc;border-radius:10px;padding:16px;font:14px/1.6 Consolas,monospace">onTrigger(() => {
+  if (cooldownReady()) {
+    playSound('gunshot');
+    muzzleFlash(<span style="background:#3c7a5a;padding:0 4px;border-radius:4px">0.3</span>);
+    const hit = castRay(<span style="background:#3c7a5a;padding:0 4px;border-radius:4px">10</span>);
+    if (hit.isPerson) hitEffect(hit.point);
+    ejectShell();
+    vibrate(<span style="background:#3c7a5a;padding:0 4px;border-radius:4px">0.5</span>);
+    setCooldown(<span style="background:#3c7a5a;padding:0 4px;border-radius:4px">0.5</span>);
+  }
+});</pre><p style="font-size:13px;color:#4c6158">초록 숫자는 직접 고칠 수 있어요 · 허용 범위: 쿨타임 0.5초 이상, 사거리 10m 이하</p></div>
+  <div id="v" style="position:relative;border-top:1px solid #d6dfd9"></div></section></div>`);
+ const el=document.getElementById('v');scene3d(el,{cam:[1.2,1.6,5.5],look:[0,1,-1],gun:true,fov:65,mannequins:[{pos:[0,0,-1.5]},{pos:[1.6,0,-2.5],found:true}]});
+ el.insertAdjacentHTML('beforeend',`<div class="chip" style="position:absolute;left:14px;top:12px">시험 사격장 · 맞힘 1 · 헛발 0 · HP 10/10</div>`);
+}
+const done=()=>{if(!(window.PENDING>0))window.READY=true;else setTimeout(done,50)};done();
+</script></body></html>

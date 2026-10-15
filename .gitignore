@@ -24,3 +24,7 @@ backups/
 *.pfx
 *.p12
 *.dump
+
+# 기능 설명서 완성본은 공유용으로 추적
+!docs/manual/dist/
+docs/manual/work/*/logs/

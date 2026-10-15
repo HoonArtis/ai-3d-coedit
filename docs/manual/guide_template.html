@@ -1,0 +1,154 @@
+<title>{{TITLE}}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gothic+A1:wght@500;700;800&family=Noto+Sans+KR:wght@400;500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* 레이아웃: 왼쪽 기능 색인 레일 + 오른쪽 기능 카드(설명 열 | 현장 화면 열). 앱의 녹색·회녹 바탕을 그대로 쓰고, 빨강은 화면 속 표시와 같은 색 하나만 사용 */
+:root{
+ --paper:#f2f5f0; --surface:#ffffff; --ink:#1d2a24; --muted:#5f6f66; --line:#d8e0d7;
+ --accent:#326754; --accent-soft:#e2ece4; --mark:#bf2529;--on-mark:#ffffff; --warn-soft:#fbe6e3; --code-soft:#ece9f6; --code:#5a4c99;
+ --f-display:'Gothic A1','Noto Sans KR',system-ui,sans-serif; --f-body:'Noto Sans KR',system-ui,sans-serif; --f-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
+ --r:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#121815;--surface:#1a221e;--ink:#e6ede8;--muted:#9aaba1;--line:#2c3832;--accent:#7cc0a0;--accent-soft:#203129;--mark:#ff5a5d;--on-mark:#2a0d0e;--warn-soft:#3a2224;--code-soft:#272338;--code:#b9aef0;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#121815;--surface:#1a221e;--ink:#e6ede8;--muted:#9aaba1;--line:#2c3832;--accent:#7cc0a0;--accent-soft:#203129;--mark:#ff5a5d;--on-mark:#2a0d0e;--warn-soft:#3a2224;--code-soft:#272338;--code:#b9aef0;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px;padding-block:40px 80px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+/* 색인 레일 */
+nav.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 24px);align-self:start;display:flex;flex-direction:column;gap:2px}
+nav.rail .lbl{font:500 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+nav.rail a{display:flex;flex-direction:column;padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--ink);font-weight:500}
+nav.rail a span{font-size:12px;color:var(--muted);font-weight:400}
+nav.rail a:hover{background:var(--accent-soft)}
+/* 현재 읽는 섹션 표시(스크롤 위치 기준) */
+nav.rail{max-height:calc(100vh - 48px);overflow-y:auto}
+nav.rail a.on{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent);font-weight:700;color:var(--accent)}nav.rail a.on span{color:var(--accent);font-weight:600}
+.now{display:none}
+/* 표지 */
+.cover{display:grid;gap:22px;padding-bottom:28px;border-bottom:1px solid var(--line)}
+.eyebrow{font:500 12px/1 var(--f-mono);letter-spacing:.14em;color:var(--accent);text-transform:uppercase}
+.cover h1{font-size:clamp(30px,4.2vw,46px);font-weight:800;letter-spacing:-.02em}
+.cover .lead{max-width:62ch;font-size:17px;color:var(--muted);margin:0}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px 28px;margin:0}
+.facts dt{font-size:12px;color:var(--muted)}.facts dd{margin:2px 0 0;font-size:14px}
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;font-size:13px;color:var(--muted)}
+.legend i{display:inline-block;width:26px;height:16px;border:3px solid var(--mark);border-radius:4px;vertical-align:-3px;margin-right:6px}
+.legend .badge{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--mark);color:var(--on-mark);font-weight:700;font-size:12px;margin-right:6px}
+.stats{display:flex;flex-wrap:wrap;gap:10px}
+.stats b{font-family:var(--f-display);font-size:26px;font-variant-numeric:tabular-nums;display:block;line-height:1.1}
+.stats div{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:10px 16px;min-width:120px;font-size:12px;color:var(--muted)}
+/* 메인 기능 흐름 */
+.mainflow{word-break:keep-all}
+.mainflow .phases{display:grid;grid-template-columns:4fr 2fr 2fr;gap:14px}
+.mainflow .phase{background:var(--accent-soft);border-radius:var(--r);padding:12px;display:grid;grid-template-rows:auto 1fr;gap:10px;min-width:0}
+.mainflow .phase h3{font-size:13px;color:var(--accent);letter-spacing:.02em}
+.mainflow ol{list-style:none;margin:0;padding:0;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:10px}
+.mainflow li{min-width:0;position:relative}
+.mainflow li+li::before{content:'';position:absolute;left:-10px;top:22px;width:10px;height:2px;background:var(--accent)}
+.mainflow .step{height:100%;display:grid;grid-template-rows:auto auto auto 1fr auto auto;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px;text-decoration:none;color:var(--ink);transition:border-color .15s}
+.mainflow .no{font:500 12px/1 var(--f-mono);color:var(--accent)}
+.mainflow .who{justify-self:start;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+.mainflow .step b{font-family:var(--f-display);font-size:15px;line-height:1.35}
+.mainflow .d{font-size:13px;color:var(--muted);line-height:1.5}
+.mainflow .pic img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;object-position:center top;border-radius:5px;border:1px solid var(--line);background:var(--paper)}
+.mainflow .links{display:flex;flex-wrap:wrap;align-content:flex-start;gap:4px 10px;font-size:12px;min-height:3.6em}.mainflow .links a{color:var(--accent)}.mainflow .links .go{font-weight:700}
+.mainflow .pic.fit img{object-fit:contain;background:var(--surface)}
+.mainflow .phase.always{background:transparent;border:1.5px dashed var(--accent)}
+.mainflow .phase.always li+li::before{display:none}
+.mainflow .next{margin:14px 0 0;font-size:14px;color:var(--muted)}
+@media (max-width:1180px){.mainflow .phases{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:640px){.mainflow ol{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}.mainflow li+li::before{display:none}}
+/* 섹션 */
+.sec{padding-top:56px;scroll-margin-top:16px}
+.sec-head{display:grid;gap:6px;margin-bottom:22px;max-width:80ch}
+.kind{font:500 12px/1 var(--f-mono);letter-spacing:.1em;color:var(--accent)}
+.sec-head h2{font-size:28px;font-weight:800}
+.sec-head p{margin:0;color:var(--muted)}
+.sec-head .n{font-size:12px;color:var(--muted)}
+.cards{display:grid;gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);grid-template-rows:auto 1fr;align-items:start;gap:8px 26px;scroll-margin-top:16px}
+.card header{grid-column:1;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.card h3{font-size:18px;font-weight:700;flex-basis:100%;order:2;margin-top:2px}
+.tid{font:500 12px/1 var(--f-mono);color:var(--muted);text-decoration:none}
+.st{font-size:12px;padding:3px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:700}
+.st.warn{background:var(--warn-soft);color:var(--mark)}.st.code{background:var(--code-soft);color:var(--code)}
+.card ul{grid-column:1;margin:0;padding-left:18px;color:var(--ink);font-size:14px}
+.card ul li{margin-block:3px}
+.media{grid-column:2;grid-row:1/span 2;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;align-content:start;min-width:0}
+.card:not(.many) .media{grid-template-columns:1fr}
+.m{margin:0;display:grid;gap:4px;min-width:0}
+.m.zoom{align-self:start}
+.m.video{grid-column:1/-1}
+.card:not(.many) .m.zoom{max-width:460px}
+.m figcaption{font-size:12px;color:var(--muted);font-family:var(--f-mono)}
+.m img,.m video{display:block;width:100%;height:auto;max-width:100%;border-radius:6px;border:1px solid var(--line);background:var(--paper)}
+.zoomable{all:unset;cursor:zoom-in;display:block;border-radius:6px}
+.card .media:empty::after{content:'실제 동작 결함으로 촬영 보류. 아래 개선 필요 사항 참고';font-size:13px;color:var(--mark);padding:14px;border:1px dashed var(--mark);border-radius:6px}
+.card[data-st=none] .media:empty::after{content:'촬영 중 해당 상황 미발생으로 화면 없음';color:var(--muted);border-color:var(--line)}
+.card[data-st=code] .media:empty::after{content:'코드로 확인, 화면 없음';color:var(--muted);border-color:var(--line)}
+.st.plan{background:transparent;color:var(--mark);border:1px dashed var(--mark)}.card[data-st=plan]{border-style:dashed}.card[data-st=plan]:has(.media:empty){grid-template-columns:minmax(0,1fr);grid-template-rows:auto}.card[data-st=plan] .media:empty{display:none}
+.card[data-st=plan] figcaption::after{content:' · 기획 예시'}
+.card[data-st=plan] .media:empty::after{content:'기획 단계, 구현 전이라 화면 없음';color:var(--muted);border-color:var(--line)}
+.m.wide{grid-column:1/-1}
+/* 흐름도 */
+.flow{margin:0 0 22px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;overflow-x:auto}
+.flow svg{width:100%;min-width:720px;height:auto;display:block}
+.flow-cap{margin-top:8px;font-size:13px;color:var(--muted);line-height:1.6}
+.fl rect{fill:var(--paper);stroke:var(--line);stroke-width:1.5}.fl rect.hi{fill:var(--accent-soft);stroke:var(--accent)}
+.fl text{fill:var(--ink);font:700 15px var(--f-display);text-anchor:middle}.fl text.s{font:400 12px var(--f-body);fill:var(--muted)}
+.fl text.t{font:500 11px var(--f-mono);fill:var(--muted)}.fl path{stroke:var(--muted);stroke-width:1.6;fill:none}
+/* 개선 필요 */
+#findings ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+#findings li{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--mark);border-radius:var(--r);padding:12px 16px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:2px 12px}
+#findings li b{font-family:var(--f-display)}#findings li p{grid-column:2;margin:0;color:var(--muted);font-size:14px}
+footer{margin-top:60px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+/* 크게 보기 */
+dialog#lb{border:0;padding:0;background:transparent;max-width:96vw;max-height:94vh}
+dialog#lb::backdrop{background:rgb(0 0 0 / .82)}
+dialog#lb img{max-width:96vw;max-height:90vh;display:block;border-radius:6px}
+dialog#lb button{position:absolute;top:8px;right:8px;background:var(--surface);color:var(--ink);border:0;border-radius:999px;width:36px;height:36px;font-size:20px;cursor:pointer}
+@media (max-width:980px){.wrap{grid-template-columns:minmax(0,1fr);gap:20px}nav.rail{position:static;flex-direction:row;flex-wrap:wrap;gap:6px}nav.rail .lbl{flex-basis:100%;margin:0}nav.rail a{border:1px solid var(--line);padding:6px 10px}
+ .card{grid-template-columns:minmax(0,1fr)}.media{grid-column:1;grid-row:auto}}
+/* 휴대폰: 확대 보기에서 원본 크기로 좌우 이동 */
+@media (max-width:760px){dialog#lb{max-width:100vw;max-height:100vh;width:100vw;height:100vh;overflow:auto;background:var(--paper)}
+ dialog#lb img{max-width:none;max-height:none;width:auto;height:auto;min-width:100%;border-radius:0;margin-top:56px}
+ dialog#lb button{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:calc(env(safe-area-inset-right,0px) + 10px);box-shadow:0 1px 6px rgba(0,0,0,.25)}
+ dialog#lb::after{content:'좌우로 밀어 전체 보기';position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 14px);transform:translateX(-50%);font-size:12px;background:var(--surface);color:var(--ink);padding:4px 10px;border-radius:999px}}
+@media (max-width:980px){.now{position:fixed;left:0;right:0;top:0;z-index:20;display:flex;gap:8px;align-items:baseline;padding:calc(env(safe-area-inset-top,0px) + 8px) max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));background:var(--surface);border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.08);transform:translateY(-110%);transition:transform .2s}.now.show{transform:none}.now .k{font-size:12px;color:var(--accent);font-weight:700}.now b{font-size:15px}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+html{scroll-behavior:smooth}
+</style>
+<div class="now" aria-hidden="true"><span class="k"></span><b></b></div>
+<div class="wrap">
+ <nav class="rail" aria-label="기능 색인"><div class="lbl">기능 색인</div>{{NAV}}</nav>
+ <main>
+  <header class="cover">
+   <span class="eyebrow">Space Studio · 기능 설명서</span>
+   <h1>{{TITLE}}</h1>
+   <p class="lead">{{LEAD}}</p>
+   <div class="stats"><div><b>{{TOTAL}}</b>정리한 기능</div><div><b>{{SHOT}}</b>실제 화면 촬영</div><div><b>{{CODE}}</b>코드 근거·미발생</div><div><b>{{WARN}}</b>개선 필요 사항</div></div>
+   <dl class="facts">{{FACTS}}</dl>
+   <div class="legend"><span><i></i>설명 대상 표시</span><span><span class="badge">1</span>설명 순서</span><span>이미지 클릭 시 크게 보기</span></div>
+  </header>
+  {{SECTIONS}}
+  <section class="sec" id="findings"><div class="sec-head"><span class="kind">점검 결과</span><h2>개선 필요 사항</h2><p>촬영 중 실제 동작으로 확인한 결함·한계. 로컬 LLM 응답은 실행마다 달라질 수 있음.</p></div><ul>{{FINDINGS}}</ul></section>
+  <footer>자료 원본: docs/manual/work(작업 장부)·capture(촬영 스크립트)·media(원본 이미지·영상). 헤드셋 실기기 검증은 범위 밖.</footer>
+ </main>
+</div>
+<dialog id="lb" aria-label="이미지 크게 보기"><button type="button" aria-label="닫기">×</button></dialog>
+<script>
+(()=>{const d=document.getElementById('lb'),im=document.createElement('img');d.prepend(im);
+document.addEventListener('click',e=>{const b=e.target.closest('.zoomable');if(b){const s=b.querySelector('img');im.src=s.src;im.alt=s.alt;try{d.showModal()}catch(_){d.setAttribute('open','')}}});
+d.querySelector('button').addEventListener('click',()=>d.close());
+/* 영상: 화면에 보일 때만 재생, 벗어나면 정지(브라우저 자동 재생 중단 보완·동시 재생 부담 감소) */
+if('IntersectionObserver' in window){const io=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting){v.muted=true;const p=v.play();if(p&&p.catch)p.catch(()=>{})}else v.pause()}),{threshold:.25});
+document.querySelectorAll('video').forEach(v=>{v.removeAttribute('autoplay');v.pause();io.observe(v)})}d.addEventListener('click',e=>{if(e.target===d)d.close()});
+/* 스크롤 위치에 따라 왼쪽 색인의 현재 섹션 강조, 좁은 화면은 상단 띠에 표시 */
+const links=[...document.querySelectorAll('nav.rail a[href^="#"]')],secs=links.map(a=>document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean),now=document.querySelector('.now'),rail=document.querySelector('nav.rail');let cur=null,tick=false;
+const spy=()=>{tick=false;const y=innerHeight*.3;let hit=null;for(const s of secs)if(s.getBoundingClientRect().top<=y)hit=s;if(hit!==cur){cur=hit;links.forEach(a=>{const on=hit&&a.getAttribute('href')==='#'+hit.id;a.classList.toggle('on',!!on);if(on){a.setAttribute('aria-current','location');const r=a.getBoundingClientRect(),q=rail.getBoundingClientRect();if(r.top<q.top||r.bottom>q.bottom)rail.scrollTop+=r.top-q.top-q.height/2;}else a.removeAttribute('aria-current')});if(hit){const a=links.find(l=>l.getAttribute('href')==='#'+hit.id);now.querySelector('.k').textContent=a.querySelector('span')?.textContent||'';now.querySelector('b').textContent=[...a.childNodes].filter(n=>n.nodeType===3).map(n=>n.textContent).join('').trim()}}now.classList.toggle('show',!!hit&&rail.getBoundingClientRect().bottom<0)};
+addEventListener('scroll',()=>{if(!tick){tick=true;requestAnimationFrame(spy)}},{passive:true});addEventListener('resize',spy);spy();})();
+</script>

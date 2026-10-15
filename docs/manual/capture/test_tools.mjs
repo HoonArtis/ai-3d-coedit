@@ -1,0 +1,17 @@
+import {launch,openStudent,shot,sleep,boxes,finishVideo} from './lib.mjs';
+import {annotate,zoom,toMp4,sideBySide,union} from './tools.mjs';
+const b=await launch();
+const s1=await openStudent(b,1,{record:true}),s2=await openStudent(b,2,{record:true});
+const p=s1.page;
+const bx=await boxes(p,{count:p.getByLabel('에셋 수'),move:p.getByRole('button',{name:'이동 모드'}),lib:p.getByRole('button',{name:'공원 벤치 배치'})});
+const src=await shot(p,'t_base');
+await annotate(src,'_test_annot',[{box:bx.lib,n:1,label:'더블클릭 배치'},{box:bx.move,n:2},{box:bx.count,n:3,label:'에셋 수'}]);
+await zoom(src,'_test_zoom',bx.count,{marks:[{box:bx.count}]});
+await sleep(500);
+await p.getByRole('button',{name:'공원 벤치 배치'}).dblclick();
+await s2.page.getByLabel('에셋 수').filter({hasText:/^\d+ \/ 200$/}).waitFor();await sleep(2500);
+const v1=await finishVideo(s1),v2=await finishVideo(s2);
+const off=(s2.t0-s1.t0)/1000;console.log('offset',off,v1,v2);
+toMp4(v1,'_test_single',{start:Math.max(0,off),dur:6});
+sideBySide(v1,v2,'_test_sbs',{offA:Math.max(0,off),offB:0,dur:6});
+await b.close();

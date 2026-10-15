@@ -185,3 +185,26 @@ USER-2026-10-14-NO-COMMERCIAL: 사용자가 판매용 라이선스 경로 LIC-03
 감상 전용 세션을 발급하며 편집·생성·새 제출·아바타 설정 저장은 서버에서 거부한다. 수업 코드가 유효하고 초대가 열려 있어야 한다. 빈 자리도 기본 블록 캐릭터의 임시 감상자로 입장할 수 있고 PC용 학생 자리를 점유하지 않는다. 세션은 선택한 조에만 묶인다. 제출본이 없으면 PC에서 VR 감상 → 현재 작품 제출을 먼저 수행한다. 정원은 기존 편집자/감상자 합산 5명 규칙을 유지한다. 이는 학생 본인 확인 기능이 아닌 테스트용 자유 감상이며, 정식 개인 계정·기기 연결 코드는 이번 요청으로 추가하지 않는다.
 
 근거: `docs/evidence/vr-free-entry.md`.
+
+## 2026-10-16 기능 설명서·한눈에 보기와 숨바꼭질 기획
+
+### 여는 법
+- 완성본 두 파일: `docs/manual/dist/기능설명서.html`(전체 설명서), `docs/manual/dist/한눈에보기.html`(메인 기능 한 페이지). 더블클릭으로 브라우저에서 연다. 이미지·영상이 파일 안에 들어 있어 인터넷·서버 없이 열린다. 두 파일은 같은 폴더에 둔다(서로 링크).
+- 한눈에보기: 타일을 누르면 그 자리에서 크게 열리고 ← → 로 다음 단계를 이어 본다. 기능설명서: 스크롤 위치에 따라 왼쪽 색인에 현재 섹션이 표시된다.
+
+### 앱 켜는 법(촬영·확인용 로컬 실행)
+새 PC 설치는 [START_HERE.md](START_HERE.md). 이 PC에서는 저장소 `.worktrees/implementation`에서 각각 별도 터미널로 실행한다.
+1. Docker Desktop 실행 후 `docker compose -f infra/compose.yml up -d --wait` (Postgres 54329, Redis 63799)
+2. Ollama: `OLLAMA_MODELS=D:/AI/ollama_models ollama serve`
+3. `npm run dev:server` (방 서버 2567) · `npm run dev:llm` · `npm run dev:cpu` · `npm run dev:gpu`(생성 기능을 쓸 때)
+4. `npm run dev -- --host 127.0.0.1 --port 4173 --strictPort` 후 http://127.0.0.1:4173 접속. 강사 화면은 `?login=1`의 강사 탭.
+
+### 다시 만드는 법
+- 설명서 조립: `py docs/manual/build_guide.py` → `docs/manual/guide.html`과 `dist/` 두 파일을 다시 만든다. 내용은 `guide_content.py`(메인·챗봇·한눈에보기 데이터), `guide_content_more.py`(생성·캐릭터·강사·VR·숨바꼭질), 모양은 `guide_template.html`·`overview_template.html`.
+- 화면 촬영: 앱을 켠 뒤 `docs/manual/capture/`의 스크립트(`node m1.mjs` 등). 촬영 계정 정보 `capture/out/state.json`은 Git 제외. 진행 장부는 `py docs/manual/work/check.py`, 규칙은 `docs/manual/work/LOOP.md`.
+- 숨바꼭질 기획 예시 화면: 장면 그림은 `docs/manual/work/scenes/gen.sh`(GPT 이미지 생성, codex 필요), 화면 틀 촬영은 `docs/manual/capture`에서 `node plan_mock/shoot.mjs`. 실제 화면이 아니므로 이미지에 "기획 예시 화면 · 구현 전" 표시를 유지한다.
+- 배경 테마 시안: `docs/manual/work/backdrops/gen.sh`(GPT 360° 파노라마) → `node plan_mock/shoot_bg.mjs` 비교 렌더.
+
+### 숨바꼭질(메차카멜레온) — 기획, 구현 전
+- 설계 `docs/superpowers/specs/2026-10-16-mecha-chameleon-design.md`, 1단계 구현 계획 `docs/superpowers/plans/2026-10-16-mecha-chameleon-phase1.md`. 사용자 지시로 계획만 작성했고 구현하지 않았다.
+- 핵심: 5인 조 맵에서 회색 마네킹을 칠해 숨고, 상대 조 맵에서 학생이 블록 코딩으로 만든 술래 총으로 찾는다. 이기려고 총을 코딩하며 코딩을 익히는 것이 교육 목적. 수업 흐름상 VR 감상 대신 마지막 단계.
