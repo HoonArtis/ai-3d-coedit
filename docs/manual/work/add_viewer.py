@@ -8,7 +8,7 @@ css = r"""
 .tile{cursor:zoom-in}
 dialog#view{border:0;padding:0;margin:0;width:100vw;height:100dvh;max-width:none;max-height:none;background:transparent;color:var(--ink);overflow:hidden}
 dialog#view::backdrop{background:rgba(10,16,13,.55);backdrop-filter:blur(3px)}
-.sheet{--c:var(--c1);position:absolute;inset:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));max-width:1360px;margin:0 auto;background:var(--surface);border-radius:14px;border-top:5px solid var(--c);box-shadow:0 20px 60px rgba(0,0,0,.35);display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;transform-origin:center}
+.sheet{--c:var(--c1);position:absolute;inset:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));max-width:1360px;margin:0 auto;background:linear-gradient(var(--c),var(--c)) top/100% 5px no-repeat,var(--surface);border-radius:14px;padding-top:5px;box-shadow:0 20px 60px rgba(0,0,0,.35);display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;transform-origin:center}
 .sheet[data-lane="2"]{--c:var(--c2)}.sheet[data-lane="3"]{--c:var(--c3)}.sheet[data-lane="4"]{--c:var(--c4)}.sheet[data-lane="5"]{--c:var(--c5)}
 .vhead{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line)}
 .vhead .cat{font-weight:800;color:var(--c);font-family:var(--f-display)}
