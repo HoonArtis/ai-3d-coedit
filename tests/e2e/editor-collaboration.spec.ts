@@ -9,8 +9,8 @@ test('five separate browsers receive the same changes and cannot edit another ow
     await pages[1].getByRole('button',{name:'공원 벤치 선택'}).click();
     await expect(pages[1].getByRole('status',{name:'작업 안내'})).toContainText('수정 권한이 없어요');
     await expect(pages[1].getByLabel('위치 X')).toHaveCount(0);
-    await pages[0].getByLabel('위치 X').fill('3');await pages[0].getByLabel('위치 X').press('Enter');
-    await expect(pages[0].getByLabel('위치 X')).toHaveValue('3');
+    await pages[0].getByLabel('위치 X').fill('300');await pages[0].getByLabel('위치 X').press('Enter');
+    await expect(pages[0].getByLabel('위치 X')).toHaveValue('300');
     await pages[0].getByRole('button',{name:'삭제',exact:true}).click();
     for(const page of pages)await expect(page.getByLabel('에셋 수')).toHaveText('0 / 200');
   }finally{

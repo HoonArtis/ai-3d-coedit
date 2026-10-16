@@ -17,13 +17,13 @@ test('teacher force unlock cancels an active drag and teacher edits block stale 
  const send=(ops:unknown[],lockTokens:Record<string,string>={})=>new Promise<any>(resolve=>{const requestId=randomUUID();pending.set(requestId,resolve);room.send('command',{actor:identity.actor,source:'teacher',requestId,ops,lockTokens});});
  try{
   await page.goto('/');await expect(page.getByText('서버 연결됨',{exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'컬러 블록 배치'}).dblclick();await expect(page.getByLabel('위치 Y')).toBeEnabled();
+  await page.getByRole('button',{name:'컬러 블록 배치'}).dblclick();await expect(page.getByLabel('위치 Z')).toBeEnabled();
   await expect.poll(()=>Object.keys(snapshot?.objects??{}).length).toBe(1);const id=Object.keys(snapshot.objects)[0];
   const box=(await page.locator('canvas').boundingBox())!,x=box.x+box.width/2,y=box.y+box.height/2;
   await page.mouse.move(x,y-65);await page.mouse.down();await page.mouse.move(x,y-130,{steps:10});
   expect((await send([{op:'force_unlock',ids:[id]}])).ok).toBe(true);
   await expect(page.getByRole('status',{name:'작업 안내'})).toContainText('잠금이 해제');await page.mouse.up();
-  await page.getByRole('button',{name:'컬러 블록 선택'}).click();await expect(page.getByLabel('위치 Y')).toHaveValue('0');
+  await page.getByRole('button',{name:'컬러 블록 선택'}).click();await expect(page.getByLabel('위치 Z')).toHaveValue('0');
   expect(snapshot.seq).toBe(1);
   await send([{op:'force_unlock',ids:[id]}]);await send([{op:'lock',ids:[id]}]);
   let token='';room.onMessage('event',(e:any)=>{if(e.type==='locks')token=e.locks[id]?.token??'';});room.send('sync');await expect.poll(()=>token).not.toBe('');

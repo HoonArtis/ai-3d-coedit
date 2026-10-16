@@ -1,7 +1,7 @@
 import {useEffect,useLayoutEffect,useRef,useState,type ReactNode} from 'react';
 import {Canvas,useThree} from '@react-three/fiber';
 import {OrbitControls,TransformControls,Grid} from '@react-three/drei';
-import {Group,Vector2,Vector3,Plane,Raycaster,MOUSE,type Camera} from 'three';
+import {Group,Vector2,Vector3,Plane,Raycaster,MOUSE,type Camera,type Color,type Material,type Mesh,type Object3D} from 'three';
 import {BUILTIN_LIBRARY,type SceneObject,type Vec3} from '@coedit/contracts';
 import {cameraCommand,reconcileCameraFocus,type CameraCommand} from './camera';
 import {restoreTransform} from './interaction-state';
@@ -10,6 +10,16 @@ import {GeneratedModelProvider} from './GeneratedModel';
 import {actorColor} from './actor-color';
 import type {useEditor} from './use-editor';
 export type Mode='translate'|'rotate'|'scale';
+/* 기즈모 색을 언리얼과 같게: 위(three Y)는 파랑, 좌우(three Z)는 초록. 속성 패널의 X·Y·Z(언리얼 표기)와 맞춘다 */
+function unrealGizmoColors(controls:Object3D|null){
+  const done=new Set<Material>();
+  controls?.traverse(node=>{
+    const m=(node as Mesh).material as (Material&{color?:Color;tempColor?:Color})|undefined;
+    if(!m?.color||done.has(m))return;done.add(m);
+    const hex=(m.tempColor??m.color).getHex(),to=hex===0x00ff00?0x0000ff:hex===0x0000ff?0x00ff00:null;
+    if(to!==null){m.color.setHex(to);m.tempColor?.setHex(to);}
+  });
+}
 type EditorState=ReturnType<typeof useEditor>;
 function CameraRig({onDistance,request,editor}:{onDistance:(n:string)=>void;request:{seq:number;command:CameraCommand}|null;editor:EditorState}){
   const {camera}=useThree();
@@ -61,7 +71,7 @@ function SceneItem({object,editor,mode}:{object:SceneObject;editor:EditorState;m
     if(!g)return null;
     return {id:object.id,token:editor.locks[object.id]?.token??'',position:g.position.toArray() as Vec3,rotation:[g.rotation.x,g.rotation.y,g.rotation.z] as Vec3,scale:g.scale.toArray() as Vec3};
   };
-  return <>{content}<TransformControls object={group as React.RefObject<Group>} mode={mode} size={.85}
+  return <>{content}<TransformControls ref={unrealGizmoColors} object={group as React.RefObject<Group>} mode={mode} size={.85}
     onMouseDown={()=>{dragging.current=true;}}
     onObjectChange={()=>{
       if(!dragging.current||performance.now()-lastPreview.current<50)return;
@@ -102,7 +112,7 @@ export function Viewport({editor,mode,cameraRequest,diagnostics}:{diagnostics?:R
     </Canvas>
     <div className="view-label"><span className="live-dot"/> PERSPECTIVE <span>원근 보기</span></div>
     {!Object.keys(editor.snapshot.objects).length&&<div className="empty-scene"><div className="empty-glyph">＋</div><h2>상상한 공간을 펼쳐 보세요</h2><p>왼쪽에서 에셋을 끌어 놓거나<br/>카드를 두 번 눌러 시작하세요.</p></div>}
-    <div className="axis-widget"><span className="axis-y">Y</span><span className="axis-x">X</span><span className="axis-z">Z</span></div>
+    <div className="axis-widget" title="언리얼 방식 축: Z 위·X 앞뒤·Y 좌우"><span className="axis-z">Z</span><span className="axis-x">X</span><span className="axis-y">Y</span></div>
     <div className="view-bottom"><span>휠 줌 · 우클릭 회전 · 휠클릭 이동</span><output aria-label="카메라 거리">{distance} m</output></div>
   </div>;
 }

@@ -11,19 +11,19 @@ test('real rotation and scale handles commit and invalid scale rolls back',async
   await page.keyboard.press('e');await expect(page.getByRole('button',{name:'회전 모드'})).toHaveAttribute('aria-pressed','true');
   await drag(point(Math.cos(.3),0,Math.sin(.3)),point(Math.cos(.8),0,Math.sin(.8)));
   await expect.poll(async()=>{let sum=0;for(const axis of ['X','Y','Z'])sum+=Math.abs(Number(await page.getByLabel('회전 '+axis).inputValue()));return sum;}).toBeGreaterThan(1);
-  await page.getByRole('button',{name:'되돌리기',exact:true}).click();await expect(page.getByLabel('회전 Y')).toHaveValue('0');
+  await page.getByRole('button',{name:'되돌리기',exact:true}).click();await expect(page.getByLabel('회전 Z')).toHaveValue('0');
   await page.keyboard.press('r');await drag(point(0,.8,0),point(0,1.2,0));
-  await expect.poll(async()=>Number(await page.getByLabel('크기 Y').inputValue())).toBeGreaterThan(1.1);
-  await page.getByRole('button',{name:'되돌리기',exact:true}).click();await expect(page.getByLabel('크기 Y')).toHaveValue('1');
+  await expect.poll(async()=>Number(await page.getByLabel('크기 Z').inputValue())).toBeGreaterThan(1.1);
+  await page.getByRole('button',{name:'되돌리기',exact:true}).click();await expect(page.getByLabel('크기 Z')).toHaveValue('1');
   await drag(point(0,.8,0),point(0,-.3,0));
-  await expect(page.getByRole('status',{name:'작업 안내'})).toBeVisible();await expect(page.getByLabel('크기 Y')).toHaveValue('1');
+  await expect(page.getByRole('status',{name:'작업 안내'})).toBeVisible();await expect(page.getByLabel('크기 Z')).toHaveValue('1');
 });
 test('escape cancels a drag without adding undo history',async({page})=>{
   await page.goto('/');await expect(page.getByText('서버 연결됨',{exact:true})).toBeVisible();
-  await page.getByRole('button',{name:'라운지 의자 배치'}).dblclick();await expect(page.getByLabel('위치 Y')).toBeEnabled();
+  await page.getByRole('button',{name:'라운지 의자 배치'}).dblclick();await expect(page.getByLabel('위치 Z')).toBeEnabled();
   const box=(await page.locator('canvas').boundingBox())!,x=box.x+box.width/2,y=box.y+box.height/2;
   await page.keyboard.press('w');await page.mouse.move(x,y-65);await page.mouse.down();await page.mouse.move(x,y-130,{steps:10});await page.keyboard.press('Escape');await page.mouse.up();
-  await page.getByRole('button',{name:'라운지 의자 선택'}).click();await expect(page.getByLabel('위치 Y')).toHaveValue('0');
+  await page.getByRole('button',{name:'라운지 의자 선택'}).click();await expect(page.getByLabel('위치 Z')).toHaveValue('0');
   await page.getByRole('button',{name:'되돌리기',exact:true}).click();await expect(page.getByLabel('에셋 수')).toHaveText('0 / 200');
 });
 test('library drag adds one object and unknown drop payload adds none',async({page})=>{
