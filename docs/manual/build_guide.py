@@ -28,6 +28,8 @@ def vid_uri(name):
     return 'data:video/mp4;base64,' + base64.b64encode(data).decode()
 
 esc = html.escape
+# **…** = 핵심 강조(색 형광). 그 외 텍스트는 그대로 이스케이프
+def hl(s): return re.sub(r'\*\*(.+?)\*\*', r'<em class="hl">\1</em>', esc(s))
 STATUS = {'촬영': 'ok', '코드 근거': 'code', '미발생': 'none', '개선 필요': 'warn', '기획': 'plan'}
 LABEL = {'촬영': '화면 촬영', '코드 근거': '코드 근거', '미발생': '미발생', '개선 필요': '개선 필요', '기획': '기획·미구현'}
 VCAP = {'M3-01-place-sync.mp4': '영상 · 왼쪽 학생 1, 오른쪽 학생 2 (배치 동기화)', 'M3-02-move-sync.mp4': '영상 · 왼쪽 학생 1, 오른쪽 학생 2 (이동 동기화)', 'M2-04-drag-drop.mp4': '영상 · 카드 끌어놓기', 'M2-06-move-gizmo.mp4': '영상 · 화살표 끌기 이동', 'M2-14-undo-redo.mp4': '영상 · 되돌리기와 다시하기', 'M4-04-around.mp4': '영상 · 요청부터 원형 배치까지', 'M4-11-cafe.mp4': '영상 · 테마 배치', 'M4-25-cancel.mp4': '영상 · 방금 거 취소'}
@@ -90,7 +92,7 @@ def main_flow_html():
             fit = ' fit' if 'zoom' in img else ''
             pic = f'<span class="pic{fit}"><img src="{u}" alt="{esc(title)} 화면"></span>' if u else ''
             extra = ''.join(f'<a href="#{t}">{esc(l)}</a>' for t, l in more)
-            lis.append(f'<li><div class="step"><span class="no">{no}</span><span class="who">{esc(who)}</span><b>{esc(title)}</b><span class="d">{esc(desc)}</span>{pic}'
+            lis.append(f'<li><div class="step"><span class="no">{no}</span><span class="who">{esc(who)}</span><b>{esc(title)}</b><span class="d">{hl(desc)}</span>{pic}'
                        f'<span class="links"><a class="go" href="#{tid}">{tid} 자세히</a>{extra}</span></div></li>')
         phases.append(f'<div class="phase{" always" if always else ""}"><h3>{esc(phase)}</h3><ol>{"".join(lis)}</ol></div>')
     nxt = ' · '.join(f'<a href="{i}">{esc(t)}</a>' for i, t in G.MAIN_FLOW_NEXT)
@@ -120,7 +122,7 @@ def build_overview():
             cls = ' class="arrow"' if seq and prev_seq else (' class="opt"' if opt else '')
             prev_seq = seq
             badge = f'<span class="n{"" if seq else " soft"}">{k if seq else n}</span>'
-            body = f'<span class="txt"><span class="top">{badge}<span class="who {esc(who)}">{esc(who)}</span></span><b>{esc(title)}</b><span class="d">{esc(desc)}</span></span>'
+            body = f'<span class="txt"><span class="top">{badge}<span class="who {esc(who)}">{esc(who)}</span></span><b>{esc(title)}</b><span class="d">{hl(desc)}</span></span>'
             card = cards.get(tid)
             media = []
             for f in (card[3] if card else [img]):
@@ -137,7 +139,7 @@ def build_overview():
         order = f'{k}단계 순서{f" + 필요 시 {nopt}" if nopt else ""}'
         tag = '<span class="tag">편집 중 상시 적용</span>' if always else f'<span class="tag">{"기획 · " if plan else ""}{order}</span>'
         lid = ' id="hide"' if plan else ''
-        lanes.append(f'<section class="lane{" always" if always else ""}{" plan" if plan else ""}"{lid}><div class="head"><span class="num">{ci:02d}</span><h2>{esc(cat)}</h2><p>{esc(summ)}</p>{tag}</div><ol class="steps">{"".join(lis)}</ol></section>')
+        lanes.append(f'<section class="lane{" always" if always else ""}{" plan" if plan else ""}"{lid}><div class="head"><span class="num">{ci:02d}</span><h2>{esc(cat)}</h2><p>{hl(summ)}</p>{tag}</div><ol class="steps">{"".join(lis)}</ol></section>')
     other = ''.join(f'<a href="{GUIDE_FILE}#{i}">{esc(n)}<span>{esc(k)}</span></a>' for i, k, n in G.OVERVIEW_OTHER)
     tpl = (ROOT / 'overview_template.html').read_text(encoding='utf-8')
     data = json.dumps(views, ensure_ascii=False).replace('</', r'<\/')
@@ -158,12 +160,12 @@ def build():
         cards = []
         for tid, title, lines, files, st in sec['cards']:
             counts[st] = counts.get(st, 0) + 1
-            lis = ''.join(f'<li>{esc(l)}</li>' for l in lines)
+            lis = ''.join(f'<li>{hl(l)}</li>' for l in lines)
             m = media_html(files, title)
             many = ' many' if len(files) > 1 else ''
             cards.append(f'<article class="card{many}" id="{tid}" data-st="{STATUS[st]}"><header><span class="tid">{tid}</span><h3>{esc(title)}</h3><span class="st {STATUS[st]}">{LABEL[st]}</span></header><ul>{lis}</ul><div class="media">{m}</div></article>')
         flow = FLOW if sec.get('flow') else ''
-        sec_html.append(f'<section class="sec" id="{sec["id"]}"><div class="sec-head"><span class="kind">{esc(sec["kind"])}</span><h2>{esc(sec["name"])}</h2><p>{esc(sec["summary"])}</p><span class="n">{len(sec["cards"])}개 기능</span></div>{flow}<div class="cards">{"".join(cards)}</div></section>')
+        sec_html.append(f'<section class="sec" id="{sec["id"]}"><div class="sec-head"><span class="kind">{esc(sec["kind"])}</span><h2>{esc(sec["name"])}</h2><p>{hl(sec["summary"])}</p><span class="n">{len(sec["cards"])}개 기능</span></div>{flow}<div class="cards">{"".join(cards)}</div></section>')
         nav.append(f'<a href="#{sec["id"]}"><span>{esc(sec["kind"])}</span>{esc(sec["name"])}</a>')
     fnd = ''.join(f'<li><a class="tid" href="#{t}">{t}</a><b>{esc(n)}</b><p>{esc(d)}</p></li>' for t, n, d in G.FINDINGS)
     nav.append('<a href="#findings"><span>점검</span>개선 필요 사항</a>')

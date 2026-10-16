@@ -55,15 +55,15 @@ dlg = r"""
 <script type="application/json" id="steps">{{STEPS}}</script>
 <script>
 (()=>{const S=JSON.parse(document.getElementById('steps').textContent),dlg=document.getElementById('view'),sheet=dlg.querySelector('.sheet'),$=q=>sheet.querySelector(q),tiles=[...document.querySelectorAll('a.tile[data-i]')];
-const still=matchMedia('(prefers-reduced-motion: reduce)').matches,esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));let cur=0;
+const still=matchMedia('(prefers-reduced-motion: reduce)').matches,esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),hl=t=>esc(t).replace(/\*\*(.+?)\*\*/g,'<em class="hl">$1</em>');let cur=0;
 const dots=$('.dots');S.forEach((s,i)=>{const d=document.createElement('i');if(i&&S[i-1].lane!==s.lane)d.className='gap';dots.appendChild(d)});
 function showMedia(m){const box=$('.main');box.innerHTML='';if(!m){box.innerHTML='<p class="noimg">화면 없음</p>';return}
  const el=document.createElement(m.t==='v'?'video':'img');el.src=m.u;if(m.t==='v'){el.muted=true;el.loop=true;el.autoplay=true;el.playsInline=true;el.controls=true}else el.alt=m.c;box.appendChild(el)}
 function render(i){cur=(i+S.length)%S.length;const s=S[cur];sheet.dataset.lane=s.lane;
  $('.cat').textContent=String(s.lane).padStart(2,'0')+' '+s.cat;$('.prog').textContent=(cur+1)+' / '+S.length;
  const n=$('.vtext .n');n.textContent=s.badge;n.className='n'+(s.seq?'':' soft');const w=$('.vtext .who');w.textContent=s.who;w.className='who '+s.who;
- $('.vtext h2').textContent=s.title;$('.lead').textContent=s.desc;$('.vtext .plan').hidden=!s.plan;
- $('.vtext ul').innerHTML=s.lines.map(l=>'<li>'+esc(l)+'</li>').join('');$('.more').href='{{GUIDE}}#'+s.tid;
+ $('.vtext h2').textContent=s.title;$('.lead').innerHTML=hl(s.desc);$('.vtext .plan').hidden=!s.plan;
+ $('.vtext ul').innerHTML=s.lines.map(l=>'<li>'+hl(l)+'</li>').join('');$('.more').href='{{GUIDE}}#'+s.tid;
  showMedia(s.media[0]);const th=$('.thumbs');th.innerHTML='';
  if(s.media.length>1)s.media.forEach((m,k)=>{const b=document.createElement('button');b.type='button';b.setAttribute('aria-label',(k+1)+'번째 화면');b.setAttribute('aria-current',k===0);b.innerHTML=m.t==='v'?'<span class="vid">▶ 영상</span>':'<img src="'+m.u+'" alt="">';b.onclick=()=>{showMedia(m);th.querySelectorAll('button').forEach((x,j)=>x.setAttribute('aria-current',j===k))};th.appendChild(b)});
  const p=S[(cur-1+S.length)%S.length],q=S[(cur+1)%S.length];$('.prev').textContent='← '+p.title;$('.next').textContent=q.title+' →';

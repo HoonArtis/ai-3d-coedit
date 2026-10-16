@@ -6,12 +6,12 @@
 /* 레이아웃: 왼쪽 기능 색인 레일 + 오른쪽 기능 카드(설명 열 | 현장 화면 열). 앱의 녹색·회녹 바탕을 그대로 쓰고, 빨강은 화면 속 표시와 같은 색 하나만 사용 */
 :root{
  --paper:#f2f5f0; --surface:#ffffff; --ink:#1d2a24; --muted:#5f6f66; --line:#d8e0d7;
- --accent:#326754; --accent-soft:#e2ece4; --mark:#bf2529;--on-mark:#ffffff; --warn-soft:#fbe6e3; --code-soft:#ece9f6; --code:#5a4c99;
+ --accent:#326754; --accent-soft:#e2ece4; --mark:#bf2529;--hl-bg:#ffe58a;--hl-ink:#5a2a00;--on-mark:#ffffff; --warn-soft:#fbe6e3; --code-soft:#ece9f6; --code:#5a4c99;
  --f-display:'Gothic A1','Noto Sans KR',system-ui,sans-serif; --f-body:'Noto Sans KR',system-ui,sans-serif; --f-mono:'IBM Plex Mono',ui-monospace,Consolas,monospace;
  --r:10px;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#121815;--surface:#1a221e;--ink:#e6ede8;--muted:#9aaba1;--line:#2c3832;--accent:#7cc0a0;--accent-soft:#203129;--mark:#ff5a5d;--on-mark:#2a0d0e;--warn-soft:#3a2224;--code-soft:#272338;--code:#b9aef0;color-scheme:dark}}
-:root[data-theme="dark"]{--paper:#121815;--surface:#1a221e;--ink:#e6ede8;--muted:#9aaba1;--line:#2c3832;--accent:#7cc0a0;--accent-soft:#203129;--mark:#ff5a5d;--on-mark:#2a0d0e;--warn-soft:#3a2224;--code-soft:#272338;--code:#b9aef0;color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#121815;--surface:#1a221e;--ink:#e6ede8;--muted:#9aaba1;--line:#2c3832;--accent:#7cc0a0;--accent-soft:#203129;--mark:#ff5a5d;--hl-bg:#5c4a12;--hl-ink:#ffe7a0;--on-mark:#2a0d0e;--warn-soft:#3a2224;--code-soft:#272338;--code:#b9aef0;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#121815;--surface:#1a221e;--ink:#e6ede8;--muted:#9aaba1;--line:#2c3832;--accent:#7cc0a0;--accent-soft:#203129;--mark:#ff5a5d;--hl-bg:#5c4a12;--hl-ink:#ffe7a0;--on-mark:#2a0d0e;--warn-soft:#3a2224;--code-soft:#272338;--code:#b9aef0;color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.65;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .wrap{max-width:1320px;margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px;padding-block:40px 80px}
@@ -121,6 +121,7 @@ dialog#lb button{position:absolute;top:8px;right:8px;background:var(--surface);c
 @media (max-width:980px){.now{position:fixed;left:0;right:0;top:0;z-index:20;display:flex;gap:8px;align-items:baseline;padding:calc(env(safe-area-inset-top,0px) + 8px) max(16px,env(safe-area-inset-right,0px)) 8px max(16px,env(safe-area-inset-left,0px));background:var(--surface);border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(0,0,0,.08);transform:translateY(-110%);transition:transform .2s}.now.show{transform:none}.now .k{font-size:12px;color:var(--accent);font-weight:700}.now b{font-size:15px}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 html{scroll-behavior:smooth}
+.hl{font-style:normal;font-weight:700;color:var(--hl-ink);background:var(--hl-bg);border-radius:3px;padding:0 3px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
 </style>
 <div class="now" aria-hidden="true"><span class="k"></span><b></b></div>
 <div class="wrap">
