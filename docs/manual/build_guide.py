@@ -187,12 +187,26 @@ def scope_css(css, scope):
         i = m
     return NL.join(out)
 
+TOPNAV = ('<nav class="topnav" aria-label="문서 전환"><span class="brand">AI 공간 꾸미기</span>'
+          '<a href="#overview" data-pg="overview">한눈에 보기</a><a href="#guide" data-pg="guide">기능 설명서</a></nav>')
+TOPNAV_CSS = """:root{--nav-h:52px}
+.topnav{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:6px;min-height:var(--nav-h);padding-top:env(safe-area-inset-top,0px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--surface);border-bottom:1px solid var(--line);font-family:var(--f-body)}
+.topnav .brand{font:800 15px var(--f-display);color:var(--accent);margin-right:auto;white-space:nowrap}
+.topnav a{font-weight:700;font-size:15px;color:var(--muted);text-decoration:none;padding:7px 14px;border-radius:999px;white-space:nowrap}
+.topnav a:hover{color:var(--ink);background:var(--accent-soft)}
+.topnav a[aria-current=page]{color:var(--surface);background:var(--accent)}
+.topnav a:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+#guide [id]{scroll-margin-top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + 16px)}
+@media (min-width:981px){#guide nav.rail{top:calc(var(--nav-h) + env(safe-area-inset-top,0px) + 20px);max-height:calc(100vh - var(--nav-h) - 44px)}}
+@media (max-width:980px){#guide .now{top:calc(var(--nav-h) + env(safe-area-inset-top,0px));padding-top:8px;z-index:25}}
+@media (max-width:420px){.topnav .brand{display:none}.topnav{justify-content:center}}"""
+
 ROUTER = """<script>
 /* 한 파일 안에서 한눈에 보기(#overview)와 전체 설명서(#guide, 각 기능 #M1-01 등)를 해시로 전환 */
 (()=>{const ov=document.getElementById('overview'),gd=document.getElementById('guide');let ovY=0;
 function route(){if(!ov.hidden)ovY=scrollY;document.querySelectorAll('dialog[open]').forEach(d=>d.close());
  const h=decodeURIComponent(location.hash.slice(1)),t=h?document.getElementById(h):null,inG=h==='guide'||!!(t&&gd.contains(t));
- ov.hidden=inG;gd.hidden=!inG;document.title=inG?'AI 공간 꾸미기 기능 설명서':'메인 기능 한눈에 보기';
+ ov.hidden=inG;gd.hidden=!inG;document.querySelectorAll('.topnav a').forEach(x=>{if(x.dataset.pg===(inG?'guide':'overview'))x.setAttribute('aria-current','page');else x.removeAttribute('aria-current')});document.title=inG?'AI 공간 꾸미기 기능 설명서':'메인 기능 한눈에 보기';
  if(t&&t!==ov&&t!==gd)t.scrollIntoView({behavior:'instant'});else scrollTo({top:inG||h==='overview'?0:ovY,behavior:'instant'});dispatchEvent(new Event('scroll'))}
 addEventListener('hashchange',route);route();})();
 </script>"""
@@ -205,8 +219,8 @@ def write_dist(guide_page):
     _, ocss, obody = split_page(build_overview())
     head = re.sub(r'<title>.*?</title>', '<title>메인 기능 한눈에 보기</title>', ghead, count=1)
     css = (scope_css(ocss, '#overview') + NL + scope_css(gcss, '#guide') + NL +
-           'body{margin:0;background:var(--paper);color:var(--ink)}' + NL + '[hidden]{display:none!important}')
-    html_ = (DOC_HEAD + head + '<style>' + NL + css + NL + '</style>' + NL + '</head>' + NL + '<body>' + NL +
+           'body{margin:0;background:var(--paper);color:var(--ink)}' + NL + '[hidden]{display:none!important}' + NL + TOPNAV_CSS)
+    html_ = (DOC_HEAD + head + '<style>' + NL + css + NL + '</style>' + NL + '</head>' + NL + '<body>' + NL + TOPNAV + NL +
              '<div id="overview">' + obody + '</div>' + NL + '<div id="guide" hidden>' + gbody + '</div>' + NL + ROUTER + NL + '</body>' + NL + '</html>' + NL)
     for old in ('기능설명서.html', '한눈에보기.html'):
         (dist / old).unlink(missing_ok=True)
