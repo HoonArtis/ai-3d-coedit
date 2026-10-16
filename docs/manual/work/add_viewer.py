@@ -40,7 +40,7 @@ dialog#view::backdrop{background:rgba(10,16,13,.55);backdrop-filter:blur(3px)}
 .vfoot .dots{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;align-items:center;max-width:460px}
 .vfoot .dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}.vfoot .dots i.on{background:var(--c);transform:scale(1.4)}
 .vfoot .dots i.gap{margin-left:8px}
-@media (max-width:820px){.vbody{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;overflow-y:auto}.vmedia .main img,.vmedia .main video{max-height:46vh}.vtext{overflow:visible}.vfoot .dots{display:none}.vfoot{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.vhead .key{display:none}}
+@media (max-width:820px){.vbody{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;overflow-y:auto}.vmedia{grid-template-rows:auto auto;min-height:auto}.vmedia .main{min-height:auto}.vmedia .main img,.vmedia .main video{max-height:46vh}.vtext{overflow:visible}.vfoot .dots{display:none}.vfoot{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.vhead .key{display:none}}
 """
 s = s.replace('</style>', css + '</style>', 1)
 dlg = r"""
