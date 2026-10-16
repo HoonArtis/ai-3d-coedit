@@ -189,7 +189,8 @@ USER-2026-10-14-NO-COMMERCIAL: 사용자가 판매용 라이선스 경로 LIC-03
 ## 2026-10-16 기능 설명서·한눈에 보기와 숨바꼭질 기획
 
 ### 여는 법
-- 완성본 두 파일: `docs/manual/dist/기능설명서.html`(전체 설명서), `docs/manual/dist/한눈에보기.html`(메인 기능 한 페이지). 더블클릭으로 브라우저에서 연다. 이미지·영상이 파일 안에 들어 있어 인터넷·서버 없이 열린다. 두 파일은 같은 폴더에 둔다(서로 링크).
+- 완성본 한 파일: `docs/manual/dist/index.html`. 처음엔 한눈에 보기가 열리고, "전체 설명서 열기"·"자세히 보기"를 누르면 같은 파일 안의 전체 설명서로 넘어간다(주소 `#guide`, 기능별 `#M9-03` 등). 더블클릭으로 브라우저에서 연다. 이미지·영상이 파일 안에 들어 있어 인터넷·서버 없이 열린다.
+- 온라인 배포(Cloudflare Workers, 영구): https://ai-3d-coedit-manual.youqlrqod.workers.dev — 다시 올리기는 `docs/manual`에서 `py build_guide.py` 후 `npx wrangler@4 deploy`(설정 `docs/manual/wrangler.jsonc`).
 - 한눈에보기: 타일을 누르면 그 자리에서 크게 열리고 ← → 로 다음 단계를 이어 본다. 기능설명서: 스크롤 위치에 따라 왼쪽 색인에 현재 섹션이 표시된다.
 
 ### 앱 켜는 법(촬영·확인용 로컬 실행)
@@ -200,7 +201,7 @@ USER-2026-10-14-NO-COMMERCIAL: 사용자가 판매용 라이선스 경로 LIC-03
 4. `npm run dev -- --host 127.0.0.1 --port 4173 --strictPort` 후 http://127.0.0.1:4173 접속. 강사 화면은 `?login=1`의 강사 탭.
 
 ### 다시 만드는 법
-- 설명서 조립: `py docs/manual/build_guide.py` → `docs/manual/guide.html`과 `dist/` 두 파일을 다시 만든다. 내용은 `guide_content.py`(메인·챗봇·한눈에보기 데이터), `guide_content_more.py`(생성·캐릭터·강사·VR·숨바꼭질), 모양은 `guide_template.html`·`overview_template.html`.
+- 설명서 조립: `py docs/manual/build_guide.py` → `docs/manual/guide.html`과 `dist/index.html`(한눈에 보기 + 전체 설명서 합본)을 다시 만든다. 내용은 `guide_content.py`(메인·챗봇·한눈에보기 데이터), `guide_content_more.py`(생성·캐릭터·강사·VR·숨바꼭질), 모양은 `guide_template.html`·`overview_template.html`.
 - 화면 촬영: 앱을 켠 뒤 `docs/manual/capture/`의 스크립트(`node m1.mjs` 등). 촬영 계정 정보 `capture/out/state.json`은 Git 제외. 진행 장부는 `py docs/manual/work/check.py`, 규칙은 `docs/manual/work/LOOP.md`.
 - 숨바꼭질 기획 예시 화면: 장면 그림은 `docs/manual/work/scenes/gen.sh`(GPT 이미지 생성, codex 필요), 화면 틀 촬영은 `docs/manual/capture`에서 `node plan_mock/shoot.mjs`. 실제 화면이 아니므로 이미지에 "기획 예시 화면 · 구현 전" 표시를 유지한다.
 - 배경 테마 시안: `docs/manual/work/backdrops/gen.sh`(GPT 360° 파노라마) → `node plan_mock/shoot_bg.mjs` 비교 렌더.

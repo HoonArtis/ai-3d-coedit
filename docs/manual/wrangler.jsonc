@@ -1,0 +1,7 @@
+// 기능 설명서 배포: dist/index.html 한 파일(한눈에 보기 + 전체 설명서)을 정적 자산으로 올림
+// 배포: docs/manual 에서 `npx wrangler@4 deploy` (먼저 `py build_guide.py`)
+{
+  "name": "ai-3d-coedit-manual",
+  "compatibility_date": "2026-10-01",
+  "assets": { "directory": "./dist" }
+}

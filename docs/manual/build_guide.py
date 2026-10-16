@@ -103,7 +103,9 @@ def main_flow_html():
 NL = chr(10)
 DOC_HEAD = NL.join(['<!doctype html>', '<html lang="ko">', '<head>', '<meta charset="utf-8">',
                     '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">', ''])
-GUIDE_FILE, OVERVIEW_FILE = '기능설명서.html', '한눈에보기.html'
+# 배포본은 한 파일: 한눈에 보기(#overview)와 전체 설명서(#guide)를 해시로 전환
+DIST_FILE = 'index.html'
+GUIDE_FILE = ''
 
 def build_overview():
     lanes, total, views = [], 0, []
@@ -138,20 +140,78 @@ def build_overview():
         nopt = sum(1 for st in steps if st[5])
         order = f'{k}단계 순서{f" + 필요 시 {nopt}" if nopt else ""}'
         tag = '<span class="tag">편집 중 상시 적용</span>' if always else f'<span class="tag">{"기획 · " if plan else ""}{order}</span>'
-        lid = ' id="hide"' if plan else ''
+        lid = ' id="ov-hide"' if plan else ''
         lanes.append(f'<section class="lane{" always" if always else ""}{" plan" if plan else ""}"{lid}><div class="head"><span class="num">{ci:02d}</span><h2>{esc(cat)}</h2><p>{hl(summ)}</p>{tag}</div><ol class="steps">{"".join(lis)}</ol></section>')
     other = ''.join(f'<a href="{GUIDE_FILE}#{i}">{esc(n)}<span>{esc(k)}</span></a>' for i, k, n in G.OVERVIEW_OTHER)
     tpl = (ROOT / 'overview_template.html').read_text(encoding='utf-8')
     data = json.dumps(views, ensure_ascii=False).replace('</', r'<\/')
-    return tpl.replace('{{STEPS}}', data).replace('{{LANES}}', ''.join(lanes)).replace('{{OTHER}}', other).replace('{{COUNT}}', str(total)).replace('{{GUIDE}}', GUIDE_FILE)
+    return tpl.replace('{{STEPS}}', data).replace('{{LANES}}', ''.join(lanes)).replace('{{OTHER}}', other).replace('{{COUNT}}', str(total)).replace('href="{{GUIDE}}"', 'href="#guide"').replace('{{GUIDE}}', GUIDE_FILE)
+
+def split_page(page):
+    """템플릿 결과를 (머리 링크, CSS, 본문)으로 나눔"""
+    i, j = page.index('<style>'), page.index('</style>')
+    return page[:i], page[i + 7:j], page[j + 8:]
+
+def _sel_scope(sel, scope):
+    sel = sel.strip()
+    if sel.startswith((':root', 'html')): return sel
+    if sel == 'body': return scope
+    if sel.startswith('body'): return scope + sel[4:]
+    return f'{scope} {sel}'
+
+def _split_top(t, ch=','):
+    out, depth, cur = [], 0, ''
+    for c in t:
+        if c in '([': depth += 1
+        elif c in ')]': depth -= 1
+        if c == ch and depth == 0: out.append(cur); cur = ''
+        else: cur += c
+    return out + [cur]
+
+def scope_css(css, scope):
+    """선택자마다 scope를 붙여 두 페이지 스타일이 서로 섞이지 않게 함(:root·html 토큰 규칙은 그대로)"""
+    css = re.sub(r'/\*.*?\*/', '', css, flags=re.S)
+    out, i = [], 0
+    while i < len(css):
+        k = css.find('{', i)
+        if k < 0: break
+        head = css[i:k].strip(); depth, m = 1, k + 1
+        while depth:
+            if css[m] == '{': depth += 1
+            elif css[m] == '}': depth -= 1
+            m += 1
+        body = css[k + 1:m - 1]
+        if head.startswith('@media'): out.append(f'{head}{{{scope_css(body, scope)}}}')
+        elif head.startswith('@'): out.append(f'{head}{{{body}}}')
+        else: out.append(','.join(_sel_scope(x, scope) for x in _split_top(head)) + '{' + body + '}')
+        i = m
+    return NL.join(out)
+
+ROUTER = """<script>
+/* 한 파일 안에서 한눈에 보기(#overview)와 전체 설명서(#guide, 각 기능 #M1-01 등)를 해시로 전환 */
+(()=>{const ov=document.getElementById('overview'),gd=document.getElementById('guide');let ovY=0;
+function route(){if(!ov.hidden)ovY=scrollY;document.querySelectorAll('dialog[open]').forEach(d=>d.close());
+ const h=decodeURIComponent(location.hash.slice(1)),t=h?document.getElementById(h):null,inG=h==='guide'||!!(t&&gd.contains(t));
+ ov.hidden=inG;gd.hidden=!inG;document.title=inG?'AI 공간 꾸미기 기능 설명서':'메인 기능 한눈에 보기';
+ if(t&&t!==ov&&t!==gd)t.scrollIntoView({behavior:'instant'});else scrollTo({top:inG||h==='overview'?0:ovY,behavior:'instant'});dispatchEvent(new Event('scroll'))}
+addEventListener('hashchange',route);route();})();
+</script>"""
 
 def write_dist(guide_page):
     dist = ROOT / 'dist'; dist.mkdir(exist_ok=True)
-    link = f'<p class="next"><a href="{OVERVIEW_FILE}">한 페이지로 보기: 메인 기능 한눈에 보기 →</a></p></section>'
+    link = '<p class="next"><a href="#overview">한 페이지로 보기: 메인 기능 한눈에 보기 →</a></p></section>'
     g = guide_page.replace('</section><section class="sec" id="entry"', link.replace('</section>', '') + '</section><section class="sec" id="entry"', 1)
-    (dist / GUIDE_FILE).write_text(DOC_HEAD + g + NL + '</html>' + NL, encoding='utf-8')
-    (dist / OVERVIEW_FILE).write_text(DOC_HEAD + build_overview() + NL + '</html>' + NL, encoding='utf-8')
-    for f in (GUIDE_FILE, OVERVIEW_FILE): print(f'dist/{f} {(dist / f).stat().st_size/1e6:.2f}MB')
+    ghead, gcss, gbody = split_page(g)
+    _, ocss, obody = split_page(build_overview())
+    head = re.sub(r'<title>.*?</title>', '<title>메인 기능 한눈에 보기</title>', ghead, count=1)
+    css = (scope_css(ocss, '#overview') + NL + scope_css(gcss, '#guide') + NL +
+           'body{margin:0;background:var(--paper);color:var(--ink)}' + NL + '[hidden]{display:none!important}')
+    html_ = (DOC_HEAD + head + '<style>' + NL + css + NL + '</style>' + NL + '</head>' + NL + '<body>' + NL +
+             '<div id="overview">' + obody + '</div>' + NL + '<div id="guide" hidden>' + gbody + '</div>' + NL + ROUTER + NL + '</body>' + NL + '</html>' + NL)
+    for old in ('기능설명서.html', '한눈에보기.html'):
+        (dist / old).unlink(missing_ok=True)
+    (dist / DIST_FILE).write_text(html_, encoding='utf-8')
+    print(f'dist/{DIST_FILE} {(dist / DIST_FILE).stat().st_size/1e6:.2f}MB')
 
 def build():
     sec_html, nav = [main_flow_html()], ['<a href="#main-flow"><span>한눈에 보기</span>메인 기능 흐름</a>']
