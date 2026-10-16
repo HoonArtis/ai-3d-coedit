@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "docs/manual/overview_template.html"
+        ],
+        "createdAt": "2026-10-16T02:06:37.107Z",
+        "reason": "Agent: detector pairs dark-theme ink (#e6ede8/#9aaba1) with light-theme surface #ffffff; real browser measurement of every text node in light and dark found 0 AA failures"
+      }
+    ]
+  }
+}
